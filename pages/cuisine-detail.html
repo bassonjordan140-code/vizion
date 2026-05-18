@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Fiche cuisine</title>
+
+    <link rel="stylesheet"
+          href="../css/style.css">
+</head>
+
+<body>
+
+    <div class="container">
+
+        <button class="back-icon-button"
+                onclick="window.location.href='module-detail.html'">
+            ←
+        </button>
+
+        <h1 id="cuisineTitle">Cuisine</h1>
+
+        <p class="subtitle">
+            Identification et équipements de la cuisine.
+        </p>
+
+        <!-- IDENTIFICATION -->
+
+        <div class="module-detail-card">
+
+            <p class="section-title">Identification</p>
+
+            <div class="field-group">
+                <label>Nom de la cuisine</label>
+                <input type="text"
+                       id="nomCuisine"
+                       placeholder="Ex : Cuisine principale">
+            </div>
+
+            <div class="field-group">
+                <label>Surface (m²)</label>
+                <input type="number"
+                       id="surfaceCuisine"
+                       min="0" step="0.1"
+                       inputmode="numeric"
+                       placeholder="Ex : 120">
+            </div>
+
+            <div class="field-group">
+                <label>Nombre de couverts/jour (estimé)</label>
+                <input type="number"
+                       id="couvertsJour"
+                       min="0" step="1"
+                       inputmode="numeric"
+                       placeholder="Ex : 300">
+            </div>
+
+            <div class="field-group" style="margin-top: 24px;">
+                <label>Photo générale de la cuisine</label>
+                <div class="photo-slot" data-photo-field="general"></div>
+            </div>
+
+        </div>
+
+        <!-- CLIMATISATION -->
+
+        <div class="module-detail-card">
+
+            <p class="section-title">Climatisation</p>
+
+            <p class="section-hint">
+                Indiquez si la cuisine est climatisée.
+            </p>
+
+            <div class="toggle-group">
+                <label>Cuisine climatisée ?</label>
+                <div class="toggle-buttons" id="climToggle">
+                    <button type="button" class="toggle-btn" data-value="non">Non</button>
+                    <button type="button" class="toggle-btn" data-value="oui">Oui</button>
+                </div>
+            </div>
+
+            <div id="climContent" class="hidden">
+
+                <div class="field-group">
+                    <label>Nombre de climatiseurs</label>
+                    <input type="number" id="climNombre" min="1" step="1" inputmode="numeric" value="1">
+                </div>
+
+                <div class="field-group">
+                    <label>État du système</label>
+                    <select id="climEtat">
+                        <option value="Bon">Bon</option>
+                        <option value="Moyen">Moyen</option>
+                        <option value="Dégradé">Dégradé</option>
+                    </select>
+                </div>
+
+                <div class="field-group">
+                    <label>Photo du climatiseur</label>
+                    <div class="photo-slot" data-photo-field="clim"></div>
+                </div>
+
+                <div class="toggle-group">
+                    <label>Plaque signalétique visible ?</label>
+                    <div class="toggle-buttons" id="plaqueToggle">
+                        <button type="button" class="toggle-btn" data-value="non">Non</button>
+                        <button type="button" class="toggle-btn" data-value="oui">Oui</button>
+                    </div>
+                </div>
+
+                <div id="plaquePhotoContainer" class="hidden">
+                    <div class="field-group">
+                        <label>Photo de la plaque signalétique</label>
+                        <div class="photo-slot" data-photo-field="clim_plaque"></div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="toggle-group">
+                <label>Brasseur d'air ?</label>
+                <div class="toggle-buttons" id="brasseurToggle">
+                    <button type="button" class="toggle-btn" data-value="non">Non</button>
+                    <button type="button" class="toggle-btn" data-value="oui">Oui</button>
+                </div>
+            </div>
+
+            <div id="brasseurContent" class="hidden">
+                <div class="field-group">
+                    <label>Nombre de brasseurs</label>
+                    <input type="number" id="brasseurNombre" min="1" step="1" inputmode="numeric" value="1">
+                </div>
+                <div class="field-group">
+                    <label>Photo brasseur d'air</label>
+                    <div class="photo-slot" data-photo-field="brasseur"></div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ÉQUIPEMENTS -->
+
+        <div class="module-detail-card">
+
+            <p class="section-title">Équipements</p>
+
+            <p class="section-hint">
+                Cochez les équipements présents et renseignez les détails.
+            </p>
+
+            <div id="equipementsList"></div>
+
+        </div>
+
+        <!-- VENTILATION -->
+
+        <div class="module-detail-card">
+
+            <p class="section-title">Ventilation / Extraction</p>
+
+            <div class="field-group">
+                <label>Nombre de hottes</label>
+                <input type="number"
+                       id="nbHottes"
+                       min="0" step="1"
+                       inputmode="numeric"
+                       placeholder="Ex : 3">
+            </div>
+
+            <div class="field-group">
+                <label>Type de ventilation</label>
+                <select id="typeVentilation">
+                    <option value="Extraction mécanique">Extraction mécanique</option>
+                    <option value="CTA double flux">CTA double flux</option>
+                    <option value="Ventilation naturelle">Ventilation naturelle</option>
+                    <option value="Autre">Autre</option>
+                </select>
+            </div>
+
+            <div class="field-group">
+                <label>Photo hotte / extraction</label>
+                <div class="photo-slot" data-photo-field="hotte"></div>
+            </div>
+
+        </div>
+
+        <!-- ÉCLAIRAGE -->
+
+        <div class="module-detail-card">
+
+            <p class="section-title">Éclairage</p>
+
+            <p class="section-hint">
+                Listez les types d'ampoules présentes.
+                La puissance unitaire est pré-remplie et la puissance totale
+                est calculée automatiquement.
+            </p>
+
+            <div id="eclairageList" class="eclairage-list"></div>
+
+            <button type="button" class="add-row-button" id="addEclairageButton">
+                + Ajouter type d'éclairage
+            </button>
+
+        </div>
+
+        <!-- OBSERVATIONS -->
+
+        <div class="module-detail-card">
+
+            <p class="section-title">Observations</p>
+
+            <p class="section-hint">
+                Remarques terrain sur cette cuisine.
+            </p>
+
+            <textarea id="observations"
+                      class="commentaire-textarea"
+                      rows="5"
+                      placeholder="Ex : Hotte n°2 filtre encrassé, friteuse droite HS…"></textarea>
+
+        </div>
+
+        <!-- SAUVEGARDE -->
+
+        <div class="module-detail-card">
+
+            <button class="primary-button" id="saveCuisine">
+                Sauvegarder
+            </button>
+
+        </div>
+
+    </div>
+
+    <script src="../js/photo-manager.js"></script>
+    <script src="../js/cuisine-detail.js"></script>
+
+</body>
+
+</html>

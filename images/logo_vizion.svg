@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   viewBox="0 0 500 200"
+   role="img"
+   aria-label="ViZion - Audit énergétique et rétrocommissioning"
+   version="1.1"
+   id="svg8"
+   sodipodi:docname="logo_vizion.svg"
+   inkscape:version="1.3 (0e150ed6c4, 2023-07-21)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs8">
+    <inkscape:path-effect
+       effect="skeletal"
+       id="path-effect45"
+       is_visible="true"
+       lpeversion="1"
+       pattern="M 0,18.867925 C 0,8.4528302 8.4528302,0 18.867925,0 c 10.415094,0 18.867924,8.4528302 18.867924,18.867925 0,10.415094 -8.45283,18.867924 -18.867924,18.867924 C 8.4528302,37.735849 0,29.283019 0,18.867925 Z"
+       copytype="single_stretched"
+       prop_scale="-0.056302597"
+       scale_y_rel="false"
+       spacing="0"
+       normal_offset="0"
+       tang_offset="0"
+       prop_units="false"
+       vertical_pattern="false"
+       hide_knot="false"
+       fuse_tolerance="0" />
+    <inkscape:path-effect
+       effect="bspline"
+       id="path-effect44"
+       is_visible="true"
+       lpeversion="1.3"
+       weight="33.333333"
+       steps="2"
+       helper_size="0"
+       apply_no_weight="true"
+       apply_with_weight="true"
+       only_selected="false"
+       uniform="false" />
+    <inkscape:path-effect
+       effect="skeletal"
+       id="path-effect43"
+       is_visible="true"
+       lpeversion="1"
+       pattern="M 0,18.867925 C 0,8.4528302 8.4528302,0 18.867925,0 c 10.415094,0 18.867924,8.4528302 18.867924,18.867925 0,10.415094 -8.45283,18.867924 -18.867924,18.867924 C 8.4528302,37.735849 0,29.283019 0,18.867925 Z"
+       copytype="single_stretched"
+       prop_scale="0.019259081"
+       scale_y_rel="false"
+       spacing="0"
+       normal_offset="0"
+       tang_offset="0"
+       prop_units="false"
+       vertical_pattern="false"
+       hide_knot="false"
+       fuse_tolerance="0" />
+    <inkscape:path-effect
+       effect="bspline"
+       id="path-effect42"
+       is_visible="true"
+       lpeversion="1.3"
+       weight="33.333333"
+       steps="2"
+       helper_size="0"
+       apply_no_weight="true"
+       apply_with_weight="true"
+       only_selected="false"
+       uniform="false" />
+  </defs>
+  <sodipodi:namedview
+     id="namedview8"
+     pagecolor="#000000"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:zoom="1.904"
+     inkscape:cx="151.2605"
+     inkscape:cy="148.37185"
+     inkscape:window-width="2400"
+     inkscape:window-height="1321"
+     inkscape:window-x="-9"
+     inkscape:window-y="-9"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="g7" />
+  <!-- Arc supérieur de l'œil (paupière haute) -->
+  <!-- Arc inférieur de l'œil (paupière basse) -->
+  <!-- Barres ascendantes avec dessous arrondis suivant la courbe basse -->
+  <g
+     fill="#C7CCD8"
+     id="g7">
+    <path
+       d="m 179.39648,100.23928 a 55.726204,46.600016 0 0 1 -2.70703,6.06933 55.726204,46.600016 0 0 1 -3.81054,5.83607 55.726204,46.600016 0 0 1 -4.76368,5.32293 55.726204,46.600016 0 0 1 -5.62304,4.70152 55.726204,46.600016 0 0 1 -6.36524,3.98346 55.726204,46.600016 0 0 1 -6.97656,3.1871 55.726204,46.600016 0 0 1 -7.45117,2.32244 55.726204,46.600016 0 0 1 -7.76758,1.41445 55.726204,46.600016 0 0 1 -7.93164,0.47315 55.726204,46.600016 0 0 1 -7.93164,-0.47315 55.726204,46.600016 0 0 1 -7.76758,-1.41445 55.726204,46.600016 0 0 1 -7.45117,-2.32244 55.726204,46.600016 0 0 1 -6.976558,-3.1871 55.726204,46.600016 0 0 1 -6.365235,-3.98346 55.726204,46.600016 0 0 1 -5.623046,-4.70152 55.726204,46.600016 0 0 1 -4.763672,-5.32293 55.726204,46.600016 0 0 1 -3.810547,-5.83607 55.726204,46.600016 0 0 1 -2.707031,-6.06933 54.844185,45.175511 0 0 0 0.773437,2.93387 54.844185,45.175511 0 0 0 2.734375,6.03933 54.844185,45.175511 0 0 0 3.75,5.65781 54.844185,45.175511 0 0 0 4.689453,5.15968 54.844185,45.175511 0 0 0 5.533203,4.55656 54.844185,45.175511 0 0 0 6.265625,3.8635 54.844185,45.175511 0 0 0 6.867186,3.08882 54.844185,45.175511 0 0 0 7.33203,2.25246 54.844185,45.175511 0 0 0 7.64648,1.37113 54.844185,45.175511 0 0 0 7.80469,0.45983 54.844185,45.175511 0 0 0 7.80469,-0.45983 54.844185,45.175511 0 0 0 7.64648,-1.37113 54.844185,45.175511 0 0 0 7.33203,-2.25246 54.844185,45.175511 0 0 0 6.86719,-3.08882 54.844185,45.175511 0 0 0 6.26563,-3.8635 54.844185,45.175511 0 0 0 5.5332,-4.55656 54.844185,45.175511 0 0 0 4.68945,-5.15968 54.844185,45.175511 0 0 0 3.75,-5.65781 54.844185,45.175511 0 0 0 2.73438,-6.03933 54.844185,45.175511 0 0 0 0.77343,-2.93387 z"
+       style="fill:#ffffff;stroke-width:0.812133;stroke-miterlimit:0;stroke-dasharray:3.24852, 6.49705"
+       id="path41" />
+    <path
+       d="m 99,124.83686 c -5.8e-5,-0.132 0,-0.17848 0,-0.32011 V 102.61411 H 85 l -0.111328,12.56176 a 54.008575,44.74217 0 0 0 0.294922,0.32671 54.008575,44.74217 0 0 0 5.449218,4.51452 54.008575,44.74217 0 0 0 6.167969,3.82479 A 54.008575,44.74217 0 0 0 99,124.83686 Z"
+       style="stroke-width:1.13592"
+       id="path39" />
+    <path
+       d="M 116,130.07244 V 93.507534 h -14 v 32.685656 a 54.008575,44.74217 0 0 0 1.56445,0.70787 54.008575,44.74217 0 0 0 7.21875,2.23086 54.008575,44.74217 0 0 0 5.2168,0.94052 z"
+       style="stroke-width:1.08703"
+       id="path37" />
+    <path
+       d="M 133,130.53115 V 82.114002 h -14 v 45.234218 3.18293 a 54.008575,44.74217 0 0 0 7,0.41416 54.008575,44.74217 0 0 0 7,-0.41416 z"
+       style="stroke-width:1.07378"
+       id="path35" />
+    <path
+       d="M 150,126.19319 V 71.13793 h -14 v 58.93451 a 54.008575,44.74217 0 0 0 5.2168,-0.94052 54.008575,44.74217 0 0 0 7.21875,-2.23086 A 54.008575,44.74217 0 0 0 150,126.19319 Z"
+       style="stroke-width:1.02342"
+       id="path33" />
+    <path
+       d="M 167,115.29962 V 62.574218 h -14 v 62.262642 a 54.008575,44.74217 0 0 0 2.19922,-0.99497 54.008575,44.74217 0 0 0 6.16797,-3.82479 54.008575,44.74217 0 0 0 5.44922,-4.51452 A 54.008575,44.74217 0 0 0 167,115.29962 Z"
+       style="stroke-width:0.968058"
+       id="path31" />
+  </g>
+  <!-- VIZION -->
+  <text
+     x="240"
+     y="95"
+     font-family="Inter, Helvetica, sans-serif"
+     font-size="44"
+     font-weight="500"
+     fill="#E6E9F0"
+     letter-spacing="6"
+     id="text7">VIZION</text>
+  <!-- Séparateur fin -->
+  <line
+     x1="240"
+     y1="118"
+     x2="485"
+     y2="118"
+     stroke="#2A3140"
+     stroke-width="1"
+     id="line7" />
+  <!-- Tagline -->
+  <text
+     x="240"
+     y="138"
+     font-family="Inter, Helvetica, sans-serif"
+     font-size="10"
+     font-weight="400"
+     fill="#8A92A8"
+     letter-spacing="2.5"
+     id="text8">AUDIT &amp; RÉTROCOMMISSIONING</text>
+</svg>

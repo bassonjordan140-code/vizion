@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Fiche buanderie</title>
+
+    <link rel="stylesheet"
+          href="../css/style.css">
+</head>
+
+<body>
+
+    <div class="container">
+
+        <button class="back-icon-button"
+                onclick="window.location.href='module-detail.html'">
+            ←
+        </button>
+
+        <h1 id="buanderieTitle">Buanderie</h1>
+
+        <p class="subtitle">
+            Identification et caractéristiques de la buanderie.
+        </p>
+
+        <!-- IDENTIFICATION -->
+
+        <div class="module-detail-card">
+
+            <p class="section-title">Identification</p>
+
+            <div class="field-group">
+                <label>Nom de la buanderie</label>
+                <input type="text"
+                       id="nomBuanderie"
+                       placeholder="Ex : Buanderie centrale">
+            </div>
+
+            <div class="field-group">
+                <label>Surface (m²)</label>
+                <input type="number"
+                       id="surfaceBuanderie"
+                       min="0" step="0.1"
+                       inputmode="numeric"
+                       placeholder="Ex : 45">
+            </div>
+
+            <div class="field-group" style="margin-top: 24px;">
+                <label>Photo générale de la buanderie</label>
+                <div class="photo-slot" data-photo-field="general"></div>
+            </div>
+
+        </div>
+
+        <!-- CLIMATISATION -->
+
+        <div class="module-detail-card">
+
+            <p class="section-title">Climatisation</p>
+
+            <p class="section-hint">
+                Indiquez si la buanderie est climatisée,
+                l'état du système et si une plaque signalétique est visible.
+            </p>
+
+            <div class="toggle-group">
+                <label>Buanderie climatisée ?</label>
+                <div class="toggle-buttons" id="climToggle">
+                    <button type="button" class="toggle-btn" data-value="non">Non</button>
+                    <button type="button" class="toggle-btn" data-value="oui">Oui</button>
+                </div>
+            </div>
+
+            <div id="climContent" class="hidden">
+
+                <div class="field-group">
+                    <label>Nombre de climatiseurs</label>
+                    <input type="number" id="climNombre" min="1" step="1" inputmode="numeric" value="1">
+                </div>
+
+                <div class="field-group">
+                    <label>État du système</label>
+                    <select id="climEtat">
+                        <option value="Bon">Bon</option>
+                        <option value="Moyen">Moyen</option>
+                        <option value="Dégradé">Dégradé</option>
+                    </select>
+                </div>
+
+                <div class="field-group">
+                    <label>Photo du climatiseur</label>
+                    <div class="photo-slot" data-photo-field="clim"></div>
+                </div>
+
+                <div class="toggle-group">
+                    <label>Plaque signalétique visible ?</label>
+                    <div class="toggle-buttons" id="plaqueToggle">
+                        <button type="button" class="toggle-btn" data-value="non">Non</button>
+                        <button type="button" class="toggle-btn" data-value="oui">Oui</button>
+                    </div>
+                </div>
+
+                <div id="plaquePhotoContainer" class="hidden">
+                    <div class="field-group">
+                        <label>Photo de la plaque signalétique</label>
+                        <div class="photo-slot" data-photo-field="clim_plaque"></div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="toggle-group">
+                <label>Brasseur d'air ?</label>
+                <div class="toggle-buttons" id="brasseurToggle">
+                    <button type="button" class="toggle-btn" data-value="non">Non</button>
+                    <button type="button" class="toggle-btn" data-value="oui">Oui</button>
+                </div>
+            </div>
+
+            <div id="brasseurContent" class="hidden">
+                <div class="field-group">
+                    <label>Nombre de brasseurs</label>
+                    <input type="number" id="brasseurNombre" min="1" step="1" inputmode="numeric" value="1">
+                </div>
+                <div class="field-group">
+                    <label>Photo brasseur d'air</label>
+                    <div class="photo-slot" data-photo-field="brasseur"></div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- LAVE-LINGE -->
+
+        <div class="module-detail-card">
+
+            <p class="section-title">Lave-linge</p>
+
+            <div class="field-group">
+                <label>Nombre de lave-linge</label>
+                <input type="number"
+                       id="nbLaveLinge"
+                       min="0" step="1"
+                       inputmode="numeric"
+                       placeholder="Ex : 4">
+            </div>
+
+            <div class="field-group">
+                <label>Capacité unitaire (kg)</label>
+                <input type="number"
+                       id="capaciteLaveLinge"
+                       min="0" step="0.1"
+                       inputmode="numeric"
+                       placeholder="Ex : 13">
+            </div>
+
+            <div class="field-group">
+                <label>ECS associée</label>
+                <select id="ecsLaveLinge">
+                    <option value="Raccordée à l'ECS hôtel">Raccordée à l'ECS hôtel</option>
+                    <option value="Propre">Propre</option>
+                    <option value="Aucune">Aucune</option>
+                </select>
+            </div>
+
+            <div class="toggle-group">
+                <label>Plaque signalétique visible ?</label>
+                <div class="toggle-buttons" id="plaqueLaveLingeToggle">
+                    <button type="button" class="toggle-btn" data-value="non">Non</button>
+                    <button type="button" class="toggle-btn" data-value="oui">Oui</button>
+                </div>
+            </div>
+
+            <div id="plaqueLaveLingePhoto" class="hidden">
+                <div class="field-group">
+                    <label>Photo plaque lave-linge</label>
+                    <div class="photo-slot" data-photo-field="lavelinge_plaque"></div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- SÈCHE-LINGE -->
+
+        <div class="module-detail-card">
+
+            <p class="section-title">Sèche-linge</p>
+
+            <div class="field-group">
+                <label>Nombre de sèche-linge</label>
+                <input type="number"
+                       id="nbSecheLinge"
+                       min="0" step="1"
+                       inputmode="numeric"
+                       placeholder="Ex : 4">
+            </div>
+
+            <div class="field-group">
+                <label>Capacité unitaire (kg)</label>
+                <input type="number"
+                       id="capaciteSecheLinge"
+                       min="0" step="0.1"
+                       inputmode="numeric"
+                       placeholder="Ex : 13">
+            </div>
+
+            <div class="field-group">
+                <label>Type d'énergie</label>
+                <select id="energieSecheLinge">
+                    <option value="Résistance électrique">Résistance électrique</option>
+                    <option value="Pompe à chaleur">Pompe à chaleur</option>
+                    <option value="Gaz">Gaz</option>
+                    <option value="Autre">Autre</option>
+                </select>
+            </div>
+
+            <div class="toggle-group">
+                <label>Plaque signalétique visible ?</label>
+                <div class="toggle-buttons" id="plaqueSechLingeToggle">
+                    <button type="button" class="toggle-btn" data-value="non">Non</button>
+                    <button type="button" class="toggle-btn" data-value="oui">Oui</button>
+                </div>
+            </div>
+
+            <div id="plaqueSechLingePhoto" class="hidden">
+                <div class="field-group">
+                    <label>Photo plaque sèche-linge</label>
+                    <div class="photo-slot" data-photo-field="sechelinge_plaque"></div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- CALANDRE / REPASSEUSE -->
+
+        <div class="module-detail-card">
+
+            <p class="section-title">Calandre / Repasseuse</p>
+
+            <div class="toggle-group">
+                <label>Présence d'une calandre ou repasseuse ?</label>
+                <div class="toggle-buttons" id="calandreToggle">
+                    <button type="button" class="toggle-btn" data-value="non">Non</button>
+                    <button type="button" class="toggle-btn" data-value="oui">Oui</button>
+                </div>
+            </div>
+
+            <div id="calandreContent" class="hidden">
+                <div class="field-group">
+                    <label>Puissance (kW)</label>
+                    <input type="number"
+                           id="calandrePuissance"
+                           min="0" step="0.1"
+                           inputmode="numeric"
+                           placeholder="Ex : 18">
+                </div>
+                <div class="field-group">
+                    <label>Photo calandre / repasseuse</label>
+                    <div class="photo-slot" data-photo-field="calandre"></div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- USAGE -->
+
+        <div class="module-detail-card">
+
+            <p class="section-title">Usage</p>
+
+            <div class="field-group">
+                <label>Cycles lave-linge par jour (estimé)</label>
+                <input type="number"
+                       id="cyclesLaveLinge"
+                       min="0" step="1"
+                       inputmode="numeric"
+                       placeholder="Ex : 12">
+            </div>
+
+            <div class="field-group">
+                <label>Cycles sèche-linge par jour (estimé)</label>
+                <input type="number"
+                       id="cyclesSecheLinge"
+                       min="0" step="1"
+                       inputmode="numeric"
+                       placeholder="Ex : 10">
+            </div>
+
+        </div>
+
+        <!-- ÉCLAIRAGE -->
+
+        <div class="module-detail-card">
+
+            <p class="section-title">Éclairage</p>
+
+            <p class="section-hint">
+                Listez les types d'ampoules présentes.
+                La puissance unitaire est pré-remplie et la puissance totale
+                est calculée automatiquement.
+            </p>
+
+            <div id="eclairageList" class="eclairage-list"></div>
+
+            <button type="button" class="add-row-button" id="addEclairageButton">
+                + Ajouter type d'éclairage
+            </button>
+
+        </div>
+
+        <!-- OBSERVATIONS -->
+
+        <div class="module-detail-card">
+
+            <p class="section-title">Observations</p>
+
+            <p class="section-hint">
+                Remarques terrain sur cette buanderie.
+            </p>
+
+            <textarea id="observations"
+                      class="commentaire-textarea"
+                      rows="5"
+                      placeholder="Ex : Sèche-linge n°3 en panne, fuite sur arrivée d'eau…"></textarea>
+
+        </div>
+
+        <!-- SAUVEGARDE -->
+
+        <div class="module-detail-card">
+
+            <button class="primary-button" id="saveBuanderie">
+                Sauvegarder
+            </button>
+
+        </div>
+
+    </div>
+
+    <script src="../js/photo-manager.js"></script>
+    <script src="../js/buanderie-detail.js"></script>
+
+</body>
+
+</html>

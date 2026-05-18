@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Fiche bureaux</title>
+
+    <link rel="stylesheet"
+          href="../css/style.css">
+</head>
+
+<body>
+
+    <div class="container">
+
+        <button class="back-icon-button"
+                onclick="window.location.href='module-detail.html'">
+            ←
+        </button>
+
+        <h1 id="bureauxTitle">Bureaux</h1>
+
+        <p class="subtitle">
+            Identification et équipements des bureaux.
+        </p>
+
+        <!-- IDENTIFICATION -->
+
+        <div class="module-detail-card">
+
+            <p class="section-title">Identification</p>
+
+            <div class="field-group">
+                <label>Nom / désignation</label>
+                <input type="text"
+                       id="nomBureaux"
+                       placeholder="Ex : Bureaux administration">
+            </div>
+
+            <div class="field-group">
+                <label>Type d'aménagement</label>
+                <select id="amenagement">
+                    <option value="Open space">Open space</option>
+                    <option value="Bureaux cloisonnés">Bureaux cloisonnés</option>
+                    <option value="Mixte">Mixte</option>
+                    <option value="Autre">Autre</option>
+                </select>
+            </div>
+
+            <div class="field-group">
+                <label>Surface totale (m²)</label>
+                <input type="number"
+                       id="surfaceBureaux"
+                       min="0" step="0.1"
+                       inputmode="numeric"
+                       placeholder="Ex : 80">
+            </div>
+
+            <div class="field-group">
+                <label>Nombre de postes de travail</label>
+                <input type="number"
+                       id="nbPostes"
+                       min="0" step="1"
+                       inputmode="numeric"
+                       placeholder="Ex : 12">
+            </div>
+
+            <div class="field-group">
+                <label>Horaires d'occupation</label>
+                <div class="horaires-row">
+                    <div>
+                        <label>Début</label>
+                        <input type="time" id="horDebut" class="time-input">
+                    </div>
+                    <div>
+                        <label>Fin</label>
+                        <input type="time" id="horFin" class="time-input">
+                    </div>
+                </div>
+            </div>
+
+            <div class="field-group" style="margin-top: 24px;">
+                <label>Photo générale des bureaux</label>
+                <div class="photo-slot" data-photo-field="general"></div>
+            </div>
+
+        </div>
+
+        <!-- CLIMATISATION -->
+
+        <div class="module-detail-card">
+
+            <p class="section-title">Climatisation</p>
+
+            <div class="toggle-group">
+                <label>Bureaux climatisés ?</label>
+                <div class="toggle-buttons" id="climToggle">
+                    <button type="button" class="toggle-btn" data-value="non">Non</button>
+                    <button type="button" class="toggle-btn" data-value="oui">Oui</button>
+                </div>
+            </div>
+
+            <div id="climContent" class="hidden">
+
+                <div class="field-group">
+                    <label>Nombre de climatiseurs</label>
+                    <input type="number" id="climNombre" min="1" step="1" inputmode="numeric" value="1">
+                </div>
+
+                <div class="field-group">
+                    <label>État du système</label>
+                    <select id="climEtat">
+                        <option value="Bon">Bon</option>
+                        <option value="Moyen">Moyen</option>
+                        <option value="Dégradé">Dégradé</option>
+                    </select>
+                </div>
+
+                <div class="field-group">
+                    <label>Photo du climatiseur</label>
+                    <div class="photo-slot" data-photo-field="clim"></div>
+                </div>
+
+                <div class="toggle-group">
+                    <label>Plaque signalétique visible ?</label>
+                    <div class="toggle-buttons" id="plaqueToggle">
+                        <button type="button" class="toggle-btn" data-value="non">Non</button>
+                        <button type="button" class="toggle-btn" data-value="oui">Oui</button>
+                    </div>
+                </div>
+
+                <div id="plaquePhotoContainer" class="hidden">
+                    <div class="field-group">
+                        <label>Photo de la plaque signalétique</label>
+                        <div class="photo-slot" data-photo-field="clim_plaque"></div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="toggle-group">
+                <label>Brasseur d'air ?</label>
+                <div class="toggle-buttons" id="brasseurToggle">
+                    <button type="button" class="toggle-btn" data-value="non">Non</button>
+                    <button type="button" class="toggle-btn" data-value="oui">Oui</button>
+                </div>
+            </div>
+
+            <div id="brasseurContent" class="hidden">
+                <div class="field-group">
+                    <label>Nombre de brasseurs</label>
+                    <input type="number" id="brasseurNombre" min="1" step="1" inputmode="numeric" value="1">
+                </div>
+                <div class="field-group">
+                    <label>Photo brasseur d'air</label>
+                    <div class="photo-slot" data-photo-field="brasseur"></div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- POSTES DE TRAVAIL -->
+
+        <div class="module-detail-card">
+
+            <p class="section-title">Postes de travail</p>
+
+            <div class="field-group">
+                <label>Type d'ordinateurs dominant</label>
+                <select id="typeOrdinateurs">
+                    <option value="Fixes (tours)">Fixes (tours)</option>
+                    <option value="Portables">Portables</option>
+                    <option value="Mixte">Mixte</option>
+                </select>
+            </div>
+
+            <div class="field-group">
+                <label>Nombre d'écrans</label>
+                <input type="number"
+                       id="nbEcrans"
+                       min="0" step="1"
+                       inputmode="numeric"
+                       placeholder="Ex : 15">
+            </div>
+
+            <div class="field-group">
+                <label>Nombre d'imprimantes</label>
+                <input type="number"
+                       id="nbImprimantes"
+                       min="0" step="1"
+                       inputmode="numeric"
+                       placeholder="Ex : 2">
+            </div>
+
+        </div>
+
+        <!-- ÉQUIPEMENTS PARTAGÉS -->
+
+        <div class="module-detail-card">
+
+            <p class="section-title">Équipements partagés</p>
+
+            <p class="section-hint">
+                Cochez les équipements présents dans l'espace bureaux.
+            </p>
+
+            <div id="equipPartagesList"></div>
+
+        </div>
+
+        <!-- SALLE SERVEUR -->
+
+        <div class="module-detail-card">
+
+            <p class="section-title">Salle serveur / local technique IT</p>
+
+            <div class="toggle-group">
+                <label>Salle serveur présente ?</label>
+                <div class="toggle-buttons" id="serveurToggle">
+                    <button type="button" class="toggle-btn" data-value="non">Non</button>
+                    <button type="button" class="toggle-btn" data-value="oui">Oui</button>
+                </div>
+            </div>
+
+            <div id="serveurContent" class="hidden">
+
+                <div class="field-group">
+                    <label>Surface (m²)</label>
+                    <input type="number"
+                           id="serveurSurface"
+                           min="0" step="0.1"
+                           inputmode="numeric"
+                           placeholder="Ex : 12">
+                </div>
+
+                <div class="toggle-group">
+                    <label>Climatisation dédiée ?</label>
+                    <div class="toggle-buttons" id="serveurClimToggle">
+                        <button type="button" class="toggle-btn" data-value="non">Non</button>
+                        <button type="button" class="toggle-btn" data-value="oui">Oui</button>
+                    </div>
+                </div>
+
+                <div class="field-group">
+                    <label>Puissance IT estimée (kW)</label>
+                    <input type="number"
+                           id="serveurPuissance"
+                           min="0" step="0.1"
+                           inputmode="numeric"
+                           placeholder="Ex : 5">
+                </div>
+
+                <div class="field-group">
+                    <label>Photo salle serveur</label>
+                    <div class="photo-slot" data-photo-field="serveur"></div>
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- ÉCLAIRAGE -->
+
+        <div class="module-detail-card">
+
+            <p class="section-title">Éclairage</p>
+
+            <p class="section-hint">
+                Listez les types d'ampoules présentes.
+            </p>
+
+            <div class="toggle-group">
+                <label>Détection de présence ?</label>
+                <div class="toggle-buttons" id="detectionToggle">
+                    <button type="button" class="toggle-btn" data-value="non">Non</button>
+                    <button type="button" class="toggle-btn" data-value="oui">Oui</button>
+                </div>
+            </div>
+
+            <div id="eclairageList" class="eclairage-list"></div>
+
+            <button type="button" class="add-row-button" id="addEclairageButton">
+                + Ajouter type d'éclairage
+            </button>
+
+        </div>
+
+        <!-- OBSERVATIONS -->
+
+        <div class="module-detail-card">
+
+            <p class="section-title">Observations</p>
+
+            <p class="section-hint">
+                Remarques terrain sur ces bureaux.
+            </p>
+
+            <textarea id="observations"
+                      class="commentaire-textarea"
+                      rows="5"
+                      placeholder="Ex : Stores cassés côté sud, clim bruyante…"></textarea>
+
+        </div>
+
+        <!-- SAUVEGARDE -->
+
+        <div class="module-detail-card">
+
+            <button class="primary-button" id="saveBureaux">
+                Sauvegarder
+            </button>
+
+        </div>
+
+    </div>
+
+    <script src="../js/photo-manager.js"></script>
+    <script src="../js/bureaux-detail.js"></script>
+
+</body>
+
+</html>

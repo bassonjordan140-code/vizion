@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Fiche bar</title>
+
+    <link rel="stylesheet"
+          href="../css/style.css">
+</head>
+
+<body>
+
+    <div class="container">
+
+        <button class="back-icon-button"
+                onclick="window.location.href='module-detail.html'">
+            ←
+        </button>
+
+        <h1 id="barTitle">Bar</h1>
+
+        <p class="subtitle">
+            Identification et caractéristiques du bar.
+        </p>
+
+        <!-- BLOC 1 — IDENTIFICATION -->
+
+        <div class="module-detail-card">
+
+            <p class="section-title">Identification</p>
+
+            <div class="field-group">
+                <label>Nom du bar</label>
+                <input type="text"
+                       id="nomBar"
+                       placeholder="Ex : Le Sunset">
+            </div>
+
+            <div class="field-group">
+                <label>Surface (m²)</label>
+                <input type="number"
+                       id="surfaceBar"
+                       min="0" step="0.1"
+                       inputmode="numeric"
+                       placeholder="Ex : 65">
+            </div>
+
+            <div class="field-group">
+                <label>Places assises</label>
+                <input type="number"
+                       id="placesAssises"
+                       min="0" step="1"
+                       inputmode="numeric"
+                       placeholder="Ex : 24">
+            </div>
+
+            <div class="field-group">
+                <label>Heure d'ouverture</label>
+                <input type="time" id="ouvertureDebut" class="time-input" value="17:00">
+            </div>
+
+            <div class="field-group">
+                <label>Heure de fermeture</label>
+                <input type="time" id="ouvertureFin" class="time-input" value="01:00">
+            </div>
+
+            <div class="field-group" style="margin-top: 24px;">
+                <label>Photo générale du bar</label>
+                <div class="photo-slot" data-photo-field="general"></div>
+            </div>
+
+        </div>
+
+        <!-- CLIMATISATION (pattern hébergement) -->
+
+        <div class="module-detail-card">
+
+            <p class="section-title">Climatisation</p>
+
+            <p class="section-hint">
+                Indiquez si le bar est climatisé,
+                l'état du système et si une plaque signalétique est visible.
+            </p>
+
+            <div class="toggle-group">
+                <label>Bar climatisé ?</label>
+                <div class="toggle-buttons" id="climToggle">
+                    <button type="button" class="toggle-btn" data-value="non">Non</button>
+                    <button type="button" class="toggle-btn" data-value="oui">Oui</button>
+                </div>
+            </div>
+
+            <div id="climContent" class="hidden">
+
+                <div class="field-group">
+                    <label>Nombre de climatiseurs</label>
+                    <input type="number" id="climNombre" min="1" step="1" inputmode="numeric" value="1">
+                </div>
+
+                <div class="field-group">
+                    <label>État du système</label>
+                    <select id="climEtat">
+                        <option value="Bon">Bon</option>
+                        <option value="Moyen">Moyen</option>
+                        <option value="Dégradé">Dégradé</option>
+                    </select>
+                </div>
+
+                <div class="field-group">
+                    <label>Photo du climatiseur</label>
+                    <div class="photo-slot" data-photo-field="clim"></div>
+                </div>
+
+                <div class="toggle-group">
+                    <label>Plaque signalétique visible ?</label>
+                    <div class="toggle-buttons" id="plaqueToggle">
+                        <button type="button" class="toggle-btn" data-value="non">Non</button>
+                        <button type="button" class="toggle-btn" data-value="oui">Oui</button>
+                    </div>
+                </div>
+
+                <div id="plaquePhotoContainer" class="hidden">
+                    <div class="field-group">
+                        <label>Photo de la plaque signalétique</label>
+                        <div class="photo-slot" data-photo-field="clim_plaque"></div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="toggle-group">
+                <label>Brasseur d'air ?</label>
+                <div class="toggle-buttons" id="brasseurToggle">
+                    <button type="button" class="toggle-btn" data-value="non">Non</button>
+                    <button type="button" class="toggle-btn" data-value="oui">Oui</button>
+                </div>
+            </div>
+
+            <div id="brasseurContent" class="hidden">
+                <div class="field-group">
+                    <label>Nombre de brasseurs</label>
+                    <input type="number" id="brasseurNombre" min="1" step="1" inputmode="numeric" value="1">
+                </div>
+                <div class="field-group">
+                    <label>Photo brasseur d'air</label>
+                    <div class="photo-slot" data-photo-field="brasseur"></div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ÉQUIPEMENTS FRIGORIFIQUES -->
+
+        <div class="module-detail-card">
+
+            <p class="section-title">Équipements frigorifiques</p>
+
+            <p class="section-hint">
+                Vitrines réfrigérées, tireuse à bière, machine à glaçons, cave à vin.
+            </p>
+
+            <!-- Vitrines réfrigérées -->
+
+            <div class="toggle-group">
+                <label>Vitrines réfrigérées ?</label>
+                <div class="toggle-buttons" id="vitrineToggle">
+                    <button type="button" class="toggle-btn" data-value="non">Non</button>
+                    <button type="button" class="toggle-btn" data-value="oui">Oui</button>
+                </div>
+            </div>
+
+            <div id="vitrineContent" class="hidden">
+                <div class="field-group">
+                    <label>Nombre de vitrines</label>
+                    <input type="number" id="vitrineNombre" min="1" step="1" inputmode="numeric" value="1">
+                </div>
+                <div class="field-group">
+                    <label>Photo vitrines réfrigérées</label>
+                    <div class="photo-slot" data-photo-field="vitrines"></div>
+                </div>
+            </div>
+
+            <!-- Tireuse à bière -->
+
+            <div class="toggle-group">
+                <label>Pompe à bière / tireuse ?</label>
+                <div class="toggle-buttons" id="tireuseToggle">
+                    <button type="button" class="toggle-btn" data-value="non">Non</button>
+                    <button type="button" class="toggle-btn" data-value="oui">Oui</button>
+                </div>
+            </div>
+
+            <div id="tireuseContent" class="hidden">
+                <div class="field-group">
+                    <label>Photo tireuse</label>
+                    <div class="photo-slot" data-photo-field="tireuse"></div>
+                </div>
+            </div>
+
+            <!-- Machine à glaçons -->
+
+            <div class="toggle-group">
+                <label>Machine à glaçons ?</label>
+                <div class="toggle-buttons" id="glaconsToggle">
+                    <button type="button" class="toggle-btn" data-value="non">Non</button>
+                    <button type="button" class="toggle-btn" data-value="oui">Oui</button>
+                </div>
+            </div>
+
+            <div id="glaconsContent" class="hidden">
+                <div class="field-group">
+                    <label>Nombre de machines</label>
+                    <input type="number" id="glaconsNombre" min="1" step="1" inputmode="numeric" value="1">
+                </div>
+                <div class="field-group">
+                    <label>Photo machine à glaçons</label>
+                    <div class="photo-slot" data-photo-field="glacons"></div>
+                </div>
+            </div>
+
+            <!-- Cave à vin -->
+
+            <div class="toggle-group">
+                <label>Cave à vin / cellier réfrigéré ?</label>
+                <div class="toggle-buttons" id="caveToggle">
+                    <button type="button" class="toggle-btn" data-value="non">Non</button>
+                    <button type="button" class="toggle-btn" data-value="oui">Oui</button>
+                </div>
+            </div>
+
+            <div id="caveContent" class="hidden">
+                <div class="field-group">
+                    <label>Nombre de caves / celliers</label>
+                    <input type="number" id="caveNombre" min="1" step="1" inputmode="numeric" value="1">
+                </div>
+                <div class="field-group">
+                    <label>Photo cave / cellier</label>
+                    <div class="photo-slot" data-photo-field="cave"></div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- PRÉPARATION BOISSONS CHAUDES -->
+
+        <div class="module-detail-card">
+
+            <p class="section-title">Préparation boissons chaudes</p>
+
+            <div class="toggle-group">
+                <label>Machine à café pro ?</label>
+                <div class="toggle-buttons" id="cafeToggle">
+                    <button type="button" class="toggle-btn" data-value="non">Non</button>
+                    <button type="button" class="toggle-btn" data-value="oui">Oui</button>
+                </div>
+            </div>
+
+            <div id="cafeContent" class="hidden">
+                <div class="field-group">
+                    <label>Nombre de machines</label>
+                    <input type="number" id="cafeNombre" min="1" step="1" inputmode="numeric" value="1">
+                </div>
+                <div class="field-group">
+                    <label>Photo machine à café</label>
+                    <div class="photo-slot" data-photo-field="cafe"></div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ÉCLAIRAGE (pattern hébergement) -->
+
+        <div class="module-detail-card">
+
+            <p class="section-title">Éclairage</p>
+
+            <p class="section-hint">
+                Listez les types d'ampoules présentes.
+                La puissance unitaire est pré-remplie et la puissance totale
+                est calculée automatiquement.
+            </p>
+
+            <div id="eclairageList" class="eclairage-list"></div>
+
+            <button type="button" class="add-row-button" id="addEclairageButton">
+                + Ajouter type d'éclairage
+            </button>
+
+        </div>
+
+        <!-- ÉCRANS -->
+
+        <div class="module-detail-card">
+
+            <p class="section-title">Écrans</p>
+
+            <div class="toggle-group">
+                <label>TV / écrans présents ?</label>
+                <div class="toggle-buttons" id="ecransToggle">
+                    <button type="button" class="toggle-btn" data-value="non">Non</button>
+                    <button type="button" class="toggle-btn" data-value="oui">Oui</button>
+                </div>
+            </div>
+
+            <div id="ecransContent" class="hidden">
+                <div class="field-group">
+                    <label>Nombre d'écrans</label>
+                    <input type="number" id="ecransNombre" min="1" step="1" inputmode="numeric" value="1">
+                </div>
+
+                <div class="toggle-group">
+                    <label>Allumés en permanence ?</label>
+                    <div class="toggle-buttons" id="ecransPermanentsToggle">
+                        <button type="button" class="toggle-btn" data-value="non">Non</button>
+                        <button type="button" class="toggle-btn" data-value="oui">Oui</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- OBSERVATIONS -->
+
+        <div class="module-detail-card">
+
+            <p class="section-title">Observations</p>
+
+            <p class="section-hint">
+                Remarques terrain sur ce bar.
+            </p>
+
+            <textarea id="observations"
+                      class="commentaire-textarea"
+                      rows="5"
+                      placeholder="Ex : Vitrine dégivre mal, tireuse en panne…"></textarea>
+
+        </div>
+
+        <!-- SAUVEGARDE -->
+
+        <div class="module-detail-card">
+
+            <button class="primary-button" id="saveBar">
+                Sauvegarder
+            </button>
+
+        </div>
+
+    </div>
+
+    <script src="../js/photo-manager.js"></script>
+    <script src="../js/bar-detail.js"></script>
+
+</body>
+
+</html>

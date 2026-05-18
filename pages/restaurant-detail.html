@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Fiche restaurant</title>
+
+    <link rel="stylesheet"
+          href="../css/style.css">
+</head>
+
+<body>
+
+    <div class="container">
+
+        <button class="back-icon-button"
+                onclick="window.location.href='module-detail.html'">
+            ←
+        </button>
+
+        <h1 id="restaurantTitle">Restaurant</h1>
+
+        <p class="subtitle">
+            Identification et caractéristiques du restaurant.
+        </p>
+
+        <!-- BLOC 1 — IDENTIFICATION -->
+
+        <div class="module-detail-card">
+
+            <p class="section-title">Identification</p>
+
+            <div class="field-group">
+                <label>Type de restaurant</label>
+                <select id="typeRestaurant">
+                    <option value="Restaurant principal">Restaurant principal</option>
+                    <option value="Restaurant gastronomique">Restaurant gastronomique</option>
+                    <option value="Brasserie">Brasserie</option>
+                    <option value="Snack">Snack</option>
+                    <option value="Beach club">Beach club</option>
+                    <option value="Autre">Autre</option>
+                </select>
+            </div>
+
+            <div class="field-group hidden" id="autreTypeContainer">
+                <label>Préciser le type</label>
+                <input type="text"
+                       id="autreTypeInput"
+                       placeholder="Ex : Food court">
+            </div>
+
+            <div class="field-group">
+                <label>Nom du restaurant</label>
+                <input type="text"
+                       id="nomRestaurant"
+                       placeholder="Ex : La Terrasse">
+            </div>
+
+            <div class="field-group">
+                <label>Surface salle (m²)</label>
+                <input type="number"
+                       id="surfaceSalle"
+                       min="0" step="0.1"
+                       inputmode="numeric"
+                       placeholder="Ex : 180">
+            </div>
+
+            <div class="field-group">
+                <label>Couverts</label>
+                <input type="number"
+                       id="couverts"
+                       min="0" step="1"
+                       inputmode="numeric"
+                       placeholder="Ex : 80">
+            </div>
+
+            <div class="field-group">
+                <label>Places assises</label>
+                <input type="number"
+                       id="placesAssises"
+                       min="0" step="1"
+                       inputmode="numeric"
+                       placeholder="Ex : 80">
+            </div>
+
+            <div class="field-group" style="margin-top: 24px;">
+                <label>Photo générale de la salle</label>
+                <div class="photo-slot" data-photo-field="general"></div>
+            </div>
+
+        </div>
+
+        <!-- CLIMATISATION (pattern hébergement) -->
+
+        <div class="module-detail-card">
+
+            <p class="section-title">Climatisation</p>
+
+            <p class="section-hint">
+                Indiquez si le restaurant est climatisé,
+                l'état du système et si une plaque signalétique est visible.
+            </p>
+
+            <div class="toggle-group">
+                <label>Restaurant climatisé ?</label>
+                <div class="toggle-buttons" id="climToggle">
+                    <button type="button" class="toggle-btn" data-value="non">Non</button>
+                    <button type="button" class="toggle-btn" data-value="oui">Oui</button>
+                </div>
+            </div>
+
+            <div id="climContent" class="hidden">
+
+                <div class="field-group">
+                    <label>Nombre de climatiseurs</label>
+                    <input type="number" id="climNombre" min="1" step="1" inputmode="numeric" value="1">
+                </div>
+
+                <div class="field-group">
+                    <label>État du système</label>
+                    <select id="climEtat">
+                        <option value="Bon">Bon</option>
+                        <option value="Moyen">Moyen</option>
+                        <option value="Dégradé">Dégradé</option>
+                    </select>
+                </div>
+
+                <div class="field-group">
+                    <label>Photo du climatiseur</label>
+                    <div class="photo-slot" data-photo-field="clim"></div>
+                </div>
+
+                <div class="toggle-group">
+                    <label>Plaque signalétique visible ?</label>
+                    <div class="toggle-buttons" id="plaqueToggle">
+                        <button type="button" class="toggle-btn" data-value="non">Non</button>
+                        <button type="button" class="toggle-btn" data-value="oui">Oui</button>
+                    </div>
+                </div>
+
+                <div id="plaquePhotoContainer" class="hidden">
+                    <div class="field-group">
+                        <label>Photo de la plaque signalétique</label>
+                        <div class="photo-slot" data-photo-field="clim_plaque"></div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="toggle-group">
+                <label>Brasseur d'air ?</label>
+                <div class="toggle-buttons" id="brasseurToggle">
+                    <button type="button" class="toggle-btn" data-value="non">Non</button>
+                    <button type="button" class="toggle-btn" data-value="oui">Oui</button>
+                </div>
+            </div>
+
+            <div id="brasseurContent" class="hidden">
+                <div class="field-group">
+                    <label>Nombre de brasseurs</label>
+                    <input type="number" id="brasseurNombre" min="1" step="1" inputmode="numeric" value="1">
+                </div>
+                <div class="field-group">
+                    <label>Photo brasseur d'air</label>
+                    <div class="photo-slot" data-photo-field="brasseur"></div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ÉCLAIRAGE (pattern hébergement) -->
+
+        <div class="module-detail-card">
+
+            <p class="section-title">Éclairage</p>
+
+            <p class="section-hint">
+                Listez les types d'ampoules présentes.
+                La puissance unitaire est pré-remplie et la puissance totale
+                est calculée automatiquement.
+            </p>
+
+            <div id="eclairageList" class="eclairage-list"></div>
+
+            <button type="button" class="add-row-button" id="addEclairageButton">
+                + Ajouter type d'éclairage
+            </button>
+
+        </div>
+
+        <!-- REPAS SERVIS ET HORAIRES -->
+
+        <div class="module-detail-card">
+
+            <p class="section-title">Repas servis et horaires</p>
+
+            <p class="section-hint">
+                Indiquez les services proposés et leurs horaires.
+            </p>
+
+            <div class="toggle-group">
+                <label>Petit-déjeuner ?</label>
+                <div class="toggle-buttons" id="pdejToggle">
+                    <button type="button" class="toggle-btn" data-value="non">Non</button>
+                    <button type="button" class="toggle-btn" data-value="oui">Oui</button>
+                </div>
+            </div>
+
+            <div id="pdejHoraires" class="hidden horaires-row">
+                <div class="field-group">
+                    <label>Début</label>
+                    <input type="time" id="pdejDebut" class="time-input" value="07:00">
+                </div>
+                <div class="field-group">
+                    <label>Fin</label>
+                    <input type="time" id="pdejFin" class="time-input" value="10:30">
+                </div>
+            </div>
+
+            <div class="toggle-group">
+                <label>Déjeuner ?</label>
+                <div class="toggle-buttons" id="dejToggle">
+                    <button type="button" class="toggle-btn" data-value="non">Non</button>
+                    <button type="button" class="toggle-btn" data-value="oui">Oui</button>
+                </div>
+            </div>
+
+            <div id="dejHoraires" class="hidden horaires-row">
+                <div class="field-group">
+                    <label>Début</label>
+                    <input type="time" id="dejDebut" class="time-input" value="12:00">
+                </div>
+                <div class="field-group">
+                    <label>Fin</label>
+                    <input type="time" id="dejFin" class="time-input" value="14:30">
+                </div>
+            </div>
+
+            <div class="toggle-group">
+                <label>Dîner ?</label>
+                <div class="toggle-buttons" id="dinerToggle">
+                    <button type="button" class="toggle-btn" data-value="non">Non</button>
+                    <button type="button" class="toggle-btn" data-value="oui">Oui</button>
+                </div>
+            </div>
+
+            <div id="dinerHoraires" class="hidden horaires-row">
+                <div class="field-group">
+                    <label>Début</label>
+                    <input type="time" id="dinerDebut" class="time-input" value="19:00">
+                </div>
+                <div class="field-group">
+                    <label>Fin</label>
+                    <input type="time" id="dinerFin" class="time-input" value="22:00">
+                </div>
+            </div>
+
+        </div>
+
+        <!-- OBSERVATIONS -->
+
+        <div class="module-detail-card">
+
+            <p class="section-title">Observations</p>
+
+            <p class="section-hint">
+                Remarques terrain sur ce restaurant.
+            </p>
+
+            <textarea id="observations"
+                      class="commentaire-textarea"
+                      rows="5"
+                      placeholder="Ex : Clim en panne côté sud, hotte très bruyante…"></textarea>
+
+        </div>
+
+        <!-- SAUVEGARDE -->
+
+        <div class="module-detail-card">
+
+            <button class="primary-button" id="saveRestaurant">
+                Sauvegarder
+            </button>
+
+        </div>
+
+    </div>
+
+    <script src="../js/photo-manager.js"></script>
+    <script src="../js/restaurant-detail.js"></script>
+
+</body>
+
+</html>

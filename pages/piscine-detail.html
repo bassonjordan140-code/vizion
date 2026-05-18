@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Fiche piscine</title>
+
+    <link rel="stylesheet"
+          href="../css/style.css">
+</head>
+
+<body>
+
+    <div class="container">
+
+        <button class="back-icon-button"
+                onclick="window.location.href='module-detail.html'">
+            ←
+        </button>
+
+        <h1 id="piscineTitle">Piscine</h1>
+
+        <p class="subtitle">
+            Identification et caractéristiques du bassin.
+        </p>
+
+        <!-- BLOC 1 — IDENTIFICATION -->
+
+        <div class="module-detail-card">
+
+            <p class="section-title">Identification</p>
+
+            <div class="field-group">
+                <label>Type de piscine</label>
+                <select id="typePiscine">
+                    <option value="Lagon">Lagon</option>
+                    <option value="À débordement">À débordement</option>
+                    <option value="Couloir de nage">Couloir de nage</option>
+                    <option value="Rectangle classique">Rectangle classique</option>
+                    <option value="Forme libre">Forme libre</option>
+                    <option value="Autre">Autre</option>
+                </select>
+            </div>
+
+            <div class="field-group hidden" id="autreTypeContainer">
+                <label>Préciser le type</label>
+                <input type="text"
+                       id="autreTypeInput"
+                       placeholder="Ex : Bassin semi-olympique">
+            </div>
+
+            <div class="field-group">
+                <label>Nom de la piscine</label>
+                <input type="text"
+                       id="nomPiscine"
+                       placeholder="Ex : Bassin principal">
+            </div>
+
+            <div class="toggle-group">
+                <label>Couverte ?</label>
+                <div class="toggle-buttons" id="couverteToggle">
+                    <button type="button" class="toggle-btn" data-value="non">Non</button>
+                    <button type="button" class="toggle-btn" data-value="oui">Oui</button>
+                </div>
+            </div>
+
+            <div class="field-group" style="margin-top: 24px;">
+                <label>Photo générale de la piscine</label>
+                <div class="photo-slot" data-photo-field="general"></div>
+            </div>
+
+        </div>
+
+        <!-- BLOC 2 — DIMENSIONS -->
+
+        <div class="module-detail-card">
+
+            <p class="section-title">Dimensions</p>
+
+            <div class="field-group">
+                <label>Volume total (m³)</label>
+                <input type="number"
+                       id="volumeTotal"
+                       min="0" step="0.1"
+                       inputmode="numeric"
+                       placeholder="Ex : 320">
+            </div>
+
+        </div>
+
+        <!-- BLOC 3 — FILTRATION -->
+
+        <div class="module-detail-card">
+
+            <p class="section-title">Filtration</p>
+
+            <p class="section-hint">
+                Ajoutez les pompes de filtration et le type de traitement.
+            </p>
+
+            <div id="pompesList" class="pompes-list"></div>
+
+            <button type="button"
+                    class="add-row-button"
+                    id="addPompeButton">
+                + Ajouter pompe
+            </button>
+
+            <div class="field-group" style="margin-top: 24px;">
+                <label>Type de filtration</label>
+                <select id="typeFiltration">
+                    <option value="Sable">Sable</option>
+                    <option value="Cartouche">Cartouche</option>
+                    <option value="Diatomée">Diatomée</option>
+                    <option value="Verre">Verre</option>
+                </select>
+            </div>
+
+            <div class="field-group">
+                <label>Traitement de l'eau</label>
+                <select id="traitementEau">
+                    <option value="Chlore">Chlore</option>
+                    <option value="Sel-électrolyse">Sel-électrolyse</option>
+                    <option value="UV">UV</option>
+                    <option value="Brome">Brome</option>
+                    <option value="Ozone">Ozone</option>
+                    <option value="Mixte">Mixte</option>
+                </select>
+            </div>
+
+        </div>
+
+        <!-- BLOC 4 — CHAUFFAGE -->
+
+        <div class="module-detail-card">
+
+            <p class="section-title">Chauffage</p>
+
+            <div class="toggle-group">
+                <label>Piscine chauffée ?</label>
+                <div class="toggle-buttons" id="chauffeeToggle">
+                    <button type="button" class="toggle-btn" data-value="non">Non</button>
+                    <button type="button" class="toggle-btn" data-value="oui">Oui</button>
+                </div>
+            </div>
+
+            <div id="chauffageContent" class="hidden">
+
+                <div class="field-group">
+                    <label>Type de chauffe</label>
+                    <select id="typeChauffe">
+                        <option value="Pompe à chaleur">Pompe à chaleur</option>
+                        <option value="Échangeur chaudière">Échangeur chaudière</option>
+                        <option value="Solaire thermique">Solaire thermique</option>
+                        <option value="Électrique direct">Électrique direct</option>
+                        <option value="Récupération de chaleur">Récupération de chaleur</option>
+                        <option value="Autre">Autre</option>
+                    </select>
+                </div>
+
+                <div class="field-group">
+                    <label>Photo du système de chauffage</label>
+                    <div class="photo-slot" data-photo-field="chauffage"></div>
+                </div>
+
+                <div class="field-group">
+                    <label>Température de consigne (°C)</label>
+                    <input type="number"
+                           id="temperatureConsigne"
+                           min="0" step="0.5"
+                           inputmode="numeric"
+                           placeholder="Ex : 28">
+                </div>
+
+                <div class="toggle-group">
+                    <label>Plaque signalétique visible ?</label>
+                    <div class="toggle-buttons" id="chauffagePlaqueToggle">
+                        <button type="button" class="toggle-btn" data-value="non">Non</button>
+                        <button type="button" class="toggle-btn" data-value="oui">Oui</button>
+                    </div>
+                </div>
+
+                <div id="chauffagePlaquePhoto" class="hidden">
+                    <div class="field-group">
+                        <label>Photo plaque échangeur / PAC</label>
+                        <div class="photo-slot" data-photo-field="chauffage_plaque"></div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="toggle-group">
+                <label>Bâche / couverture isothermique ?</label>
+                <div class="toggle-buttons" id="bacheToggle">
+                    <button type="button" class="toggle-btn" data-value="non">Non</button>
+                    <button type="button" class="toggle-btn" data-value="oui">Oui</button>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- OBSERVATIONS -->
+
+        <div class="module-detail-card">
+
+            <p class="section-title">Observations</p>
+
+            <p class="section-hint">
+                Remarques terrain sur cette piscine.
+            </p>
+
+            <textarea id="observations"
+                      class="commentaire-textarea"
+                      rows="5"
+                      placeholder="Ex : Carrelage fissuré côté débordement, skimmer bouché…"></textarea>
+
+        </div>
+
+        <!-- SAUVEGARDE -->
+
+        <div class="module-detail-card">
+
+            <button class="primary-button"
+                    id="savePiscine">
+                Sauvegarder
+            </button>
+
+        </div>
+
+    </div>
+
+    <script src="../js/photo-manager.js"></script>
+    <script src="../js/piscine-detail.js"></script>
+
+</body>
+
+</html>
