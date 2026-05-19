@@ -1,0 +1,67 @@
+{
+  "meta": {
+    "exportDate": "2026-05-19T13:15:07.402Z",
+    "exportDateFormatted": "19/05/2026 17:15",
+    "appVersion": "0.1",
+    "nbPhotos": 0
+  },
+  "modulesSelectionnes": [
+    {
+      "id": "hebergements",
+      "label": "Hébergements",
+      "quantity": 27
+    },
+    {
+      "id": "piscines",
+      "label": "Piscines",
+      "quantity": 3
+    },
+    {
+      "id": "restaurant",
+      "label": "Restaurant",
+      "quantity": 4
+    },
+    {
+      "id": "bar",
+      "label": "Bar",
+      "quantity": 3
+    },
+    {
+      "id": "spa",
+      "label": "Spa",
+      "quantity": 3
+    },
+    {
+      "id": "cuisine",
+      "label": "Cuisine",
+      "quantity": 3
+    },
+    {
+      "id": "jeux",
+      "label": "Salle de jeux",
+      "quantity": 3
+    },
+    {
+      "id": "reunion",
+      "label": "Salle de réunion/séminaire",
+      "quantity": 2
+    },
+    {
+      "id": "sport",
+      "label": "Salle de sport",
+      "quantity": 3
+    },
+    {
+      "id": "bureaux",
+      "label": "Bureaux",
+      "quantity": 2
+    },
+    {
+      "id": "parking",
+      "label": "Parking",
+      "quantity": 1
+    }
+  ],
+  "donnees": {},
+  "photosIndex": []
+}
