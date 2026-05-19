@@ -493,6 +493,96 @@ footer {
 }
 
 /* =========================
+   EXPORT GITHUB
+========================= */
+
+.export-section {
+    margin-top: 36px;
+    padding: 24px;
+    border-radius: 20px;
+    border: 1px solid rgba(157, 164, 178, 0.18);
+    background: linear-gradient(145deg, rgba(10, 31, 79, 0.50), rgba(7, 22, 59, 0.50));
+}
+
+.export-token-setup {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.export-info {
+    color: #9DA4B2;
+    font-size: 14px;
+    line-height: 1.5;
+    margin: 0;
+}
+
+.export-info small {
+    color: #6B7280;
+}
+
+.secondary-button {
+    width: 100%;
+    padding: 14px;
+    border: 1px solid rgba(157, 164, 178, 0.30);
+    border-radius: 14px;
+    background: rgba(7, 22, 59, 0.60);
+    color: #E6E8ED;
+    font-size: 15px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: transform 0.2s, background 0.2s;
+}
+
+.secondary-button:hover {
+    transform: translateY(-2px);
+    background: rgba(10, 31, 79, 0.80);
+}
+
+.export-button {
+    margin-top: 0;
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    color: #fff;
+}
+
+.export-button:hover {
+    filter: brightness(1.1);
+    box-shadow: 0 12px 24px rgba(34, 197, 94, 0.25);
+}
+
+.export-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.export-status {
+    margin-top: 12px;
+    color: #9DA4B2;
+    font-size: 14px;
+    min-height: 20px;
+}
+
+.export-link {
+    display: block;
+    margin-top: 12px;
+    padding: 14px;
+    border-radius: 14px;
+    background: rgba(34, 197, 94, 0.10);
+    border: 1px solid rgba(34, 197, 94, 0.30);
+    color: #22c55e;
+    text-align: center;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.export-link:hover {
+    background: rgba(34, 197, 94, 0.20);
+}
+
+/* =========================
    BACK BUTTON
 ========================= */
 
