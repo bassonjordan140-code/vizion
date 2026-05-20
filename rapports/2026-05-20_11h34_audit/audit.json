@@ -1,0 +1,419 @@
+{
+  "meta": {
+    "exportDate": "2026-05-20T07:34:41.294Z",
+    "exportDateFormatted": "20/05/2026 11:34",
+    "appVersion": "0.1",
+    "nbPhotos": 22
+  },
+  "modulesSelectionnes": [
+    {
+      "id": "hebergements",
+      "label": "Hébergements",
+      "quantity": 27
+    },
+    {
+      "id": "piscines",
+      "label": "Piscines",
+      "quantity": 3
+    },
+    {
+      "id": "restaurant",
+      "label": "Restaurant",
+      "quantity": 4
+    },
+    {
+      "id": "bar",
+      "label": "Bar",
+      "quantity": 3
+    },
+    {
+      "id": "spa",
+      "label": "Spa",
+      "quantity": 3
+    },
+    {
+      "id": "cuisine",
+      "label": "Cuisine",
+      "quantity": 3
+    },
+    {
+      "id": "jeux",
+      "label": "Salle de jeux",
+      "quantity": 3
+    },
+    {
+      "id": "reunion",
+      "label": "Salle de réunion/séminaire",
+      "quantity": 2
+    },
+    {
+      "id": "sport",
+      "label": "Salle de sport",
+      "quantity": 3
+    },
+    {
+      "id": "bureaux",
+      "label": "Bureaux",
+      "quantity": 2
+    },
+    {
+      "id": "parking",
+      "label": "Parking",
+      "quantity": 1
+    }
+  ],
+  "donnees": {
+    "hebergements": {
+      "1": {
+        "typeSelect": "Chambre",
+        "type": "Chambre",
+        "nom": "",
+        "nbEtages": 1,
+        "nbHebergements": 1,
+        "nbChambres": 1,
+        "capacite": 2,
+        "parois": [
+          {
+            "materiau": "Béton",
+            "epaisseur": 20
+          },
+          {
+            "materiau": "Béton",
+            "epaisseur": 20
+          }
+        ],
+        "ouvrants": {
+          "nord": [
+            {
+              "type": "Porte",
+              "nombre": 1
+            }
+          ],
+          "nord-est": [
+            {
+              "type": "Porte",
+              "nombre": 1
+            }
+          ],
+          "est": [],
+          "sud-est": [],
+          "sud": [
+            {
+              "type": "Porte",
+              "nombre": 1
+            }
+          ],
+          "sud-ouest": [],
+          "ouest": [],
+          "nord-ouest": []
+        },
+        "protectionsSolaires": {
+          "present": true,
+          "items": [
+            {
+              "type": "Brise-soleil",
+              "facade": "nord"
+            },
+            {
+              "type": "Brise-soleil",
+              "facade": "nord"
+            }
+          ]
+        },
+        "brasseurAir": {
+          "present": "oui",
+          "nombre": 1
+        },
+        "climatisation": {
+          "present": true,
+          "nombre": 1,
+          "etat": "Dégradé",
+          "plaque": false
+        },
+        "ecs": {
+          "present": true,
+          "distribution": "Centralisée",
+          "energie": "Solaire"
+        },
+        "equipements": [
+          {
+            "nom": "Télé",
+            "nombre": 1
+          },
+          {
+            "nom": "Minibar",
+            "nombre": 1
+          },
+          {
+            "nom": "Frigo",
+            "nombre": 1
+          },
+          {
+            "nom": "Machine café",
+            "nombre": 1
+          },
+          {
+            "nom": "Sèche-cheveux",
+            "nombre": 1
+          },
+          {
+            "nom": "Téléphone",
+            "nombre": 1
+          },
+          {
+            "nom": "Cave vin",
+            "nombre": 1
+          },
+          {
+            "nom": "Brasseur air",
+            "nombre": 1
+          },
+          {
+            "nom": "Bouilloire",
+            "nombre": 1
+          },
+          {
+            "nom": "Plaques cuisson",
+            "nombre": 1
+          },
+          {
+            "nom": "Micro-ondes",
+            "nombre": 1
+          }
+        ],
+        "piscinePrivee": {
+          "present": true,
+          "chauffee": true,
+          "volume": 45,
+          "eclairage": true,
+          "eclairageNombre": 19,
+          "eclairageType": "LED"
+        },
+        "eclairages": [
+          {
+            "type": "LED",
+            "puissance": 9,
+            "quantite": 25
+          }
+        ],
+        "commentaire": ""
+      }
+    },
+    "piscines": {
+      "1": {
+        "typeSelect": "Forme libre",
+        "type": "Forme libre",
+        "nom": "Piscine principale ",
+        "couverte": "non",
+        "volumeTotal": 500,
+        "pompes": [
+          {
+            "puissance": 1.5,
+            "duree": 24,
+            "plaque": true
+          }
+        ],
+        "typeFiltration": "Sable",
+        "traitementEau": "Chlore",
+        "chauffee": "oui",
+        "typeChauffe": "Pompe à chaleur",
+        "temperatureConsigne": 0,
+        "chauffagePlaque": "oui",
+        "bache": "non",
+        "photos": {},
+        "observations": ""
+      },
+      "2": {
+        "typeSelect": "Rectangle classique",
+        "type": "Rectangle classique",
+        "nom": "",
+        "couverte": "non",
+        "volumeTotal": 0,
+        "pompes": [],
+        "typeFiltration": "Sable",
+        "traitementEau": "Chlore",
+        "chauffee": "non",
+        "typeChauffe": "Pompe à chaleur",
+        "temperatureConsigne": 0,
+        "chauffagePlaque": "non",
+        "bache": "non",
+        "photos": {},
+        "observations": "N’´´´´´gdhdrrfh"
+      }
+    },
+    "restaurant": {
+      "1": {
+        "typeSelect": "Restaurant principal",
+        "type": "Restaurant principal",
+        "nom": "",
+        "surface": 0,
+        "couverts": 0,
+        "placesAssises": 0,
+        "climatisation": {
+          "present": false,
+          "nombre": 1,
+          "etat": "Bon",
+          "plaque": false
+        },
+        "brasseurAir": {
+          "present": "non",
+          "nombre": 1
+        },
+        "eclairages": [],
+        "repas": {
+          "petitDejeuner": {
+            "servi": "non",
+            "debut": "07:00",
+            "fin": "10:30"
+          },
+          "dejeuner": {
+            "servi": "non",
+            "debut": "12:00",
+            "fin": "14:30"
+          },
+          "diner": {
+            "servi": "non",
+            "debut": "19:00",
+            "fin": "22:00"
+          }
+        },
+        "photos": {},
+        "observations": "Hggv"
+      }
+    }
+  },
+  "photosIndex": [
+    {
+      "numero": 1,
+      "fichier": "001_hebergement_1_brasseur.jpg",
+      "cle": "hebergement_1_brasseur",
+      "date": "2026-05-20T07:06:39.285Z"
+    },
+    {
+      "numero": 2,
+      "fichier": "002_hebergement_1_chauffe_eau.jpg",
+      "cle": "hebergement_1_chauffe_eau",
+      "date": "2026-05-20T07:07:03.534Z"
+    },
+    {
+      "numero": 3,
+      "fichier": "003_hebergement_1_eclairage_0.jpg",
+      "cle": "hebergement_1_eclairage_0",
+      "date": "2026-05-20T07:11:05.917Z"
+    },
+    {
+      "numero": 4,
+      "fichier": "004_hebergement_1_equip_Bouilloire.jpg",
+      "cle": "hebergement_1_equip_Bouilloire",
+      "date": "2026-05-20T07:09:34.673Z"
+    },
+    {
+      "numero": 5,
+      "fichier": "005_hebergement_1_equip_Brasseur air.jpg",
+      "cle": "hebergement_1_equip_Brasseur air",
+      "date": "2026-05-20T07:09:11.198Z"
+    },
+    {
+      "numero": 6,
+      "fichier": "006_hebergement_1_equip_Cave vin.jpg",
+      "cle": "hebergement_1_equip_Cave vin",
+      "date": "2026-05-20T07:08:49.600Z"
+    },
+    {
+      "numero": 7,
+      "fichier": "007_hebergement_1_equip_Frigo.jpg",
+      "cle": "hebergement_1_equip_Frigo",
+      "date": "2026-05-20T07:07:37.944Z"
+    },
+    {
+      "numero": 8,
+      "fichier": "008_hebergement_1_equip_Machine café.jpg",
+      "cle": "hebergement_1_equip_Machine café",
+      "date": "2026-05-20T07:07:49.961Z"
+    },
+    {
+      "numero": 9,
+      "fichier": "009_hebergement_1_equip_Micro-ondes.jpg",
+      "cle": "hebergement_1_equip_Micro-ondes",
+      "date": "2026-05-20T07:09:58.762Z"
+    },
+    {
+      "numero": 10,
+      "fichier": "010_hebergement_1_equip_Minibar.jpg",
+      "cle": "hebergement_1_equip_Minibar",
+      "date": "2026-05-20T07:07:25.297Z"
+    },
+    {
+      "numero": 11,
+      "fichier": "011_hebergement_1_equip_Plaques cuisson.jpg",
+      "cle": "hebergement_1_equip_Plaques cuisson",
+      "date": "2026-05-20T07:09:44.517Z"
+    },
+    {
+      "numero": 12,
+      "fichier": "012_hebergement_1_equip_Sèche-cheveux.jpg",
+      "cle": "hebergement_1_equip_Sèche-cheveux",
+      "date": "2026-05-20T07:08:06.109Z"
+    },
+    {
+      "numero": 13,
+      "fichier": "013_hebergement_1_equip_Télé.jpg",
+      "cle": "hebergement_1_equip_Télé",
+      "date": "2026-05-20T07:07:11.994Z"
+    },
+    {
+      "numero": 14,
+      "fichier": "014_hebergement_1_equip_Téléphone.jpg",
+      "cle": "hebergement_1_equip_Téléphone",
+      "date": "2026-05-20T07:08:24.627Z"
+    },
+    {
+      "numero": 15,
+      "fichier": "015_hebergement_1_general.jpg",
+      "cle": "hebergement_1_general",
+      "date": "2026-05-20T07:05:29.614Z"
+    },
+    {
+      "numero": 16,
+      "fichier": "016_hebergement_1_piscine.jpg",
+      "cle": "hebergement_1_piscine",
+      "date": "2026-05-20T07:10:26.016Z"
+    },
+    {
+      "numero": 17,
+      "fichier": "017_hebergement_1_protection_0.jpg",
+      "cle": "hebergement_1_protection_0",
+      "date": "2026-05-20T07:06:05.973Z"
+    },
+    {
+      "numero": 18,
+      "fichier": "018_hebergement_1_protection_1.jpg",
+      "cle": "hebergement_1_protection_1",
+      "date": "2026-05-20T07:06:13.116Z"
+    },
+    {
+      "numero": 19,
+      "fichier": "019_piscine_1_chauffage.jpg",
+      "cle": "piscine_1_chauffage",
+      "date": "2026-05-20T07:33:40.458Z"
+    },
+    {
+      "numero": 20,
+      "fichier": "020_piscine_1_general.jpg",
+      "cle": "piscine_1_general",
+      "date": "2026-05-20T07:12:15.818Z"
+    },
+    {
+      "numero": 21,
+      "fichier": "021_piscine_1_pompe_0.jpg",
+      "cle": "piscine_1_pompe_0",
+      "date": "2026-05-20T07:13:13.566Z"
+    },
+    {
+      "numero": 22,
+      "fichier": "022_piscine_1_pompe_plaque_0.jpg",
+      "cle": "piscine_1_pompe_plaque_0",
+      "date": "2026-05-20T07:13:31.279Z"
+    }
+  ]
+}
