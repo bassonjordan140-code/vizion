@@ -1,0 +1,15 @@
+# Python / tooling
+__pycache__/
+*.py[cod]
+.venv/
+.idea/
+
+# Sensitive working project with credentials, invoices, logs and downloads
+PythonProject/
+
+# Logs and local runtime artifacts
+*.log
+Thumbs.db
+
+# Keep generated workbook, but ignore scratch extraction files
+outputs/grille_tarifaire_work/
