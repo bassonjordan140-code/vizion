@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Tableau de bord terrain</title>
+
+    <link rel="stylesheet"
+          href="../css/style.css">
+</head>
+
+<body>
+
+    <div class="container">
+
+        <button class="back-icon-button"
+                onclick="window.location.href='audit.html'">
+            ←
+        </button>
+
+        <h1>Tableau de bord terrain</h1>
+
+        <p class="subtitle">
+            Sélectionnez le module que vous souhaitez auditer.
+        </p>
+
+        <div id="moduleDashboard"
+             class="dashboard-list">
+        </div>
+
+        <!-- Export GitHub -->
+        <div id="exportSection" class="export-section hidden">
+
+            <div id="tokenSetup" class="export-token-setup">
+                <p class="export-info">
+                    Pour envoyer le rapport sur GitHub, entrez votre token d'accès personnel.
+                    <br><small>(À configurer une seule fois)</small>
+                </p>
+                <input type="password" id="githubTokenInput"
+                       class="input-field" placeholder="ghp_xxxxxxxxxxxx">
+                <button type="button" id="saveTokenBtn" class="secondary-button">
+                    Enregistrer le token
+                </button>
+            </div>
+
+            <div id="exportReady" class="hidden">
+                <button type="button" id="exportBtn" class="primary-button export-button">
+                    📤 Valider & Exporter l'audit
+                </button>
+                <p id="exportStatus" class="export-status"></p>
+                <a id="exportLink" class="export-link hidden" href="#" target="_blank">
+                    📁 Voir le rapport sur GitHub
+                </a>
+            </div>
+
+        </div>
+
+    </div>
+
+    <script src="../js/progress.js"></script>
+    <script src="../js/export-github.js"></script>
+    <script src="../js/site-data.js"></script>
+
+</body>
+
+</html>

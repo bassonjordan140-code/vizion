@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Fiche hébergement</title>
+
+    <link rel="stylesheet"
+          href="../css/style.css">
+</head>
+
+<body>
+
+    <div class="container">
+
+        <button class="back-icon-button"
+                onclick="window.location.href='module-detail.html'">
+            ←
+        </button>
+
+        <h1 id="hebergementTitle">Hébergement</h1>
+
+        <p class="subtitle">
+            Identification du logement audité.
+        </p>
+
+        <div class="module-detail-card">
+
+            <p class="section-title">Identification</p>
+
+            <div class="field-group">
+
+                <label>Type d’hébergement</label>
+
+                <select id="typeHebergement">
+                    <option value="Chambre">Chambre</option>
+                    <option value="Suite">Suite</option>
+                    <option value="Bungalow">Bungalow</option>
+                    <option value="Villa">Villa</option>
+                    <option value="Appartement">Appartement</option>
+                    <option value="Dortoir">Dortoir</option>
+                    <option value="Autre">Autre</option>
+                </select>
+
+            </div>
+
+            <div class="field-group hidden"
+                 id="autreTypeContainer">
+
+                <label>Préciser le type</label>
+
+                <input type="text"
+                       id="autreTypeInput"
+                       placeholder="Ex : Studio Premium">
+
+            </div>
+
+            <div class="field-group">
+
+                <label>Nom de l’hébergement</label>
+
+                <input type="text"
+                       id="nomHebergement"
+                       placeholder="Ex : Suite Sunset">
+
+            </div>
+
+            <div id="counterContainer"></div>
+
+            <div class="field-group" style="margin-top: 24px;">
+                <label>Photo générale de la chambre</label>
+                <div class="photo-slot" data-photo-field="general"></div>
+            </div>
+
+        </div>
+
+        <div class="module-detail-card">
+
+            <p class="section-title">Parois multicouches</p>
+
+            <p class="section-hint">
+                Ajoutez chaque couche du mur de l’extérieur vers l’intérieur.
+                L’épaisseur est pré-remplie mais reste modifiable.
+            </p>
+
+            <div id="paroisList"
+                 class="parois-list">
+            </div>
+
+            <button type="button"
+                    class="add-row-button"
+                    id="addParoiButton">
+                + Ajouter matériau
+            </button>
+
+        </div>
+
+        <div class="module-detail-card">
+
+            <p class="section-title">Ouvrants / façades</p>
+
+            <p class="section-hint">
+                Pour chaque orientation, ajoutez les ouvrants présents
+                (porte, baie vitrée, jalousie, etc.).
+            </p>
+
+            <div id="ouvrantsContainer"
+                 class="ouvrants-container">
+            </div>
+
+        </div>
+
+        <div class="module-detail-card">
+
+            <p class="section-title">Protections solaires</p>
+
+            <p class="section-hint">
+                Indiquez si des protections solaires sont présentes
+                sur cet hébergement (brise-soleil, casquette, végétation…).
+            </p>
+
+            <div class="toggle-group">
+                <label>Protections solaires présentes ?</label>
+                <div class="toggle-buttons" id="protectionToggle">
+                    <button type="button" class="toggle-btn" data-value="non">Non</button>
+                    <button type="button" class="toggle-btn" data-value="oui">Oui</button>
+                </div>
+            </div>
+
+            <div id="protectionsContent" class="hidden">
+
+                <div id="protectionsList" class="protections-list"></div>
+
+                <button type="button"
+                        class="add-row-button"
+                        id="addProtectionButton">
+                    + Ajouter protection
+                </button>
+
+            </div>
+
+        </div>
+
+        <div class="module-detail-card">
+
+            <p class="section-title">Climatisation</p>
+
+            <p class="section-hint">
+                Indiquez si l'hébergement est climatisé,
+                l'état du système et si une plaque signalétique est visible.
+            </p>
+
+            <div class="toggle-group">
+                <label>Hébergement climatisé ?</label>
+                <div class="toggle-buttons" id="climToggle">
+                    <button type="button" class="toggle-btn" data-value="non">Non</button>
+                    <button type="button" class="toggle-btn" data-value="oui">Oui</button>
+                </div>
+            </div>
+
+            <div class="toggle-group">
+                <label>Brasseur d'air ?</label>
+                <div class="toggle-buttons" id="brasseurToggle">
+                    <button type="button" class="toggle-btn" data-value="non">Non</button>
+                    <button type="button" class="toggle-btn" data-value="oui">Oui</button>
+                </div>
+            </div>
+
+            <div id="brasseurContent" class="hidden">
+                <div class="field-group">
+                    <label>Nombre de brasseurs</label>
+                    <input type="number"
+                           id="brasseurNombre"
+                           min="1" step="1"
+                           inputmode="numeric"
+                           value="1">
+                </div>
+                <div class="field-group">
+                    <label>Photo brasseur d'air</label>
+                    <div class="photo-slot" data-photo-field="brasseur"></div>
+                </div>
+            </div>
+
+            <div id="climContent" class="hidden">
+
+                <div class="field-group">
+                    <label>Nombre de climatiseurs</label>
+                    <input type="number"
+                           id="climNombre"
+                           min="1" step="1"
+                           inputmode="numeric"
+                           value="1">
+                </div>
+
+                <div class="field-group">
+                    <label>État du système</label>
+                    <select id="climEtat">
+                        <option value="Bon">Bon</option>
+                        <option value="Moyen">Moyen</option>
+                        <option value="Dégradé">Dégradé</option>
+                    </select>
+                </div>
+
+                <div class="field-group">
+                    <label>Photo du climatiseur</label>
+                    <div class="photo-slot" data-photo-field="clim"></div>
+                </div>
+
+                <div class="toggle-group">
+                    <label>Plaque signalétique visible ?</label>
+                    <div class="toggle-buttons" id="plaqueToggle">
+                        <button type="button" class="toggle-btn" data-value="non">Non</button>
+                        <button type="button" class="toggle-btn" data-value="oui">Oui</button>
+                    </div>
+                </div>
+
+                <div id="plaquePhotoContainer" class="hidden">
+                    <div class="field-group">
+                        <label>Photo de la plaque signalétique</label>
+                        <div class="photo-slot" data-photo-field="clim_plaque"></div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="module-detail-card">
+
+            <p class="section-title">Eau chaude sanitaire (ECS)</p>
+
+            <p class="section-hint">
+                Indiquez si l'hébergement dispose d'une production
+                d'eau chaude sanitaire et ses caractéristiques.
+            </p>
+
+            <div class="toggle-group">
+                <label>ECS présente ?</label>
+                <div class="toggle-buttons" id="ecsToggle">
+                    <button type="button" class="toggle-btn" data-value="non">Non</button>
+                    <button type="button" class="toggle-btn" data-value="oui">Oui</button>
+                </div>
+            </div>
+
+            <div id="ecsContent" class="hidden">
+
+                <div class="field-group">
+                    <label>Distribution</label>
+                    <select id="ecsDistribution">
+                        <option value="Centralisée">Centralisée</option>
+                        <option value="Individuelle">Individuelle</option>
+                    </select>
+                </div>
+
+                <div class="field-group">
+                    <label>Énergie</label>
+                    <select id="ecsEnergie">
+                        <option value="Électrique">Électrique</option>
+                        <option value="Solaire">Solaire</option>
+                        <option value="Thermodynamique">Thermodynamique</option>
+                        <option value="Gaz">Gaz</option>
+                        <option value="Autre">Autre</option>
+                    </select>
+                </div>
+
+                <div class="field-group">
+                    <label>Photo de l'installation</label>
+                    <div class="photo-slot" data-photo-field="chauffe_eau"></div>
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="module-detail-card">
+
+            <p class="section-title">Équipements</p>
+
+            <p class="section-hint">
+                Cochez les équipements présents dans l'hébergement.
+            </p>
+
+            <div id="equipementsGrid" class="equipements-grid"></div>
+
+            <div class="field-group" style="margin-top: 24px;">
+                <label>Photo générale des équipements</label>
+                <div class="photo-slot" data-photo-field="equipements"></div>
+            </div>
+
+        </div>
+
+        <div class="module-detail-card">
+
+            <p class="section-title">Piscine privée</p>
+
+            <p class="section-hint">
+                Indiquez si l'hébergement dispose d'une piscine privée
+                et ses caractéristiques.
+            </p>
+
+            <div class="toggle-group">
+                <label>Piscine privée ?</label>
+                <div class="toggle-buttons" id="piscineToggle">
+                    <button type="button" class="toggle-btn" data-value="non">Non</button>
+                    <button type="button" class="toggle-btn" data-value="oui">Oui</button>
+                </div>
+            </div>
+
+            <div id="piscineContent" class="hidden">
+
+                <div class="toggle-group">
+                    <label>Chauffée ?</label>
+                    <div class="toggle-buttons" id="piscineChauffeToggle">
+                        <button type="button" class="toggle-btn" data-value="non">Non</button>
+                        <button type="button" class="toggle-btn" data-value="oui">Oui</button>
+                    </div>
+                </div>
+
+                <div class="field-group">
+                    <label>Volume (m³)</label>
+                    <input type="number"
+                           id="piscineVolume"
+                           min="0"
+                           step="0.1"
+                           placeholder="Ex : 25">
+                </div>
+
+                <div class="toggle-group">
+                    <label>Éclairage immergé ?</label>
+                    <div class="toggle-buttons" id="piscineEclairageToggle">
+                        <button type="button" class="toggle-btn" data-value="non">Non</button>
+                        <button type="button" class="toggle-btn" data-value="oui">Oui</button>
+                    </div>
+                </div>
+
+                <div id="piscineEclairageContent" class="hidden">
+
+                    <div class="field-group">
+                        <label>Nombre de points lumineux</label>
+                        <input type="number"
+                               id="piscineEclairageNombre"
+                               min="1"
+                               step="1"
+                               value="1">
+                    </div>
+
+                    <div class="field-group">
+                        <label>Type d'éclairage</label>
+                        <select id="piscineEclairageType">
+                            <option value="LED">LED</option>
+                            <option value="Halogène">Halogène</option>
+                            <option value="Autre">Autre</option>
+                        </select>
+                    </div>
+
+                </div>
+
+                <div class="field-group">
+                    <label>Photo de la piscine</label>
+                    <div class="photo-slot" data-photo-field="piscine"></div>
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="module-detail-card">
+
+            <p class="section-title">Éclairage</p>
+
+            <p class="section-hint">
+                Listez les types d'ampoules présentes dans l'hébergement.
+                La puissance unitaire est pré-remplie et la puissance totale
+                est calculée automatiquement.
+            </p>
+
+            <div id="eclairageList" class="eclairage-list"></div>
+
+            <button type="button"
+                    class="add-row-button"
+                    id="addEclairageButton">
+                + Ajouter type d'éclairage
+            </button>
+
+        </div>
+
+        <div class="module-detail-card">
+
+            <p class="section-title">Observation terrain</p>
+
+            <p class="section-hint">
+                Ajoutez toute remarque utile pour l'audit
+                (état général, anomalies, accès, etc.).
+            </p>
+
+            <textarea id="commentaireLibre"
+                      class="commentaire-textarea"
+                      rows="5"
+                      placeholder="Ex : Fuite visible au plafond, VMC absente…"></textarea>
+
+        </div>
+
+        <div class="module-detail-card">
+
+            <button class="primary-button"
+                    id="saveHebergement">
+                Sauvegarder
+            </button>
+
+        </div>
+
+    </div>
+
+    <script src="../js/photo-manager.js"></script>
+    <script src="../js/hebergement-detail.js"></script>
+
+</body>
+
+</html>

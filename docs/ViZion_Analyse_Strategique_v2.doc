@@ -1,0 +1,443 @@
+<html xmlns:o='urn:schemas-microsoft-com:office:office'
+      xmlns:w='urn:schemas-microsoft-com:office:word'
+      xmlns='http://www.w3.org/TR/REC-html40'>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="ProgId" content="Word.Document">
+<meta name="Generator" content="Microsoft Word 16">
+<meta name="Originator" content="Microsoft Word 16">
+<title>ViZion — Analyse stratégique v2</title>
+<!--[if gte mso 9]>
+<xml>
+<w:WordDocument>
+<w:View>Print</w:View>
+<w:Zoom>100</w:Zoom>
+<w:DoNotOptimizeForBrowser/>
+</w:WordDocument>
+</xml>
+<![endif]-->
+<style>
+@page WordSection1 {
+    size: 8.5in 11.0in;
+    margin: 2.5cm 2.5cm 2.5cm 2.5cm;
+    mso-page-orientation: portrait;
+}
+div.WordSection1 { page: WordSection1; }
+
+body {
+    font-family: "Calibri", "Arial", sans-serif;
+    font-size: 11pt;
+    color: #1F2937;
+    line-height: 1.5;
+}
+
+h1 {
+    font-family: "Calibri Light", "Arial", sans-serif;
+    font-size: 28pt;
+    color: #0A1F4F;
+    font-weight: 300;
+    margin-top: 0;
+    margin-bottom: 6pt;
+    page-break-after: avoid;
+}
+
+h2 {
+    font-family: "Calibri Light", "Arial", sans-serif;
+    font-size: 18pt;
+    color: #0A1F4F;
+    font-weight: 400;
+    margin-top: 24pt;
+    margin-bottom: 8pt;
+    padding-bottom: 4pt;
+    border-bottom: 1pt solid #C8CCD5;
+    page-break-after: avoid;
+}
+
+h3 {
+    font-family: "Calibri", "Arial", sans-serif;
+    font-size: 13pt;
+    color: #07163B;
+    font-weight: 600;
+    margin-top: 16pt;
+    margin-bottom: 6pt;
+    page-break-after: avoid;
+}
+
+p { margin: 0 0 8pt 0; text-align: justify; }
+
+.subtitle { font-size: 12pt; color: #6B7280; font-style: italic; margin-bottom: 4pt; }
+.meta { font-size: 10pt; color: #9DA4B2; margin-bottom: 24pt; }
+
+ul, ol { margin: 0 0 10pt 0; padding-left: 24pt; }
+li { margin-bottom: 4pt; }
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 10pt 0 14pt 0;
+    font-size: 10pt;
+}
+
+th {
+    background-color: #0A1F4F;
+    color: #FFFFFF;
+    padding: 8pt 10pt;
+    text-align: left;
+    font-weight: 600;
+    border: 1pt solid #07163B;
+}
+
+td {
+    padding: 6pt 10pt;
+    border: 1pt solid #D1D5DB;
+    vertical-align: top;
+}
+
+tr:nth-child(even) td { background-color: #F3F4F6; }
+
+.highlight { background-color: #FEF3C7; padding: 12pt; border-left: 4pt solid #F59E0B; margin: 12pt 0; }
+.callout { background-color: #EFF6FF; padding: 12pt; border-left: 4pt solid #0A1F4F; margin: 12pt 0; }
+.success { background-color: #ECFDF5; padding: 12pt; border-left: 4pt solid #10B981; margin: 12pt 0; }
+.warning { background-color: #FEF2F2; padding: 12pt; border-left: 4pt solid #EF4444; margin: 12pt 0; }
+
+strong { color: #0A1F4F; font-weight: 600; }
+
+.kpi-row { display: table; width: 100%; margin: 16pt 0; }
+.kpi {
+    display: table-cell;
+    text-align: center;
+    padding: 12pt;
+    background-color: #F9FAFB;
+    border: 1pt solid #E5E7EB;
+}
+.kpi-value { font-size: 22pt; font-weight: bold; color: #0A1F4F; display: block; }
+.kpi-label { font-size: 10pt; color: #6B7280; display: block; margin-top: 4pt; }
+</style>
+</head>
+
+<body>
+<div class="WordSection1">
+
+<h1>ViZion</h1>
+<p class="subtitle">Analyse stratégique — Plateforme multi-secteurs pour audit énergétique</p>
+<p class="meta">Version 2 — 13 mai 2026 — Jordan BASSON</p>
+
+<hr style="border: none; border-top: 2pt solid #0A1F4F; margin: 20pt 0;">
+
+<h2>1. Synthèse</h2>
+
+<p>ViZion est une plateforme d'audit énergétique pour le secteur tertiaire. Elle digitalise la collecte de données terrain et automatise la génération de rapport, par le biais de <strong>templates métier spécialisés</strong> (hôtellerie, bureaux, EHPAD, commerces, centres de dialyse, etc.).</p>
+
+<p>Son architecture <strong>100 % sans backend</strong> en fait un produit unique sur le marché : marge brute supérieure à 90 %, conformité RGPD simplifiée, fonctionnement offline, et installation client réduite à une URL.</p>
+
+<p>Ce document répond à quatre questions stratégiques :</p>
+
+<ol>
+<li>Pourquoi ce produit a-t-il une valeur réelle ?</li>
+<li>Pourquoi le modèle multi-templates change-t-il la donne ?</li>
+<li>Devrais-je le commercialiser ?</li>
+<li>Open source ou propriétaire — que choisir ?</li>
+</ol>
+
+<div class="callout">
+<strong>Recommandation principale</strong> : commercialiser sous forme SaaS B2B avec une bibliothèque de templates métier vendus séparément. Ne pas ouvrir le code source dans un premier temps. Réévaluer après 18 mois selon la traction.
+</div>
+
+<h2>2. Quel est l'intérêt réel de ViZion ?</h2>
+
+<h3>Le contexte réglementaire est en faveur du produit</h3>
+
+<p>Le <strong>décret tertiaire</strong> impose à tous les bâtiments tertiaires de plus de 1 000 m² une réduction de consommation énergétique de <strong>-40 % d'ici 2030</strong> et <strong>-60 % d'ici 2050</strong>. Cela force tous les hôtels, restaurants, bureaux, centres commerciaux, EHPAD, établissements médicaux à faire auditer leur performance énergétique. Le marché est mécaniquement en croissance forte sur les 8 prochaines années.</p>
+
+<h3>Le gain de temps est mesurable et significatif</h3>
+
+<p>Un audit énergétique d'un site de taille moyenne demande aujourd'hui environ 3 jours de travail : 1 journée sur site + 2 journées de saisie et rapport au bureau. ViZion vise à supprimer la phase de saisie :</p>
+
+<table>
+<tr><th>Étape</th><th>Méthode actuelle</th><th>Avec ViZion</th><th>Gain</th></tr>
+<tr><td>Collecte terrain</td><td>1 jour</td><td>1 jour</td><td>—</td></tr>
+<tr><td>Saisie post-terrain</td><td>1 jour</td><td>0,2 jour</td><td>-80 %</td></tr>
+<tr><td>Organisation des photos</td><td>0,3 jour</td><td>Automatique</td><td>-100 %</td></tr>
+<tr><td>Préparation rapport</td><td>0,7 jour</td><td>0,1 jour (auto)</td><td>-85 %</td></tr>
+<tr><td><strong>Total audit moyen</strong></td><td><strong>3 jours</strong></td><td><strong>1,3 jour</strong></td><td><strong>-57 %</strong></td></tr>
+</table>
+
+<div class="success">
+<strong>Sur 30 audits par an et par auditeur</strong> : environ 51 jours-homme économisés annuellement, soit l'équivalent de <strong>~30 000 € de capacité supplémentaire</strong> par auditeur (sur base 600 €/jour). Le gain est encore plus fort grâce à la génération automatique de rapport.
+</div>
+
+<h3>Les autres avantages tangibles</h3>
+
+<ul>
+<li><strong>Zéro oubli sur site</strong> : la checklist guidée empêche les retours sur place coûteux (300 à 800 € par retour).</li>
+<li><strong>Standardisation par template</strong> : tous les collaborateurs collectent les mêmes données dans le même format métier.</li>
+<li><strong>Photos contextuelles</strong> : automatiquement liées au site, à l'équipement et au type.</li>
+<li><strong>Reprise sur incident</strong> : un collègue peut reprendre un dossier sans perte d'information.</li>
+<li><strong>Image moderne</strong> : un client voit son auditeur utiliser un outil digital plutôt qu'un classeur.</li>
+</ul>
+
+<h3>Le marché concurrentiel</h3>
+
+<p><strong>Aucun concurrent direct identifié</strong>. Les solutions actuelles sont :</p>
+
+<ul>
+<li><strong>Logiciels de simulation thermique</strong> (BatiActu, Pleiades, ClimaWin) : pour l'analyse en bureau, pas pour le terrain.</li>
+<li><strong>Outils généralistes</strong> (Excel, Notion, Airtable) : flexibles mais ne capitalisent pas le métier.</li>
+<li><strong>Applications maison</strong> de certains gros cabinets : non commercialisées.</li>
+</ul>
+
+<p>ViZion occupe un <strong>vide de marché documenté</strong> entre la fiche papier et le logiciel de simulation.</p>
+
+<h2>3. ViZion n'est pas un outil hôtelier — c'est une plateforme multi-secteurs</h2>
+
+<p>Un point stratégique majeur : ViZion <strong>n'est pas conçu uniquement pour l'hôtellerie</strong>. Le modèle technique repose sur des <strong>templates métier</strong>. Chaque secteur tertiaire a ses spécificités (équipements, surfaces, contraintes, indicateurs), et ViZion s'adapte par le biais de templates dédiés.</p>
+
+<h3>Le modèle template</h3>
+
+<p>Le module Hébergements actuellement en développement est <strong>le premier template (hôtellerie / hébergement touristique)</strong>. Une fois ce template stabilisé, le même moteur applicatif sert de base pour décliner d'autres modèles métier :</p>
+
+<table>
+<tr><th>Template</th><th>Cible</th><th>Marché FR estimé</th><th>Spécificités métier</th></tr>
+<tr><td>Hôtellerie</td><td>Hôtels, résidences, gîtes</td><td>~17 000 établissements</td><td>Hébergement, piscine, restauration, spa</td></tr>
+<tr><td>EHPAD &amp; santé</td><td>Maisons de retraite, cliniques</td><td>~7 500 EHPAD + 3 000 cliniques</td><td>Chambres médicalisées, cuisine collective, blanchisserie</td></tr>
+<tr><td>Centres de dialyse</td><td>Établissements de dialyse</td><td>~570 centres</td><td>Salles techniques, traitement d'eau, fluides médicaux</td></tr>
+<tr><td>Commerces &amp; magasins</td><td>Retail, supérettes, grandes surfaces</td><td>~600 000 commerces</td><td>Surfaces de vente, vitrines, froid commercial, éclairage</td></tr>
+<tr><td>Restauration collective</td><td>Cantines, restaurants entreprises</td><td>~80 000 sites</td><td>Cuisines pro, chambres froides, ventilation</td></tr>
+<tr><td>Bureaux &amp; tertiaire</td><td>Immeubles de bureaux</td><td>~200 000 sites</td><td>Open spaces, salles serveur, sanitaires</td></tr>
+<tr><td>Crèches &amp; écoles</td><td>Établissements scolaires</td><td>~60 000 établissements</td><td>Salles de classe, dortoirs, restauration</td></tr>
+</table>
+
+<div class="success">
+<strong>Le marché adressable total dépasse très largement les 17 000 hôtels initiaux.</strong> Avec 5 à 7 templates métier, ViZion peut couvrir l'essentiel du secteur tertiaire français concerné par le décret tertiaire, soit potentiellement <strong>plusieurs centaines de milliers d'établissements</strong>.
+</div>
+
+<h3>Templates standards et templates spécifiques</h3>
+
+<p>L'architecture distingue deux niveaux de templates :</p>
+
+<ul>
+<li><strong>Templates standards</strong> : modèles génériques couvrant les usages les plus répandus (hôtel, bureau, magasin, école). Inclus dans la formule de base.</li>
+<li><strong>Templates spécifiques</strong> : modèles métier pointus (centre de dialyse, laboratoire pharmaceutique, datacenter, EHPAD avec contraintes médicales). Vendus en option ou à l'unité, à plus forte marge car l'expertise métier est rare.</li>
+</ul>
+
+<h3>Le template de rapport — la deuxième couche de valeur</h3>
+
+<p>À chaque template de collecte est associé un <strong>template de rapport</strong>. Une fois les données terrain saisies, le rapport est généré <strong>automatiquement et instantanément</strong> à partir du JSON structuré. L'auditeur n'a plus à mettre en forme manuellement son rendu : la sortie est directement présentable au client.</p>
+
+<p>Concrètement :</p>
+
+<ol>
+<li>L'auditeur remplit les fiches sur site (template hôtel, EHPAD ou autre).</li>
+<li>À la fin, l'application combine les données JSON avec le template de rapport associé.</li>
+<li>Un document professionnel (PDF, Word, ou HTML imprimable) est généré en quelques secondes.</li>
+<li>Pas d'intervention manuelle, pas de retouches Word fastidieuses.</li>
+</ol>
+
+<div class="callout">
+<strong>Effet de levier business</strong> : le couple « template de collecte + template de rapport » crée une valeur composée. L'auditeur achète une fois, et obtient la collecte structurée + le rapport automatisé. C'est ce qui justifie un prix premium par rapport à un simple outil de saisie.
+</div>
+
+<h3>Architecture sans backend — la promesse technique différenciante</h3>
+
+<p>Toute cette mécanique fonctionne <strong>sans serveur ni base de données externe</strong>. C'est un choix d'architecture délibéré qui apporte plusieurs avantages business :</p>
+
+<table>
+<tr><th>Avantage</th><th>Conséquence concrète</th></tr>
+<tr><td><strong>Coût d'infrastructure quasi nul</strong></td><td>L'app peut être hébergée sur un service statique à moins de 10 €/mois. La marge brute sur chaque client est maximale (&gt;90 %).</td></tr>
+<tr><td><strong>Conformité RGPD simplifiée</strong></td><td>Les données restent chez le client, dans son navigateur. Pas de sous-traitance, pas de DPA à signer, pas de transfert international à encadrer.</td></tr>
+<tr><td><strong>Fonctionnement offline</strong></td><td>Idéal pour les sites mal connectés (caves techniques, sous-sols, EHPAD ruraux, centres de dialyse). L'auditeur travaille même sans réseau.</td></tr>
+<tr><td><strong>Sécurité par défaut</strong></td><td>Aucune surface d'attaque serveur. Pas de risque de fuite massive de données.</td></tr>
+<tr><td><strong>Scalabilité naturelle</strong></td><td>1 client ou 10 000 clients coûtent la même chose. Pas de re-architecture nécessaire à la croissance.</td></tr>
+<tr><td><strong>Installation simplifiée</strong></td><td>Pas de déploiement chez le client. Une URL suffit.</td></tr>
+</table>
+
+<div class="callout">
+<p><strong>Différenciation forte vs concurrents</strong> : les outils SaaS classiques nécessitent un backend, des serveurs, du DevOps, du support infrastructure. ViZion s'en passe entièrement.</p>
+<p>Cette architecture est <strong>défendable techniquement</strong> et <strong>simple à expliquer commercialement</strong> : « vos données ne sortent jamais de votre ordinateur. » Un argument de poids face aux DSI, aux responsables conformité et aux établissements de santé.</p>
+</div>
+
+<h3>Évolution du modèle</h3>
+
+<p>Le plan de templates suit une logique de priorité commerciale :</p>
+
+<ol>
+<li><strong>Hôtellerie</strong> (en cours) — proof of concept, marché actif, contacts faciles via les bureaux d'études énergétique du secteur</li>
+<li><strong>Bureaux</strong> (M+3 à M+6) — décret tertiaire le plus contraignant, marché énorme, audits récurrents</li>
+<li><strong>Commerces</strong> (M+6 à M+9) — secteur très demandeur, possibilité de mutualisation entre franchisés</li>
+<li><strong>EHPAD</strong> (M+9 à M+12) — secteur subventionné, budgets disponibles, sensibilité forte à la qualité du rapport</li>
+<li><strong>Templates de niche</strong> (centres de dialyse, datacenters, labos pharmaceutiques) à partir de M+12 — sur demande, à forte marge</li>
+</ol>
+
+<p>Chaque nouveau template représente <strong>2 à 3 semaines de développement</strong> une fois le moteur stabilisé, ce qui rend la déclinaison économiquement très rentable.</p>
+
+<h2>4. Pourquoi vendre — analyse argumentée</h2>
+
+<h3>Les arguments en faveur de la vente (SaaS B2B)</h3>
+
+<div class="success">
+<strong>Argument 1 — Le marché est mature, solvable et multi-secteurs.</strong> Avec 6 à 7 templates, le marché adressable dépasse plusieurs centaines de milliers d'établissements. Un bureau d'études énergétique fait entre 50 et 500 audits par an. À 79 €/mois par utilisateur, l'outil paie pour lui-même dès le premier audit qu'il fait gagner.
+</div>
+
+<div class="success">
+<strong>Argument 2 — Effet réseau et standardisation de marché.</strong> Si ViZion devient l'outil de référence avec ses templates, son format de données peut devenir un standard du secteur (comme Excel l'est pour les chiffres). Cela crée un effet d'enfermement positif pour les utilisateurs et un fossé concurrentiel.
+</div>
+
+<div class="success">
+<strong>Argument 3 — Revenus récurrents prévisibles + revenus à la carte.</strong> SaaS B2B (abonnement) + ventes de templates spécifiques à l'unité (one-shot à forte marge). Combinaison vertueuse : MRR stable + pics de revenu sur les templates premium.
+</div>
+
+<div class="success">
+<strong>Argument 4 — Marge brute exceptionnelle grâce à l'architecture sans backend.</strong> Coût d'infrastructure quasi nul, pas de DevOps, pas de support serveur. Marge brute estimée : <strong>90 à 95 %</strong> (vs 75-85 % pour un SaaS classique).
+</div>
+
+<div class="success">
+<strong>Argument 5 — Valorisation patrimoniale.</strong> Un SaaS B2B avec une bibliothèque de templates métier se valorise typiquement entre 4 et 8 fois son chiffre d'affaires annuel récurrent (multiple supérieur aux SaaS génériques grâce à la spécialisation). Un produit qui génère 150 000 € de revenu récurrent annuel peut être revendu 600 000 à 1 200 000 € à un acteur du secteur.
+</div>
+
+<h3>Les contre-arguments (à anticiper)</h3>
+
+<div class="warning">
+<strong>Contre-argument 1 — Temps commercial et marketing.</strong> Compter 30 à 50 % du temps sur la commercialisation les 12 premiers mois. Ce n'est pas du « build it and they will come ».
+</div>
+
+<div class="warning">
+<strong>Contre-argument 2 — Conformité et juridique.</strong> CGV/CGU, RGPD (simplifié grâce au no-backend), conditions de support, facturation, TVA intracommunautaire. Compter 10 à 20 h de juridique en amont.
+</div>
+
+<div class="warning">
+<strong>Contre-argument 3 — Maintenance et SLA.</strong> 5 à 10 h de support par mois à partir de 20 clients. Multiplié par template (chaque template a sa propre courbe d'apprentissage côté utilisateur).
+</div>
+
+<div class="warning">
+<strong>Contre-argument 4 — Risque de concurrence sur le long terme.</strong> Si le produit marche, des acteurs établis peuvent copier la fonction. Il faut anticiper en construisant des barrières (templates spécifiques différenciants, données accumulées, marque).
+</div>
+
+<h3>Verdict sur la vente</h3>
+
+<p>La vente fait sens car ViZion construit un <strong>actif commercial scalable</strong> qui génère du revenu indépendamment du temps facturable. L'architecture multi-templates en fait un produit unique sur le marché français.</p>
+
+<p><strong>La voie médiane</strong> : commencer par utiliser l'outil en interne pendant 3 à 6 mois pour valider la valeur sur des audits réels (hôtels, puis bureaux), puis commercialiser une fois que le produit et 2 ou 3 templates sont rodés.</p>
+
+<h2>5. Open source — pour et contre</h2>
+
+<h3>Ce qu'apporterait l'open source</h3>
+
+<table>
+<tr><th>Avantage</th><th>Détail</th></tr>
+<tr><td><strong>Adoption rapide</strong></td><td>Les outils gratuits gagnent rapidement en visibilité dans la communauté technique. Bouche-à-oreille fort, référencement organique amélioré.</td></tr>
+<tr><td><strong>Contributions de templates</strong></td><td>Des cabinets ou des experts métier peuvent contribuer des templates sectoriels (un centre de dialyse, un bailleur social), enrichissant la bibliothèque sans coût pour toi.</td></tr>
+<tr><td><strong>Confiance client</strong></td><td>Un code ouvert rassure les acheteurs B2B sur la pérennité de l'outil (« si tu fermes boutique, je peux continuer à l'utiliser »).</td></tr>
+<tr><td><strong>Crédibilité technique</strong></td><td>Un projet GitHub bien maintenu est un atout sur le CV et pour attirer des partenaires.</td></tr>
+<tr><td><strong>Effet plate-forme</strong></td><td>D'autres acteurs peuvent construire des intégrations (CRM, logiciels métier) autour de ViZion.</td></tr>
+</table>
+
+<h3>Ce que l'open source coûterait</h3>
+
+<table>
+<tr><th>Risque</th><th>Détail</th></tr>
+<tr><td><strong>Vol direct par un concurrent</strong></td><td>Un acteur établi peut forker le code, le rebadger et le commercialiser plus vite et mieux, en s'appuyant sur sa base clients existante. Cas classique : MongoDB → Amazon DocumentDB.</td></tr>
+<tr><td><strong>Pas de revenu direct</strong></td><td>Open source pur signifie zéro revenu de licence. Il faut vendre du service autour (support, hébergement, intégration, templates premium), ce qui est un autre métier.</td></tr>
+<tr><td><strong>Effort communautaire élevé</strong></td><td>Maintenir une communauté coûte du temps : répondre aux issues, releases, documentation, modération des PRs. Compter 5 à 15 h par semaine.</td></tr>
+<tr><td><strong>Difficulté de valorisation</strong></td><td>Un projet open source est très difficile à revendre. La valeur est dans la communauté et la marque, pas dans le code.</td></tr>
+<tr><td><strong>Pression sur la roadmap</strong></td><td>Les utilisateurs gratuits demandent des fonctionnalités sans payer. Il faut savoir dire non.</td></tr>
+</table>
+
+<h3>Les voies hybrides à considérer</h3>
+
+<ul>
+<li><strong>Open core</strong> : moteur et 1 ou 2 templates de base en open source, templates métier premium (dialyse, datacenter, etc.) propriétaires et payants. C'est l'approche que je recommande si l'ouverture attire — elle marie virilité et revenu.</li>
+<li><strong>Source available</strong> : code public mais sous licence non-libre (interdiction de revendre). Exemple : Sentry BSL, MongoDB SSPL.</li>
+<li><strong>Closed avec démo publique</strong> : code privé, démo en ligne. Le plus simple commercialement, sans communauté.</li>
+</ul>
+
+<h3>Verdict sur l'open source</h3>
+
+<div class="callout">
+<p><strong>Recommandation</strong> : <strong>ne pas open-sourcer dans un premier temps.</strong> Le marché est concentré, le risque qu'un concurrent fork et capture la valeur est réel, et l'effort communautaire est lourd pour un développeur solo.</p>
+<p>Une fois que ViZion aura 50 à 100 clients payants, 4 à 5 templates en production et une marque établie (12 à 24 mois), envisager un modèle <strong>open core</strong> : moteur + 2 templates standards en open source, templates premium fermés.</p>
+</div>
+
+<h2>6. Le gain de temps — chiffrage détaillé</h2>
+
+<h3>Hypothèses de calcul</h3>
+
+<ul>
+<li>Auditeur senior : coût journalier interne 600 €, prix facturé client 1 200 €</li>
+<li>Audit site moyen (50 chambres équivalentes) : 3 jours de travail actuels</li>
+<li>Volume typique d'un auditeur : 30 audits/an</li>
+</ul>
+
+<h3>Décomposition du gain (avec génération automatique de rapport)</h3>
+
+<table>
+<tr><th>Source de gain</th><th>Par audit</th><th>Par an (30 audits)</th></tr>
+<tr><td>Réduction saisie (-80 %)</td><td>0,8 jour</td><td>24 jours</td></tr>
+<tr><td>Organisation photos (-100 %)</td><td>0,3 jour</td><td>9 jours</td></tr>
+<tr><td>Génération rapport automatique (-85 %)</td><td>0,6 jour</td><td>18 jours</td></tr>
+<tr><td>Retours sur site évités (estim. 10 %)</td><td>0,1 jour</td><td>3 jours</td></tr>
+<tr><td><strong>Total gain</strong></td><td><strong>1,8 jour</strong></td><td><strong>54 jours</strong></td></tr>
+</table>
+
+<h3>Valorisation économique</h3>
+
+<div class="kpi-row">
+<div class="kpi"><span class="kpi-value">54j</span><span class="kpi-label">Jours-homme économisés / an</span></div>
+<div class="kpi"><span class="kpi-value">32 400 €</span><span class="kpi-label">Coût économisé (interne)</span></div>
+<div class="kpi"><span class="kpi-value">64 800 €</span><span class="kpi-label">CA additionnel possible</span></div>
+</div>
+
+<p style="text-align: center; font-style: italic; color: #6B7280; margin-top: 4pt;">Calcul par auditeur, sur la base de 30 audits par an, avec génération automatique de rapport.</p>
+
+<h3>ROI client (cabinet de 5 auditeurs)</h3>
+
+<ul>
+<li>Coût ViZion (formule Cabinet + 2 templates premium) : <strong>~200 € / mois = 2 400 € / an</strong></li>
+<li>Gain (5 × 54 jours × 600 €) : <strong>162 000 € / an</strong></li>
+<li><strong>ROI : ×67 — payback en 5 jours d'utilisation effective</strong></li>
+</ul>
+
+<div class="success">
+<strong>Argument commercial massue</strong> : « notre outil vous coûte le prix de 3 cafés par jour par auditeur, et vous fait gagner l'équivalent de 11 semaines de travail par an. »
+</div>
+
+<h2>7. Synthèse et recommandation</h2>
+
+<div class="callout">
+
+<p><strong>Que faire de ViZion ?</strong></p>
+
+<p>Trois trajectoires sont défendables :</p>
+
+<ol>
+<li><strong>Trajectoire « interne d'abord »</strong> (court terme) : utilise ViZion sur tes propres audits pendant 6 mois. Mesure le gain réel, raffine l'outil et le premier template. 0 € en commercialisation, ~30 000 € en productivité personnelle dès la première année.</li>
+
+<li><strong>Trajectoire « SaaS B2B multi-templates »</strong> (moyen terme) : à partir de M+6, lance la version commercialisable avec 2 templates rodés (hôtel + bureau). Cible 50 à 100 clients sur 24 mois. À 79 €/mois moyen + templates premium à l'unité, cela représente entre <strong>60 000 et 150 000 €</strong> de revenu récurrent annuel. Valorisation patrimoniale à 24 mois : 250 000 à 1 000 000 €.</li>
+
+<li><strong>Trajectoire « open core »</strong> (à évaluer à M+18) : si la commercialisation marche, ouvre le moteur + 1 ou 2 templates standards pour accélérer l'adoption. Garde les templates métier premium (dialyse, datacenter, EHPAD) propriétaires.</li>
+</ol>
+
+<p>À <strong>éviter</strong> : ouvrir le code sans modèle économique en parallèle, ou lancer trop tôt sans avoir validé sur tes propres audits.</p>
+
+</div>
+
+<h3>Plan d'action sur 90 jours</h3>
+
+<table>
+<tr><th>Semaine</th><th>Action</th><th>Objectif</th></tr>
+<tr><td>S1-S3</td><td>Finaliser le template Hôtellerie (blocs 4 à 11)</td><td>Avoir une fiche complètement utilisable</td></tr>
+<tr><td>S4-S5</td><td>Construire le moteur de génération de rapport (template JSON → PDF/Word)</td><td>Boucle valeur fermée</td></tr>
+<tr><td>S6-S7</td><td>Tester sur 2 audits hôtels réels avec génération de rapport</td><td>Identifier les frictions terrain</td></tr>
+<tr><td>S8-S10</td><td>Démarrer le template Bureaux (le 2e plus gros marché)</td><td>Valider l'architecture multi-templates</td></tr>
+<tr><td>S11-S12</td><td>Décision finale : commercialiser ou rester interne</td><td>Sortir de l'ambiguïté avec data réelle</td></tr>
+</table>
+
+<hr style="border: none; border-top: 1pt solid #C8CCD5; margin: 30pt 0 20pt 0;">
+
+<p style="font-size: 9pt; color: #9DA4B2; text-align: center;">
+ViZion — Document de réflexion stratégique<br>
+Préparé par Jordan BASSON — 13 mai 2026 — Version 2
+</p>
+
+</div>
+</body>
+</html>

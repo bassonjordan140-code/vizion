@@ -1,0 +1,431 @@
+<html xmlns:o='urn:schemas-microsoft-com:office:office'
+      xmlns:w='urn:schemas-microsoft-com:office:word'
+      xmlns='http://www.w3.org/TR/REC-html40'>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="ProgId" content="Word.Document">
+<meta name="Generator" content="Microsoft Word 16">
+<meta name="Originator" content="Microsoft Word 16">
+<title>ViZion — Analyse stratégique</title>
+<!--[if gte mso 9]>
+<xml>
+<w:WordDocument>
+<w:View>Print</w:View>
+<w:Zoom>100</w:Zoom>
+<w:DoNotOptimizeForBrowser/>
+</w:WordDocument>
+</xml>
+<![endif]-->
+<style>
+@page WordSection1 {
+    size: 8.5in 11.0in;
+    margin: 2.5cm 2.5cm 2.5cm 2.5cm;
+    mso-page-orientation: portrait;
+}
+div.WordSection1 { page: WordSection1; }
+
+body {
+    font-family: "Calibri", "Arial", sans-serif;
+    font-size: 11pt;
+    color: #1F2937;
+    line-height: 1.5;
+}
+
+h1 {
+    font-family: "Calibri Light", "Arial", sans-serif;
+    font-size: 28pt;
+    color: #0A1F4F;
+    font-weight: 300;
+    margin-top: 0;
+    margin-bottom: 6pt;
+    page-break-after: avoid;
+}
+
+h2 {
+    font-family: "Calibri Light", "Arial", sans-serif;
+    font-size: 18pt;
+    color: #0A1F4F;
+    font-weight: 400;
+    margin-top: 24pt;
+    margin-bottom: 8pt;
+    padding-bottom: 4pt;
+    border-bottom: 1pt solid #C8CCD5;
+    page-break-after: avoid;
+}
+
+h3 {
+    font-family: "Calibri", "Arial", sans-serif;
+    font-size: 13pt;
+    color: #07163B;
+    font-weight: 600;
+    margin-top: 16pt;
+    margin-bottom: 6pt;
+    page-break-after: avoid;
+}
+
+p {
+    margin: 0 0 8pt 0;
+    text-align: justify;
+}
+
+.subtitle {
+    font-size: 12pt;
+    color: #6B7280;
+    font-style: italic;
+    margin-bottom: 4pt;
+}
+
+.meta {
+    font-size: 10pt;
+    color: #9DA4B2;
+    margin-bottom: 24pt;
+}
+
+ul, ol {
+    margin: 0 0 10pt 0;
+    padding-left: 24pt;
+}
+
+li {
+    margin-bottom: 4pt;
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 10pt 0 14pt 0;
+    font-size: 10pt;
+}
+
+th {
+    background-color: #0A1F4F;
+    color: #FFFFFF;
+    padding: 8pt 10pt;
+    text-align: left;
+    font-weight: 600;
+    border: 1pt solid #07163B;
+}
+
+td {
+    padding: 6pt 10pt;
+    border: 1pt solid #D1D5DB;
+    vertical-align: top;
+}
+
+tr:nth-child(even) td {
+    background-color: #F3F4F6;
+}
+
+.highlight {
+    background-color: #FEF3C7;
+    padding: 12pt;
+    border-left: 4pt solid #F59E0B;
+    margin: 12pt 0;
+}
+
+.callout {
+    background-color: #EFF6FF;
+    padding: 12pt;
+    border-left: 4pt solid #0A1F4F;
+    margin: 12pt 0;
+}
+
+.success {
+    background-color: #ECFDF5;
+    padding: 12pt;
+    border-left: 4pt solid #10B981;
+    margin: 12pt 0;
+}
+
+.warning {
+    background-color: #FEF2F2;
+    padding: 12pt;
+    border-left: 4pt solid #EF4444;
+    margin: 12pt 0;
+}
+
+strong { color: #0A1F4F; font-weight: 600; }
+
+.kpi-row {
+    display: table;
+    width: 100%;
+    margin: 16pt 0;
+}
+.kpi {
+    display: table-cell;
+    text-align: center;
+    padding: 12pt;
+    background-color: #F9FAFB;
+    border: 1pt solid #E5E7EB;
+}
+.kpi-value {
+    font-size: 22pt;
+    font-weight: bold;
+    color: #0A1F4F;
+    display: block;
+}
+.kpi-label {
+    font-size: 10pt;
+    color: #6B7280;
+    display: block;
+    margin-top: 4pt;
+}
+</style>
+</head>
+
+<body>
+<div class="WordSection1">
+
+<h1>ViZion</h1>
+<p class="subtitle">Analyse stratégique — Vendre, open-sourcer, ou garder en interne ?</p>
+<p class="meta">Document préparé le 13 mai 2026 — Jordan BASSON</p>
+
+<hr style="border: none; border-top: 2pt solid #0A1F4F; margin: 20pt 0;">
+
+<h2>1. Synthèse</h2>
+
+<p>ViZion est une application web qui digitalise la collecte de données terrain lors des audits énergétiques et des opérations de rétrocommissioning. Elle remplace la combinaison « papier + Excel + photos en vrac » par un outil structuré, guidé et automatisable.</p>
+
+<p>Ce document répond à trois questions stratégiques :</p>
+
+<ol>
+<li><strong>Pourquoi ce produit a-t-il une valeur réelle ?</strong></li>
+<li><strong>Devrais-je le commercialiser ?</strong></li>
+<li><strong>Open source ou propriétaire — que choisir ?</strong></li>
+</ol>
+
+<div class="callout">
+<strong>Recommandation principale</strong> : commercialiser sous forme SaaS B2B, avec une version freemium limitée. Ne pas ouvrir le code source dans un premier temps. Réévaluer après 18 mois selon la traction.
+</div>
+
+<h2>2. Quel est l'intérêt réel de ViZion ?</h2>
+
+<h3>Le contexte réglementaire est en faveur du produit</h3>
+
+<p>Le <strong>décret tertiaire</strong> impose à tous les bâtiments tertiaires de plus de 1 000 m² une réduction de consommation énergétique de <strong>-40 % d'ici 2030</strong> et <strong>-60 % d'ici 2050</strong>. Cela force tous les hôtels, restaurants, bureaux, centres commerciaux à faire auditer leur performance énergétique. Le marché est mécaniquement en croissance forte sur les 8 prochaines années.</p>
+
+<p>Spécifiquement sur l'hôtellerie : <strong>environ 17 000 hôtels en France</strong> sont concernés. Et chaque audit doit ensuite être suivi de plans d'action (le rétrocommissioning), eux-mêmes facturables.</p>
+
+<h3>Le gain de temps est mesurable et significatif</h3>
+
+<p>Un audit énergétique d'un hôtel de taille moyenne (50 chambres) demande aujourd'hui environ 3 jours de travail pour l'auditeur : 1 journée sur site + 2 journées de saisie et rapport au bureau. ViZion vise à réduire la phase de saisie en l'intégrant à la phase terrain :</p>
+
+<table>
+<tr><th>Étape</th><th>Méthode actuelle</th><th>Avec ViZion</th><th>Gain</th></tr>
+<tr><td>Collecte terrain</td><td>1 jour</td><td>1 jour</td><td>—</td></tr>
+<tr><td>Saisie post-terrain</td><td>1 jour</td><td>0,2 jour (vérification)</td><td>-80 %</td></tr>
+<tr><td>Organisation des photos</td><td>0,3 jour</td><td>Automatique</td><td>-100 %</td></tr>
+<tr><td>Préparation rapport</td><td>0,7 jour</td><td>0,5 jour (export auto)</td><td>-30 %</td></tr>
+<tr><td><strong>Total audit moyen</strong></td><td><strong>3 jours</strong></td><td><strong>1,7 jour</strong></td><td><strong>-43 %</strong></td></tr>
+</table>
+
+<div class="success">
+<strong>Sur 30 audits par an et par auditeur</strong> : environ 40 jours-homme économisés annuellement, soit l'équivalent de <strong>~24 000 € de capacité supplémentaire</strong> par auditeur (sur base 600 €/jour).
+</div>
+
+<h3>Les autres avantages tangibles</h3>
+
+<ul>
+<li><strong>Zéro oubli sur site</strong> : la checklist guidée empêche les retours sur place coûteux (un retour vaut entre 300 € et 800 €).</li>
+<li><strong>Standardisation</strong> : tous les collaborateurs collectent les mêmes données dans le même format — onboarding d'un nouveau auditeur en 1 jour au lieu de 2-3 semaines.</li>
+<li><strong>Photos contextuelles</strong> : chaque photo est automatiquement liée à l'hébergement et au type d'équipement.</li>
+<li><strong>Reprise sur incident</strong> : si l'auditeur tombe malade, un collègue peut reprendre le dossier sans perte d'information.</li>
+<li><strong>Image moderne</strong> : un client qui voit son auditeur utiliser un outil digital plutôt qu'un classeur perçoit mieux la valeur du cabinet.</li>
+</ul>
+
+<h3>Le marché concurrentiel</h3>
+
+<p>Il n'existe <strong>aucun concurrent direct identifié</strong> sur le segment « outil terrain pour audit énergétique ». Les solutions actuelles sont :</p>
+
+<ul>
+<li><strong>Logiciels de simulation thermique</strong> (BatiActu, Pleiades, ClimaWin) : très techniques, conçus pour la phase d'analyse en bureau, pas pour le terrain.</li>
+<li><strong>Outils généralistes</strong> (Excel, Notion, Airtable) : flexibles mais ne capitalisent pas le métier.</li>
+<li><strong>Applications maison</strong> de certains gros cabinets : non commercialisées, peu professionnalisées.</li>
+</ul>
+
+<p>ViZion occupe un <strong>vide de marché documenté</strong> entre la fiche papier et le logiciel de simulation.</p>
+
+<h2>3. Pourquoi vendre — analyse argumentée</h2>
+
+<h3>Les arguments en faveur de la vente (SaaS B2B)</h3>
+
+<div class="success">
+<p><strong>Argument 1 — Le marché est mature et solvable.</strong> Un bureau d'études énergétique fait entre 50 et 500 audits par an. À 79 €/mois par utilisateur, l'outil paie pour lui-même dès le premier audit qu'il fait gagner (moins d'une demi-journée par mois). Le rapport coût/bénéfice est évident pour le client.</p>
+</div>
+
+<div class="success">
+<p><strong>Argument 2 — Effet réseau et standardisation de marché.</strong> Si ViZion devient l'outil de référence, son format de données structurées peut devenir un standard du secteur (comme Excel l'est pour les chiffres). Cela crée un effet d'enfermement positif pour les utilisateurs et un fossé concurrentiel.</p>
+</div>
+
+<div class="success">
+<p><strong>Argument 3 — Revenus récurrents prévisibles.</strong> Un SaaS B2B sur outil métier a un taux de rétention typique de 85 à 95 % par an. Au-delà de 50 clients payants, le chiffre d'affaires devient prévisible et le projet auto-finance ses évolutions.</p>
+</div>
+
+<div class="success">
+<p><strong>Argument 4 — Faible coût marginal.</strong> Une fois la v1 livrée, l'ajout d'un nouveau client ne coûte quasiment rien (pas d'infrastructure dédiée, pas de support intensif). Marge brute estimée : 75 à 85 %.</p>
+</div>
+
+<div class="success">
+<p><strong>Argument 5 — Valorisation patrimoniale.</strong> Un SaaS B2B avec 100 à 500 clients récurrents se valorise typiquement entre 3 et 6 fois son chiffre d'affaires annuel. Un produit qui génère 100 000 € de revenu récurrent annuel peut être revendu 300 000 à 600 000 € à un acteur du secteur (consolidation, intégration dans une suite logicielle).</p>
+</div>
+
+<h3>Les contre-arguments (à anticiper)</h3>
+
+<div class="warning">
+<p><strong>Contre-argument 1 — Temps commercial et marketing.</strong> Vendre du SaaS B2B en France est exigeant : prospection LinkedIn, démos, salons professionnels, gestion des objections. Compter <strong>30 à 50 % du temps</strong> sur la commercialisation les 12 premiers mois. Ce n'est pas du « build it and they will come ».</p>
+</div>
+
+<div class="warning">
+<p><strong>Contre-argument 2 — Conformité et juridique.</strong> Vendre à des entreprises implique : CGV/CGU, RGPD, conditions de support, sous-traitance des données, facturation, TVA intracommunautaire si export. Cela représente <strong>10 à 20 h de juridique en amont</strong> et l'équivalent d'un poste comptable à temps partiel.</p>
+</div>
+
+<div class="warning">
+<p><strong>Contre-argument 3 — Maintenance et SLA.</strong> Un client payant attend un service. Il faut être disponible pour les bugs, les questions, les évolutions. Compter <strong>5 à 10 h de support par mois</strong> à partir de 20 clients.</p>
+</div>
+
+<div class="warning">
+<p><strong>Contre-argument 4 — Risque de concurrence.</strong> Si le produit marche, des acteurs établis du logiciel énergétique peuvent copier la fonction et l'intégrer à leur suite (ils ont la base installée, ils gagnent). Il faut anticiper en construisant des barrières (intégrations, données, marque).</p>
+</div>
+
+<h3>Verdict sur la vente</h3>
+
+<p>La vente fait sens si l'objectif est de <strong>construire un actif commercial</strong> qui génère du revenu indépendamment du temps facturable. Elle ne fait pas sens si l'objectif est uniquement d'avoir un outil interne pour gagner en productivité personnelle.</p>
+
+<p><strong>La voie médiane</strong> : commencer par utiliser l'outil en interne pendant 3 à 6 mois pour valider la valeur sur ses propres audits, puis commercialiser une fois que le produit est rodé.</p>
+
+<h2>4. Open source — pour et contre</h2>
+
+<h3>Ce qu'apporterait l'open source</h3>
+
+<table>
+<tr><th>Avantage</th><th>Détail</th></tr>
+<tr><td><strong>Adoption rapide</strong></td><td>Les outils gratuits gagnent rapidement en visibilité dans la communauté technique. Bouche-à-oreille fort, référencement organique amélioré.</td></tr>
+<tr><td><strong>Contributions externes</strong></td><td>Des développeurs peuvent corriger des bugs ou ajouter des modules sans coût. Si la communauté est active, la roadmap peut s'enrichir gratuitement.</td></tr>
+<tr><td><strong>Confiance client</strong></td><td>Un code ouvert rassure les acheteurs B2B sur la pérennité de l'outil (« si tu fermes boutique, je peux continuer à l'utiliser »).</td></tr>
+<tr><td><strong>Crédibilité technique</strong></td><td>Un projet GitHub bien maintenu est un atout sur le CV et pour attirer des partenaires.</td></tr>
+<tr><td><strong>Effet plate-forme</strong></td><td>D'autres acteurs peuvent construire des intégrations (CRM, logiciels métier) autour de ViZion, élargissant son écosystème.</td></tr>
+</table>
+
+<h3>Ce que l'open source coûterait</h3>
+
+<table>
+<tr><th>Risque</th><th>Détail</th></tr>
+<tr><td><strong>Vol direct par un concurrent</strong></td><td>Un acteur établi peut forker le code, le rebadger et le commercialiser plus vite et mieux, en s'appuyant sur sa base clients existante. Cas classique : MongoDB → Amazon DocumentDB.</td></tr>
+<tr><td><strong>Pas de revenu direct</strong></td><td>Open source pur signifie zéro revenu de licence. Il faut vendre du service autour (support, hébergement, intégration), ce qui est un autre métier.</td></tr>
+<tr><td><strong>Effort communautaire élevé</strong></td><td>Maintenir une communauté coûte du temps : répondre aux issues, faire des releases, écrire de la documentation, modérer les PRs. Compter <strong>5 à 15 h par semaine</strong> pour un projet actif.</td></tr>
+<tr><td><strong>Difficulté de valorisation</strong></td><td>Un projet open source est très difficile à revendre comme actif. La valeur est dans la communauté et la marque, pas dans le code.</td></tr>
+<tr><td><strong>Pression sur la roadmap</strong></td><td>Les utilisateurs gratuits demandent des fonctionnalités sans payer. Il faut savoir dire non, ce qui est délicat sans frustrer la communauté.</td></tr>
+</table>
+
+<h3>Les voies hybrides à considérer</h3>
+
+<p>Plusieurs modèles permettent de tirer le meilleur des deux mondes :</p>
+
+<ul>
+<li><strong>Open core</strong> : le code de base est open source, mais les fonctionnalités premium (multi-utilisateurs, génération de rapports, intégrations, synchronisation cloud) sont propriétaires et payantes. Exemple : GitLab, Sentry. <strong>C'est l'approche que je recommanderais si l'open source attire.</strong></li>
+<li><strong>Source available</strong> : code public mais sous licence non-libre (interdiction de revendre, par exemple). Le code est lisible et auditable mais pas réutilisable commercialement. Exemple : Sentry BSL, MongoDB SSPL.</li>
+<li><strong>Closed avec démo</strong> : code privé, version démo accessible publiquement. Le plus simple commercialement, sans communauté.</li>
+</ul>
+
+<h3>Verdict sur l'open source</h3>
+
+<div class="callout">
+<p><strong>Recommandation</strong> : <strong>ne pas open-sourcer dans un premier temps.</strong> Le marché est petit (quelques milliers de bureaux d'études en France), le risque qu'un concurrent fork et capture la valeur est réel, et l'effort communautaire est lourd pour un développeur solo.</p>
+<p>Une fois que ViZion aura 50 à 100 clients payants et une marque établie (12 à 24 mois), envisager un modèle <strong>open core</strong> pour accélérer l'adoption tout en protégeant les revenus.</p>
+</div>
+
+<h2>5. Le gain de temps — chiffrage détaillé</h2>
+
+<h3>Hypothèses de calcul</h3>
+
+<ul>
+<li>Auditeur senior : coût journalier interne 600 €, prix facturé client 1 200 €</li>
+<li>Audit hôtel moyen (50 chambres) : 3 jours de travail actuels</li>
+<li>Volume typique d'un auditeur : 30 audits/an</li>
+</ul>
+
+<h3>Décomposition du gain</h3>
+
+<table>
+<tr><th>Source de gain</th><th>Par audit</th><th>Par an (30 audits)</th></tr>
+<tr><td>Réduction saisie (-80 %)</td><td>0,8 jour</td><td>24 jours</td></tr>
+<tr><td>Organisation photos (-100 %)</td><td>0,3 jour</td><td>9 jours</td></tr>
+<tr><td>Préparation rapport (-30 %)</td><td>0,2 jour</td><td>6 jours</td></tr>
+<tr><td>Retours sur site évités (estim. 10 %)</td><td>0,1 jour</td><td>3 jours</td></tr>
+<tr><td><strong>Total gain</strong></td><td><strong>1,4 jour</strong></td><td><strong>42 jours</strong></td></tr>
+</table>
+
+<h3>Valorisation économique</h3>
+
+<div class="kpi-row">
+<div class="kpi">
+<span class="kpi-value">42j</span>
+<span class="kpi-label">Jours-homme économisés / an</span>
+</div>
+<div class="kpi">
+<span class="kpi-value">25 200 €</span>
+<span class="kpi-label">Coût économisé (interne)</span>
+</div>
+<div class="kpi">
+<span class="kpi-value">50 400 €</span>
+<span class="kpi-label">CA additionnel possible (facturé)</span>
+</div>
+</div>
+
+<p style="text-align: center; font-style: italic; color: #6B7280; margin-top: 4pt;">Calcul par auditeur, sur la base de 30 audits par an.</p>
+
+<h3>ROI client</h3>
+
+<p>Pour un cabinet à 5 auditeurs :</p>
+
+<ul>
+<li>Coût ViZion (formule Cabinet) : <strong>149 € × 12 = 1 788 € / an</strong></li>
+<li>Gain (5 × 42 jours × 600 €) : <strong>126 000 € / an</strong></li>
+<li><strong>ROI : ×70 — payback en 5 jours d'utilisation effective</strong></li>
+</ul>
+
+<div class="success">
+<strong>Ce ratio rend l'argument commercial extrêmement simple à porter</strong> : « notre outil vous coûte le prix de 3 cafés par jour par auditeur, et vous fait gagner l'équivalent de 8 semaines de travail par an. »
+</div>
+
+<h2>6. Synthèse et recommandation</h2>
+
+<div class="callout">
+
+<p><strong>Que faire de ViZion ?</strong></p>
+
+<p>Sur la base de l'analyse ci-dessus, trois trajectoires sont défendables :</p>
+
+<ol>
+<li><strong>Trajectoire « interne d'abord »</strong> (recommandée à court terme) : utilise ViZion sur tes propres audits pendant 6 mois. Mesure le gain réel, raffine l'outil sur la base de la pratique. Cela coûte 0 € en commercialisation et te fait gagner ~25 000 € en productivité personnelle dès la première année.</li>
+
+<li><strong>Trajectoire « SaaS B2B »</strong> (recommandée à moyen terme) : à partir de M+6, lance une version commercialisable. Cible 50 à 100 clients sur 24 mois. À 79 €/mois moyen, cela représente entre 47 000 et 95 000 € de revenu récurrent annuel. Valorisation patrimoniale à 24 mois : 150 000 à 500 000 €.</li>
+
+<li><strong>Trajectoire « open core »</strong> (à évaluer après 18 mois) : si la commercialisation marche, ouvre le code de base pour accélérer l'adoption tout en gardant les modules premium propriétaires. Cela renforce la marque sans tuer le revenu.</li>
+</ol>
+
+<p>Ce qu'il faut <strong>éviter</strong> : ouvrir le code sans modèle économique en parallèle. Tu perdrais le contrôle stratégique sans contrepartie.</p>
+
+</div>
+
+<h3>Plan d'action sur 90 jours</h3>
+
+<table>
+<tr><th>Semaine</th><th>Action</th><th>Objectif</th></tr>
+<tr><td>S1-S3</td><td>Finaliser le module Hébergements (blocs 4 à 11)</td><td>Avoir une fiche complètement utilisable</td></tr>
+<tr><td>S4-S5</td><td>Tester sur 2 audits réels</td><td>Identifier les frictions terrain</td></tr>
+<tr><td>S6-S8</td><td>Itérer sur les retours + ajouter le générateur de rapport (PDF)</td><td>Boucle valeur fermée</td></tr>
+<tr><td>S9-S10</td><td>Décliner sur 1-2 autres modules (piscine, restaurant)</td><td>Élargir la couverture</td></tr>
+<tr><td>S11-S12</td><td>Décision finale : commercialiser ou rester interne</td><td>Sortir de l'ambiguïté</td></tr>
+</table>
+
+<hr style="border: none; border-top: 1pt solid #C8CCD5; margin: 30pt 0 20pt 0;">
+
+<p style="font-size: 9pt; color: #9DA4B2; text-align: center;">
+ViZion — Document de réflexion stratégique<br>
+Préparé par Jordan BASSON — 13 mai 2026
+</p>
+
+</div>
+</body>
+</html>
