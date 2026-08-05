@@ -113,9 +113,10 @@ function deleteLocalisation(numero, nom) {
         }
     }
 
-    PhotoManager.deletePhotosByPrefix(currentSecteur.id + "_" + numero).then(function () {
-        renderList();
-    });
+    // Rafraîchit tout de suite ; le nettoyage des photos se fait en tâche de fond
+    // (ne doit jamais retarder l'affichage).
+    renderList();
+    PhotoManager.deletePhotosByPrefix(currentSecteur.id + "_" + numero);
 
 }
 

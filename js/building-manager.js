@@ -51,7 +51,9 @@ window.BuildingManager = (function () {
         var currentId = getCurrentBuildingId();
         if (!currentId) return Promise.resolve();
 
-        var snapshot = {};
+        var snapshot = {
+            activeSecteurs: JSON.parse(localStorage.getItem("activeSecteurs")) || []
+        };
         Object.keys(SECTEUR_DATA_KEYS).forEach(function (secteurId) {
             var key = SECTEUR_DATA_KEYS[secteurId];
             var data = localStorage.getItem(key);
@@ -76,6 +78,17 @@ window.BuildingManager = (function () {
                 localStorage.removeItem(key);
             }
         });
+
+        var activeSecteurs = snapshot.activeSecteurs;
+        if (!activeSecteurs) {
+            // Migration : bâtiment créé avant l'ajout/retrait de secteurs — on rend
+            // visibles ceux qui ont déjà des localisations, pour ne rien cacher.
+            activeSecteurs = Object.keys(SECTEUR_DATA_KEYS).filter(function (secteurId) {
+                var data = snapshot[SECTEUR_DATA_KEYS[secteurId]];
+                return data && Object.keys(data).length > 0;
+            });
+        }
+        localStorage.setItem("activeSecteurs", JSON.stringify(activeSecteurs));
 
         // Navigation transitoire : jamais pertinente d'un bâtiment à l'autre.
         localStorage.removeItem("currentSecteur");
@@ -122,6 +135,7 @@ window.BuildingManager = (function () {
         localStorage.removeItem(CURRENT_BUILDING_KEY);
         localStorage.removeItem("siteInfo");
         localStorage.removeItem("currentSecteur");
+        localStorage.removeItem("activeSecteurs");
         Object.keys(SECTEUR_DATA_KEYS).forEach(function (secteurId) {
             localStorage.removeItem(SECTEUR_DATA_KEYS[secteurId]);
         });
