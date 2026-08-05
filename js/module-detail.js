@@ -56,18 +56,22 @@ function renderList() {
 
         var saved = data[numero];
         var progress = calcItemProgress(currentSecteur.id, saved);
+        var nom = saved.nom || (currentSecteur.label + " " + numero);
 
-        var card = document.createElement("button");
+        var card = document.createElement("div");
         card.className = "dashboard-card";
+        card.setAttribute("tabindex", "0");
+        card.setAttribute("role", "button");
 
         card.innerHTML =
             '<div class="dashboard-header">' +
-                '<strong>' + (saved.nom || (currentSecteur.label + " " + numero)) + '</strong>' +
+                '<strong>' + nom + '</strong>' +
                 '<span>' + progress + '% ' + (progress === 100 ? "✅" : "") + '</span>' +
             '</div>' +
             '<div class="progress-bar">' +
                 '<div class="progress-fill" style="width: ' + progress + '%"></div>' +
-            '</div>';
+            '</div>' +
+            '<button type="button" class="card-delete-btn" aria-label="Supprimer cette localisation">✕</button>';
 
         card.addEventListener("click", function () {
 
@@ -80,8 +84,37 @@ function renderList() {
 
         });
 
+        card.querySelector(".card-delete-btn").addEventListener("click", function (e) {
+            e.stopPropagation();
+            deleteLocalisation(numero, nom);
+        });
+
         moduleContent.appendChild(card);
 
+    });
+
+}
+
+function deleteLocalisation(numero, nom) {
+
+    if (!confirm('Supprimer la localisation "' + nom + '" ? Cette action est irréversible.')) {
+        return;
+    }
+
+    var data = loadSecteurData();
+    delete data[numero];
+    saveSecteurData(data);
+
+    var currentKeyRaw = localStorage.getItem(SECTEUR_CURRENT_KEYS[currentSecteur.id]);
+    if (currentKeyRaw) {
+        var current = JSON.parse(currentKeyRaw);
+        if (String(current.numero) === String(numero)) {
+            localStorage.removeItem(SECTEUR_CURRENT_KEYS[currentSecteur.id]);
+        }
+    }
+
+    PhotoManager.deletePhotosByPrefix(currentSecteur.id + "_" + numero).then(function () {
+        renderList();
     });
 
 }
