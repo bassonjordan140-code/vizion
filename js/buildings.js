@@ -21,11 +21,8 @@ siteAdresseInput.value = siteInfo.adresse || "";
 destinataireEmailInput.value = siteInfo.email || "";
 
 var siteMetaHint = document.getElementById("siteMetaHint");
-if (siteInfo.commune || siteInfo.zonePerene || siteInfo.stationMeteo) {
-    siteMetaHint.textContent =
-        "Commune : " + (siteInfo.commune || "?") +
-        " — Zone PERENE : " + (siteInfo.zonePerene || "?") +
-        " — Station météo : " + (siteInfo.stationMeteo || "?");
+if (siteInfo.commune) {
+    siteMetaHint.textContent = "Commune : " + siteInfo.commune;
     siteMetaHint.classList.remove("hidden");
 }
 

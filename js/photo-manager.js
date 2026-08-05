@@ -98,6 +98,26 @@ window.PhotoManager = (function () {
         });
     }
 
+    // Supprime du store actif toutes les photos dont la clé commence par "<prefix>_"
+    // (ex: "hebergements_") — utilisé quand un secteur entier est supprimé.
+    function deletePhotosByPrefix(prefix) {
+        return getAllPhotos().then(function (photos) {
+            var matching = photos.filter(function (photo) {
+                return photo.key.indexOf(prefix + "_") === 0;
+            });
+            if (!matching.length) return;
+            return openDB().then(function (db) {
+                return new Promise(function (resolve, reject) {
+                    var tx = db.transaction(STORE_NAME, "readwrite");
+                    var store = tx.objectStore(STORE_NAME);
+                    matching.forEach(function (photo) { store.delete(photo.key); });
+                    tx.oncomplete = function () { resolve(); };
+                    tx.onerror = function () { reject(tx.error); };
+                });
+            });
+        });
+    }
+
     function clearPhotos() {
         return openDB().then(function (db) {
             return new Promise(function (resolve, reject) {
@@ -332,6 +352,7 @@ window.PhotoManager = (function () {
         savePhoto: savePhoto,
         loadThumbnail: loadThumbnail,
         deletePhoto: deletePhoto,
+        deletePhotosByPrefix: deletePhotosByPrefix,
         archivePhotosForBuilding: archivePhotosForBuilding,
         restorePhotosForBuilding: restorePhotosForBuilding,
         getArchivedPhotosForBuilding: getArchivedPhotosForBuilding,
