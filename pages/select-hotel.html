@@ -7,7 +7,7 @@
     <meta name="viewport"
           content="width=device-width, initial-scale=1.0">
 
-    <title>Audit énergétique</title>
+    <title>Sélection de l'hôtel</title>
 
     <link rel="stylesheet"
           href="../css/style.css">
@@ -22,18 +22,28 @@
             ←
         </button>
 
-        <h1>Sélection des secteurs</h1>
+        <h1>Quel hôtel suivez-vous ?</h1>
 
         <p class="subtitle">
-            Sélectionnez uniquement les secteurs présents dans ce bâtiment.
+            Ce choix alimente la page de garde du rapport.
         </p>
 
-        <div class="module-list"
-             id="moduleList">
+        <div class="module-detail-card">
+
+            <div class="field-group">
+                <label for="hotelSelect">Hôtel</label>
+                <select id="hotelSelect">
+                    <option value="">— Sélectionner un hôtel —</option>
+                </select>
+            </div>
+
+            <div id="hotelPreview" class="section-hint hidden"></div>
+
         </div>
 
         <button class="primary-button"
-                id="continueButton">
+                id="continueButton"
+                disabled>
             Continuer
         </button>
 
@@ -42,7 +52,8 @@
     <script src="../js/secteur-config.js"></script>
     <script src="../js/photo-manager.js"></script>
     <script src="../js/building-manager.js"></script>
-    <script src="../js/script.js"></script>
+    <script src="../js/hotels-data.js"></script>
+    <script src="../js/select-hotel.js"></script>
 
 </body>
 

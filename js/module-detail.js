@@ -1,5 +1,5 @@
-var currentModule =
-    JSON.parse(localStorage.getItem("currentModule"));
+var currentSecteur =
+    JSON.parse(localStorage.getItem("currentSecteur"));
 
 var moduleContent =
     document.getElementById("moduleContent");
@@ -10,8 +10,8 @@ var moduleTitle =
 var moduleSubtitle =
     document.getElementById("moduleSubtitle");
 
-if (currentModule && moduleTitle) {
-    moduleTitle.textContent = currentModule.label;
+if (currentSecteur && moduleTitle) {
+    moduleTitle.textContent = currentSecteur.label;
 }
 
 /* ==============================
@@ -42,7 +42,7 @@ function createItemCard(opts) {
         localStorage.setItem(
             opts.currentKey,
             JSON.stringify({
-                moduleId: currentModule.id,
+                moduleId: currentSecteur.id,
                 numero: opts.numero
             })
         );
@@ -58,12 +58,12 @@ function createItemCard(opts) {
    Branchement par module
 ============================== */
 
-if (currentModule && currentModule.id === "hebergements") {
+if (currentSecteur && currentSecteur.id === "hebergements") {
 
     var hebergementsData =
         JSON.parse(localStorage.getItem("hebergementsData")) || {};
 
-    for (var i = 1; i <= currentModule.quantity; i++) {
+    for (var i = 1; i <= currentSecteur.quantity; i++) {
 
         var saved = hebergementsData[i];
 
@@ -77,12 +77,12 @@ if (currentModule && currentModule.id === "hebergements") {
         });
     }
 
-} else if (currentModule && currentModule.id === "piscines") {
+} else if (currentSecteur && currentSecteur.id === "piscines") {
 
     var piscinesData =
         JSON.parse(localStorage.getItem("piscinesData")) || {};
 
-    for (var i = 1; i <= currentModule.quantity; i++) {
+    for (var i = 1; i <= currentSecteur.quantity; i++) {
 
         var saved = piscinesData[i];
 
@@ -96,12 +96,12 @@ if (currentModule && currentModule.id === "hebergements") {
         });
     }
 
-} else if (currentModule && currentModule.id === "spa") {
+} else if (currentSecteur && currentSecteur.id === "spa") {
 
     var spaData =
         JSON.parse(localStorage.getItem("spaData")) || {};
 
-    for (var i = 1; i <= currentModule.quantity; i++) {
+    for (var i = 1; i <= currentSecteur.quantity; i++) {
 
         var saved = spaData[i];
 
@@ -115,12 +115,12 @@ if (currentModule && currentModule.id === "hebergements") {
         });
     }
 
-} else if (currentModule && currentModule.id === "restaurant") {
+} else if (currentSecteur && currentSecteur.id === "restaurant") {
 
     var restaurantData =
         JSON.parse(localStorage.getItem("restaurantData")) || {};
 
-    for (var i = 1; i <= currentModule.quantity; i++) {
+    for (var i = 1; i <= currentSecteur.quantity; i++) {
 
         var saved = restaurantData[i];
 
@@ -134,12 +134,12 @@ if (currentModule && currentModule.id === "hebergements") {
         });
     }
 
-} else if (currentModule && currentModule.id === "bar") {
+} else if (currentSecteur && currentSecteur.id === "bar") {
 
     var barData =
         JSON.parse(localStorage.getItem("barData")) || {};
 
-    for (var i = 1; i <= currentModule.quantity; i++) {
+    for (var i = 1; i <= currentSecteur.quantity; i++) {
 
         var saved = barData[i];
 
@@ -153,12 +153,12 @@ if (currentModule && currentModule.id === "hebergements") {
         });
     }
 
-} else if (currentModule && currentModule.id === "buanderie") {
+} else if (currentSecteur && currentSecteur.id === "buanderie") {
 
     var buanderieData =
         JSON.parse(localStorage.getItem("buanderieData")) || {};
 
-    for (var i = 1; i <= currentModule.quantity; i++) {
+    for (var i = 1; i <= currentSecteur.quantity; i++) {
 
         var saved = buanderieData[i];
 
@@ -172,12 +172,12 @@ if (currentModule && currentModule.id === "hebergements") {
         });
     }
 
-} else if (currentModule && currentModule.id === "cuisine") {
+} else if (currentSecteur && currentSecteur.id === "cuisine") {
 
     var cuisineData =
         JSON.parse(localStorage.getItem("cuisineData")) || {};
 
-    for (var i = 1; i <= currentModule.quantity; i++) {
+    for (var i = 1; i <= currentSecteur.quantity; i++) {
 
         var saved = cuisineData[i];
 
@@ -191,12 +191,12 @@ if (currentModule && currentModule.id === "hebergements") {
         });
     }
 
-} else if (currentModule && currentModule.id === "bureaux") {
+} else if (currentSecteur && currentSecteur.id === "bureaux") {
 
     var bureauxData =
         JSON.parse(localStorage.getItem("bureauxData")) || {};
 
-    for (var i = 1; i <= currentModule.quantity; i++) {
+    for (var i = 1; i <= currentSecteur.quantity; i++) {
 
         var saved = bureauxData[i];
 
@@ -210,12 +210,12 @@ if (currentModule && currentModule.id === "hebergements") {
         });
     }
 
-} else if (currentModule && currentModule.id === "parking") {
+} else if (currentSecteur && currentSecteur.id === "parking") {
 
     var parkingData =
         JSON.parse(localStorage.getItem("parkingData")) || {};
 
-    for (var i = 1; i <= currentModule.quantity; i++) {
+    for (var i = 1; i <= currentSecteur.quantity; i++) {
 
         var saved = parkingData[i];
 
@@ -229,12 +229,12 @@ if (currentModule && currentModule.id === "hebergements") {
         });
     }
 
-} else if (currentModule && currentModule.id === "sport") {
+} else if (currentSecteur && currentSecteur.id === "sport") {
 
     var sportData =
         JSON.parse(localStorage.getItem("sportData")) || {};
 
-    for (var i = 1; i <= currentModule.quantity; i++) {
+    for (var i = 1; i <= currentSecteur.quantity; i++) {
 
         var saved = sportData[i];
 
@@ -248,12 +248,12 @@ if (currentModule && currentModule.id === "hebergements") {
         });
     }
 
-} else if (currentModule && currentModule.id === "reunion") {
+} else if (currentSecteur && currentSecteur.id === "reunion") {
 
     var reunionData =
         JSON.parse(localStorage.getItem("reunionData")) || {};
 
-    for (var i = 1; i <= currentModule.quantity; i++) {
+    for (var i = 1; i <= currentSecteur.quantity; i++) {
 
         var saved = reunionData[i];
 
@@ -267,12 +267,12 @@ if (currentModule && currentModule.id === "hebergements") {
         });
     }
 
-} else if (currentModule && currentModule.id === "jeux") {
+} else if (currentSecteur && currentSecteur.id === "jeux") {
 
     var jeuxData =
         JSON.parse(localStorage.getItem("jeuxData")) || {};
 
-    for (var i = 1; i <= currentModule.quantity; i++) {
+    for (var i = 1; i <= currentSecteur.quantity; i++) {
 
         var saved = jeuxData[i];
 

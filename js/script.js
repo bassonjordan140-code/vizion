@@ -1,26 +1,13 @@
-const modules = [
-    { id: "hebergements", label: "Hébergements", hasCounter: true },
-    { id: "piscines", label: "Piscines", hasCounter: true },
-    { id: "restaurant", label: "Restaurant", hasCounter: true },
-    { id: "bar", label: "Bar", hasCounter: true },
-    { id: "spa", label: "Spa", hasCounter: true },
-    { id: "buanderie", label: "Buanderie", hasCounter: true },
-    { id: "cuisine", label: "Cuisine", hasCounter: true },
-    { id: "jeux", label: "Salle de jeux", hasCounter: true },
-    { id: "reunion", label: "Salle de réunion/séminaire", hasCounter: true },
-    { id: "sport", label: "Salle de sport", hasCounter: true },
-    { id: "bureaux", label: "Bureaux", hasCounter: true },
-    { id: "parking", label: "Parking", hasCounter: true }
-];
+// Secteurs auditables (id, label, hasCounter) — voir js/secteur-config.js
 
-const moduleList = document.getElementById("moduleList");
+const secteurList = document.getElementById("moduleList");
 const continueButton = document.getElementById("continueButton");
 const backToHomeButton = document.getElementById("backToHomeButton");
 
-const savedModules =
-    JSON.parse(localStorage.getItem("selectedModules")) || [];
+const savedSecteurs =
+    JSON.parse(localStorage.getItem("selectedSecteurs")) || [];
 
-modules.forEach(function (module) {
+SECTEURS.forEach(function (secteur) {
 
     const card = document.createElement("label");
     card.className = "module-card";
@@ -29,23 +16,23 @@ modules.forEach(function (module) {
         <div class="module-content">
 
             <div class="module-header">
-                <input type="checkbox" id="${module.id}Check">
-                <span>${module.label}</span>
+                <input type="checkbox" id="${secteur.id}Check">
+                <span>${secteur.label}</span>
             </div>
 
-            <div class="counter hidden" id="${module.id}Counter">
+            <div class="counter hidden" id="${secteur.id}Counter">
 
                 <button type="button"
                         class="counter-button"
-                        id="minus-${module.id}">
+                        id="minus-${secteur.id}">
                     -
                 </button>
 
-                <span id="${module.id}Value">1</span>
+                <span id="${secteur.id}Value">1</span>
 
                 <button type="button"
                         class="counter-button"
-                        id="plus-${module.id}">
+                        id="plus-${secteur.id}">
                     +
                 </button>
 
@@ -54,26 +41,26 @@ modules.forEach(function (module) {
         </div>
     `;
 
-    moduleList.appendChild(card);
+    secteurList.appendChild(card);
 
     let value = 1;
 
-    const savedModule =
-        savedModules.find(function (item) {
-            return item.id === module.id;
+    const savedSecteur =
+        savedSecteurs.find(function (item) {
+            return item.id === secteur.id;
         });
 
-    if (savedModule) {
-        value = savedModule.quantity;
+    if (savedSecteur) {
+        value = savedSecteur.quantity;
     }
 
-    const checkbox = document.getElementById(`${module.id}Check`);
-    const counter = document.getElementById(`${module.id}Counter`);
-    const display = document.getElementById(`${module.id}Value`);
-    const plusButton = document.getElementById(`plus-${module.id}`);
-    const minusButton = document.getElementById(`minus-${module.id}`);
+    const checkbox = document.getElementById(`${secteur.id}Check`);
+    const counter = document.getElementById(`${secteur.id}Counter`);
+    const display = document.getElementById(`${secteur.id}Value`);
+    const plusButton = document.getElementById(`plus-${secteur.id}`);
+    const minusButton = document.getElementById(`minus-${secteur.id}`);
 
-    if (savedModule) {
+    if (savedSecteur) {
         checkbox.checked = true;
         counter.classList.remove("hidden");
         display.textContent = value;
@@ -111,87 +98,59 @@ modules.forEach(function (module) {
    NETTOYAGE DES DONNÉES
 ========================= */
 
-// Liste des clés localStorage utilisées par chaque module.
-// À enrichir au fur et à mesure qu'on ajoute des modules.
-const moduleDataKeys = {
-    hebergements: ["hebergementsData"],
-    piscines:     ["piscinesData"],
-    restaurant:   ["restaurantData"],
-    bar:          ["barData"],
-    spa:          ["spaData"],
-    buanderie:    ["buanderieData"],
-    cuisine:      ["cuisineData"],
-    jeux:         ["jeuxData"],
-    reunion:      ["reunionData"],
-    sport:        ["sportData"],
-    bureaux:      ["bureauxData"],
-    parking:      ["parkingData"]
-};
-
-function clearModuleData(moduleId) {
-    const keys = moduleDataKeys[moduleId] || [];
-    keys.forEach(function (key) {
-        localStorage.removeItem(key);
-    });
+function clearSecteurData(secteurId) {
+    const key = SECTEUR_DATA_KEYS[secteurId];
+    if (key) localStorage.removeItem(key);
 }
 
-function clearAllModuleData() {
-    Object.keys(moduleDataKeys).forEach(function (moduleId) {
-        clearModuleData(moduleId);
+function clearAllSecteurData() {
+    Object.keys(SECTEUR_DATA_KEYS).forEach(function (secteurId) {
+        clearSecteurData(secteurId);
     });
-    localStorage.removeItem("currentHebergement");
-    localStorage.removeItem("currentPiscine");
-    localStorage.removeItem("currentSpa");
-    localStorage.removeItem("currentRestaurant");
-    localStorage.removeItem("currentBar");
-    localStorage.removeItem("currentBuanderie");
-    localStorage.removeItem("currentCuisine");
-    localStorage.removeItem("currentBureaux");
-    localStorage.removeItem("currentParking");
-    localStorage.removeItem("currentSport");
-    localStorage.removeItem("currentReunion");
-    localStorage.removeItem("currentJeux");
+    Object.keys(SECTEUR_CURRENT_KEYS).forEach(function (secteurId) {
+        localStorage.removeItem(SECTEUR_CURRENT_KEYS[secteurId]);
+    });
 }
 
 continueButton.addEventListener("click", function () {
 
-    const selectedModules = [];
+    const selectedSecteurs = [];
     const selectedIds = new Set();
 
-    modules.forEach(function (module) {
+    SECTEURS.forEach(function (secteur) {
 
         const checkbox =
-            document.getElementById(`${module.id}Check`);
+            document.getElementById(`${secteur.id}Check`);
 
         if (checkbox.checked) {
 
             const quantity =
                 parseInt(
-                    document.getElementById(`${module.id}Value`).textContent
+                    document.getElementById(`${secteur.id}Value`).textContent
                 );
 
-            selectedModules.push({
-                id: module.id,
-                label: module.label,
+            selectedSecteurs.push({
+                id: secteur.id,
+                label: secteur.label,
                 quantity: quantity
             });
 
-            selectedIds.add(module.id);
+            selectedIds.add(secteur.id);
 
         }
 
     });
 
-    // Pour chaque module non coché, on efface ses fiches.
-    modules.forEach(function (module) {
-        if (!selectedIds.has(module.id)) {
-            clearModuleData(module.id);
+    // Pour chaque secteur non coché, on efface ses fiches.
+    SECTEURS.forEach(function (secteur) {
+        if (!selectedIds.has(secteur.id)) {
+            clearSecteurData(secteur.id);
         }
     });
 
     localStorage.setItem(
-        "selectedModules",
-        JSON.stringify(selectedModules)
+        "selectedSecteurs",
+        JSON.stringify(selectedSecteurs)
     );
 
     window.location.href = "site-data.html";
@@ -200,13 +159,10 @@ continueButton.addEventListener("click", function () {
 
 backToHomeButton.addEventListener("click", function () {
 
-    // Retour à l'accueil = remise à zéro complète.
-    localStorage.removeItem("selectedModules");
-    localStorage.removeItem("moduleProgress");
-    localStorage.removeItem("currentModule");
-
-    clearAllModuleData();
-
-    window.location.href = "../index.html";
+    // Retour au hub des bâtiments : on sauvegarde le bâtiment en cours,
+    // rien n'est perdu (contrairement à l'ancien reset complet ici).
+    BuildingManager.saveCurrentBuildingSnapshot().then(function () {
+        window.location.href = "buildings.html";
+    });
 
 });

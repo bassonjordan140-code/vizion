@@ -7,8 +7,9 @@
 window.PhotoManager = (function () {
 
     var DB_NAME = "vizion-photos";
-    var DB_VERSION = 1;
+    var DB_VERSION = 2;
     var STORE_NAME = "photos";
+    var ARCHIVE_STORE_NAME = "photos_archive";
     var MAX_WIDTH = 1600;       // compression image pleine
     var THUMB_WIDTH = 300;      // miniature
     var JPEG_QUALITY = 0.8;
@@ -27,6 +28,10 @@ window.PhotoManager = (function () {
                 var db = e.target.result;
                 if (!db.objectStoreNames.contains(STORE_NAME)) {
                     db.createObjectStore(STORE_NAME, { keyPath: "key" });
+                }
+                if (!db.objectStoreNames.contains(ARCHIVE_STORE_NAME)) {
+                    var archiveStore = db.createObjectStore(ARCHIVE_STORE_NAME, { keyPath: "archiveKey" });
+                    archiveStore.createIndex("by_buildingId", "buildingId", { unique: false });
                 }
             };
             req.onsuccess = function (e) {
@@ -73,6 +78,107 @@ window.PhotoManager = (function () {
                 tx.objectStore(STORE_NAME).delete(key);
                 tx.oncomplete = function () { resolve(); };
                 tx.onerror = function () { reject(tx.error); };
+            });
+        });
+    }
+
+    /* =========================
+       Archive par bâtiment
+       Le store "photos" représente toujours le bâtiment actif ;
+       "photos_archive" conserve les photos des autres bâtiments.
+    ========================= */
+
+    function getAllPhotos() {
+        return openDB().then(function (db) {
+            return new Promise(function (resolve, reject) {
+                var req = db.transaction(STORE_NAME, "readonly").objectStore(STORE_NAME).getAll();
+                req.onsuccess = function () { resolve(req.result || []); };
+                req.onerror = function () { reject(req.error); };
+            });
+        });
+    }
+
+    function clearPhotos() {
+        return openDB().then(function (db) {
+            return new Promise(function (resolve, reject) {
+                var tx = db.transaction(STORE_NAME, "readwrite");
+                tx.objectStore(STORE_NAME).clear();
+                tx.oncomplete = function () { resolve(); };
+                tx.onerror = function () { reject(tx.error); };
+            });
+        });
+    }
+
+    // Déplace tout le store actif vers l'archive, tagué buildingId, puis vide le store actif.
+    function archivePhotosForBuilding(buildingId) {
+        return getAllPhotos().then(function (photos) {
+            if (!photos.length) return clearPhotos();
+            return openDB().then(function (db) {
+                return new Promise(function (resolve, reject) {
+                    var tx = db.transaction(ARCHIVE_STORE_NAME, "readwrite");
+                    var store = tx.objectStore(ARCHIVE_STORE_NAME);
+                    photos.forEach(function (photo) {
+                        store.put({
+                            archiveKey: buildingId + "::" + photo.key,
+                            buildingId: buildingId,
+                            key: photo.key,
+                            blob: photo.blob,
+                            thumbnail: photo.thumbnail,
+                            timestamp: photo.timestamp
+                        });
+                    });
+                    tx.oncomplete = function () { resolve(); };
+                    tx.onerror = function () { reject(tx.error); };
+                });
+            }).then(clearPhotos);
+        });
+    }
+
+    // Lit l'archive d'un bâtiment sans toucher au store actif (utilisé pour l'export du rapport).
+    function getArchivedPhotosForBuilding(buildingId) {
+        return openDB().then(function (db) {
+            return new Promise(function (resolve, reject) {
+                var index = db.transaction(ARCHIVE_STORE_NAME, "readonly")
+                    .objectStore(ARCHIVE_STORE_NAME).index("by_buildingId");
+                var req = index.getAll(buildingId);
+                req.onsuccess = function () { resolve(req.result || []); };
+                req.onerror = function () { reject(req.error); };
+            });
+        });
+    }
+
+    // Vide entièrement le store actif ET l'archive (remise à zéro complète, tous bâtiments confondus).
+    function clearAllPhotosAndArchive() {
+        return openDB().then(function (db) {
+            return new Promise(function (resolve, reject) {
+                var tx = db.transaction([STORE_NAME, ARCHIVE_STORE_NAME], "readwrite");
+                tx.objectStore(STORE_NAME).clear();
+                tx.objectStore(ARCHIVE_STORE_NAME).clear();
+                tx.oncomplete = function () { resolve(); };
+                tx.onerror = function () { reject(tx.error); };
+            });
+        });
+    }
+
+    // Réinjecte l'archive d'un bâtiment dans le store actif (le store actif est vide à cet instant).
+    function restorePhotosForBuilding(buildingId) {
+        return getArchivedPhotosForBuilding(buildingId).then(function (archived) {
+            if (!archived.length) return;
+            return openDB().then(function (db) {
+                return new Promise(function (resolve, reject) {
+                    var tx = db.transaction(STORE_NAME, "readwrite");
+                    var store = tx.objectStore(STORE_NAME);
+                    archived.forEach(function (photo) {
+                        store.put({
+                            key: photo.key,
+                            blob: photo.blob,
+                            thumbnail: photo.thumbnail,
+                            timestamp: photo.timestamp
+                        });
+                    });
+                    tx.oncomplete = function () { resolve(); };
+                    tx.onerror = function () { reject(tx.error); };
+                });
             });
         });
     }
@@ -225,7 +331,12 @@ window.PhotoManager = (function () {
         initPage: initPage,
         savePhoto: savePhoto,
         loadThumbnail: loadThumbnail,
-        deletePhoto: deletePhoto
+        deletePhoto: deletePhoto,
+        archivePhotosForBuilding: archivePhotosForBuilding,
+        restorePhotosForBuilding: restorePhotosForBuilding,
+        getArchivedPhotosForBuilding: getArchivedPhotosForBuilding,
+        clearPhotos: clearPhotos,
+        clearAllPhotosAndArchive: clearAllPhotosAndArchive
     };
 
 })();

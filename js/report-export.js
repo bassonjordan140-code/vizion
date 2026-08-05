@@ -20,7 +20,7 @@ window.ReportExport = (function () {
 
     var LOTS_HEADERS = ["Index", "Nom", "Contact", "Tel", "ABR", "Email", "Entreprise", "Adresse"];
 
-    var PAGE_GARDE_HEADERS = ["Index", "Type construction", "Adresse"];
+    var PAGE_GARDE_HEADERS = ["Index", "Type construction", "Adresse", "Commune", "Zone PERENE", "Station Météo"];
 
     /* =========================
        INFOS SITE
@@ -57,66 +57,6 @@ window.ReportExport = (function () {
         return !!(cfg.serviceId && cfg.templateId && cfg.publicKey);
     }
 
-    /* =========================
-       COLLECTE DES DONNÉES D'AUDIT
-    ========================= */
-
-    function collectAuditData() {
-
-        var selectedModules = JSON.parse(localStorage.getItem("selectedModules")) || [];
-
-        var moduleDataKeys = {
-            hebergements: "hebergementsData",
-            piscines: "piscinesData",
-            restaurant: "restaurantData",
-            bar: "barData",
-            spa: "spaData",
-            buanderie: "buanderieData",
-            cuisine: "cuisineData",
-            jeux: "jeuxData",
-            reunion: "reunionData",
-            sport: "sportData",
-            bureaux: "bureauxData",
-            parking: "parkingData"
-        };
-
-        var donnees = {};
-
-        selectedModules.forEach(function (mod) {
-            var key = moduleDataKeys[mod.id];
-            if (key) {
-                var data = JSON.parse(localStorage.getItem(key));
-                if (data) {
-                    donnees[mod.id] = data;
-                }
-            }
-        });
-
-        return { modulesSelectionnes: selectedModules, donnees: donnees };
-    }
-
-    /* =========================
-       COLLECTE DES PHOTOS (IndexedDB)
-    ========================= */
-
-    function collectAllPhotos() {
-        return new Promise(function (resolve) {
-            var req = indexedDB.open("vizion-photos", 1);
-            req.onerror = function () { resolve([]); };
-            req.onsuccess = function (e) {
-                var db = e.target.result;
-                if (!db.objectStoreNames.contains("photos")) {
-                    resolve([]);
-                    return;
-                }
-                var tx = db.transaction("photos", "readonly");
-                var getAll = tx.objectStore("photos").getAll();
-                getAll.onsuccess = function () { resolve(getAll.result || []); };
-                getAll.onerror = function () { resolve([]); };
-            };
-        });
-    }
-
     function photoFileName(photo, idx) {
         return String(idx + 1).padStart(3, "0") + "_" + photo.key + ".jpg";
     }
@@ -125,14 +65,23 @@ window.ReportExport = (function () {
        CONSTRUCTION DU CLASSEUR XLSX
     ========================= */
 
-    function buildWorkbook(siteInfo, auditData) {
+    // buildingsAuditData = [{ id, nom, donnees }, ...] — une entrée par bâtiment
+    // (voir BuildingManager.collectAllBuildingsAuditData).
+    function buildWorkbook(siteInfo, buildingsAuditData) {
 
         var wb = XLSX.utils.book_new();
 
-        // --- Page de garde ---
+        // --- Page de garde --- (niveau hôtel, ne varie pas par bâtiment)
         var pageGardeData = [
             PAGE_GARDE_HEADERS,
-            [siteInfo.nom || "Audit ViZion", siteInfo.typeConstruction || "", siteInfo.adresse || ""]
+            [
+                siteInfo.nom || "Audit ViZion",
+                siteInfo.typeConstruction || "",
+                siteInfo.adresse || "",
+                siteInfo.commune || "",
+                siteInfo.zonePerene || "",
+                siteInfo.stationMeteo || ""
+            ]
         ];
         var wsPageGarde = XLSX.utils.aoa_to_sheet(pageGardeData);
         XLSX.utils.book_append_sheet(wb, wsPageGarde, "Page de garde");
@@ -145,8 +94,14 @@ window.ReportExport = (function () {
         var wsLots = XLSX.utils.aoa_to_sheet(lotsData);
         XLSX.utils.book_append_sheet(wb, wsLots, "Lots de travaux");
 
-        // --- Observations ---
-        var rows = LotMapping.buildAllRows(auditData.donnees);
+        // --- Observations --- (toutes les lignes de tous les bâtiments, une seule numérotation)
+        var rows = [];
+        buildingsAuditData.forEach(function (building) {
+            var buildingRows = LotMapping.buildAllRows(building.donnees);
+            buildingRows.forEach(function (row) { row.batiment = building.nom; });
+            rows = rows.concat(buildingRows);
+        });
+
         var obsData = [OBSERVATIONS_HEADERS];
         rows.forEach(function (row, idx) {
             obsData.push([
@@ -155,7 +110,7 @@ window.ReportExport = (function () {
                 "",
                 "",
                 "",
-                siteInfo.typeConstruction || "",
+                row.batiment || "",
                 row.secteur,
                 row.puissance === null ? "" : row.puissance,
                 row.nombre === null ? "" : row.nombre,
@@ -188,10 +143,16 @@ window.ReportExport = (function () {
        CONSTRUCTION DU ZIP PHOTOS
     ========================= */
 
-    function buildPhotosZip(photos) {
+    // buildingsPhotos = [{ id, nom, photos }, ...] — voir BuildingManager.collectAllBuildingsPhotos.
+    // Un sous-dossier par bâtiment dans le zip, pour éviter toute collision de nom de fichier.
+    function buildPhotosZip(buildingsPhotos) {
         var zip = new JSZip();
-        photos.forEach(function (photo, idx) {
-            zip.file(photoFileName(photo, idx), photo.blob);
+        buildingsPhotos.forEach(function (building) {
+            if (!building.photos.length) return;
+            var folder = zip.folder((building.nom || building.id).replace(/[\\/]/g, "-"));
+            building.photos.forEach(function (photo, idx) {
+                folder.file(photoFileName(photo, idx), photo.blob);
+            });
         });
         return zip.generateAsync({ type: "blob" });
     }
@@ -267,52 +228,56 @@ window.ReportExport = (function () {
     function sendReport(email, onProgress) {
 
         var siteInfo = getSiteInfo();
-        var auditData = collectAuditData();
 
-        if (onProgress) onProgress("Génération du rapport Excel...");
-        var xlsxBlob = buildWorkbook(siteInfo, auditData);
+        if (onProgress) onProgress("Collecte des bâtiments...");
 
-        if (onProgress) onProgress("Préparation des photos...");
+        return BuildingManager.collectAllBuildingsAuditData().then(function (buildingsAuditData) {
 
-        return collectAllPhotos().then(function (photos) {
+            if (onProgress) onProgress("Génération du rapport Excel...");
+            var xlsxBlob = buildWorkbook(siteInfo, buildingsAuditData);
 
-            return buildPhotosZip(photos).then(function (zipBlob) {
+            if (onProgress) onProgress("Préparation des photos...");
 
-                var result = { xlsxBlob: xlsxBlob, zipBlob: zipBlob, nbPhotos: photos.length };
+            return BuildingManager.collectAllBuildingsPhotos().then(function (buildingsPhotos) {
+                return buildPhotosZip(buildingsPhotos).then(function (zipBlob) {
 
-                var afterEmail = email
-                    ? sendByEmail(email, xlsxBlob, zipBlob, siteInfo).then(function () {
-                        result.channel = "email";
-                        result.detail = "Rapport envoyé par email à " + email;
-                        return result;
-                    }).catch(function (err) {
-                        console.warn("Envoi email impossible, repli GitHub :", err);
-                        if (onProgress) onProgress("Email indisponible, envoi vers GitHub...");
-                        return tryGithub();
-                    })
-                    : tryGithub();
+                    var nbPhotos = buildingsPhotos.reduce(function (sum, b) { return sum + b.photos.length; }, 0);
+                    var result = { xlsxBlob: xlsxBlob, zipBlob: zipBlob, nbPhotos: nbPhotos };
 
-                function tryGithub() {
-                    return sendToGithub(xlsxBlob, zipBlob, siteInfo, onProgress).then(function (gh) {
-                        result.channel = "github";
-                        result.detail = (email ? "Email indisponible — " : "") + "Rapport envoyé sur GitHub.";
-                        result.url = gh.url;
-                        return result;
-                    }).catch(function (err) {
-                        // Aucun canal d'envoi disponible : on ne perd pas les fichiers pour autant.
-                        console.warn("Envoi GitHub impossible également :", err);
-                        result.channel = "local";
-                        result.detail = "Envoi impossible (email et GitHub indisponibles) — fichiers téléchargés localement uniquement.";
-                        return result;
+                    function tryGithub() {
+                        return sendToGithub(xlsxBlob, zipBlob, siteInfo, onProgress).then(function (gh) {
+                            result.channel = "github";
+                            result.detail = (email ? "Email indisponible — " : "") + "Rapport envoyé sur GitHub.";
+                            result.url = gh.url;
+                            return result;
+                        }).catch(function (err) {
+                            // Aucun canal d'envoi disponible : on ne perd pas les fichiers pour autant.
+                            console.warn("Envoi GitHub impossible également :", err);
+                            result.channel = "local";
+                            result.detail = "Envoi impossible (email et GitHub indisponibles) — fichiers téléchargés localement uniquement.";
+                            return result;
+                        });
+                    }
+
+                    var afterEmail = email
+                        ? sendByEmail(email, xlsxBlob, zipBlob, siteInfo).then(function () {
+                            result.channel = "email";
+                            result.detail = "Rapport envoyé par email à " + email;
+                            return result;
+                        }).catch(function (err) {
+                            console.warn("Envoi email impossible, repli GitHub :", err);
+                            if (onProgress) onProgress("Email indisponible, envoi vers GitHub...");
+                            return tryGithub();
+                        })
+                        : tryGithub();
+
+                    // Le téléchargement local sert toujours de filet de sécurité,
+                    // quel que soit le canal d'envoi effectivement utilisé.
+                    return afterEmail.then(function (r) {
+                        downloadBlob(r.xlsxBlob, "rapport.xlsx");
+                        downloadBlob(r.zipBlob, "photos.zip");
+                        return r;
                     });
-                }
-
-                // Le téléchargement local sert toujours de filet de sécurité,
-                // quel que soit le canal d'envoi effectivement utilisé.
-                return afterEmail.then(function (r) {
-                    downloadBlob(r.xlsxBlob, "rapport.xlsx");
-                    downloadBlob(r.zipBlob, "photos.zip");
-                    return r;
                 });
             });
         });
@@ -328,7 +293,6 @@ window.ReportExport = (function () {
         getEmailConfig: getEmailConfig,
         setEmailConfig: setEmailConfig,
         hasEmailConfig: hasEmailConfig,
-        collectAuditData: collectAuditData,
         buildWorkbook: buildWorkbook,
         buildPhotosZip: buildPhotosZip,
         sendReport: sendReport

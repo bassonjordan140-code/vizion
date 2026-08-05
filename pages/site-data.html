@@ -24,105 +24,20 @@
 
         <h1>Tableau de bord terrain</h1>
 
-        <p class="subtitle">
-            Sélectionnez le module que vous souhaitez auditer.
+        <p class="subtitle" id="buildingSubtitle">
+            Sélectionnez le secteur que vous souhaitez auditer.
         </p>
-
-        <!-- Informations du site -->
-        <div class="module-detail-card">
-            <h2 class="section-title">Informations du site</h2>
-            <p class="section-hint">
-                Utilisées pour la page de garde du rapport.
-            </p>
-
-            <div class="field-group">
-                <label for="siteNomInput">Nom du site</label>
-                <input type="text" id="siteNomInput" placeholder="Ex : Villa Delisle">
-            </div>
-
-            <div class="field-group">
-                <label for="siteTypeInput">Type de construction</label>
-                <input type="text" id="siteTypeInput" placeholder="Ex : Hôtel">
-            </div>
-
-            <div class="field-group">
-                <label for="siteAdresseInput">Adresse</label>
-                <input type="text" id="siteAdresseInput" placeholder="Ex : 42 boulevard Hubert Delisle">
-            </div>
-        </div>
 
         <div id="moduleDashboard"
              class="dashboard-list">
         </div>
 
-        <!-- Envoi du rapport -->
-        <div id="exportSection" class="export-section hidden">
-
-            <h2 class="section-title">Envoyer le rapport</h2>
-
-            <div class="field-group">
-                <label for="destinataireEmailInput">Email destinataire</label>
-                <input type="email" id="destinataireEmailInput" placeholder="destinataire@exemple.com">
-            </div>
-
-            <details id="emailConfigDetails">
-                <summary class="export-info">
-                    Configuration de l'envoi email (EmailJS) — à faire une seule fois
-                </summary>
-                <div class="export-token-setup">
-                    <div class="field-group">
-                        <label for="emailjsServiceInput">Service ID</label>
-                        <input type="text" id="emailjsServiceInput" placeholder="service_xxxxxxx">
-                    </div>
-                    <div class="field-group">
-                        <label for="emailjsTemplateInput">Template ID</label>
-                        <input type="text" id="emailjsTemplateInput" placeholder="template_xxxxxxx">
-                    </div>
-                    <div class="field-group">
-                        <label for="emailjsPublicKeyInput">Public Key</label>
-                        <input type="text" id="emailjsPublicKeyInput" placeholder="clé publique EmailJS">
-                    </div>
-                    <button type="button" id="saveEmailConfigBtn" class="secondary-button">
-                        Enregistrer la configuration email
-                    </button>
-                </div>
-            </details>
-
-            <details id="githubConfigDetails">
-                <summary class="export-info">
-                    Repli GitHub (si l'email échoue) — token d'accès personnel
-                </summary>
-                <div class="export-token-setup">
-                    <div class="field-group">
-                        <label for="githubTokenInput">Token GitHub</label>
-                        <input type="password" id="githubTokenInput" placeholder="ghp_xxxxxxxxxxxx">
-                    </div>
-                    <button type="button" id="saveTokenBtn" class="secondary-button">
-                        Enregistrer le token
-                    </button>
-                </div>
-            </details>
-
-            <button type="button" id="exportBtn" class="primary-button export-button">
-                📤 Valider & Envoyer le rapport
-            </button>
-            <p id="exportStatus" class="export-status"></p>
-            <a id="exportLink" class="export-link hidden" href="#" target="_blank">
-                📁 Voir le rapport sur GitHub
-            </a>
-
-        </div>
-
     </div>
 
-    <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-
+    <script src="../js/secteur-config.js"></script>
+    <script src="../js/photo-manager.js"></script>
+    <script src="../js/building-manager.js"></script>
     <script src="../js/progress.js"></script>
-    <script src="../js/export-github.js"></script>
-    <script src="../js/lot-mapping.js"></script>
-    <script src="../js/report-export.js"></script>
     <script src="../js/site-data.js"></script>
 
 </body>

@@ -536,18 +536,18 @@ function calcReunionProgress(d) {
 ============================================================ */
 
 var progressCalculators = {
-    hebergements: { key: "hebergementsData", calc: calcHebergementProgress },
-    piscines:     { key: "piscinesData",     calc: calcPiscineProgress },
-    spa:          { key: "spaData",          calc: calcSpaProgress },
-    restaurant:   { key: "restaurantData",   calc: calcRestaurantProgress },
-    bar:          { key: "barData",          calc: calcBarProgress },
-    buanderie:    { key: "buanderieData",    calc: calcBuanderieProgress },
-    cuisine:      { key: "cuisineData",      calc: calcCuisineProgress },
-    bureaux:      { key: "bureauxData",      calc: calcBureauxProgress },
-    parking:      { key: "parkingData",      calc: calcParkingProgress },
-    sport:        { key: "sportData",       calc: calcSportProgress },
-    reunion:      { key: "reunionData",    calc: calcReunionProgress },
-    jeux:         { key: "jeuxData",       calc: calcJeuxProgress }
+    hebergements: { key: SECTEUR_DATA_KEYS.hebergements, calc: calcHebergementProgress },
+    piscines:     { key: SECTEUR_DATA_KEYS.piscines,     calc: calcPiscineProgress },
+    spa:          { key: SECTEUR_DATA_KEYS.spa,          calc: calcSpaProgress },
+    restaurant:   { key: SECTEUR_DATA_KEYS.restaurant,   calc: calcRestaurantProgress },
+    bar:          { key: SECTEUR_DATA_KEYS.bar,          calc: calcBarProgress },
+    buanderie:    { key: SECTEUR_DATA_KEYS.buanderie,    calc: calcBuanderieProgress },
+    cuisine:      { key: SECTEUR_DATA_KEYS.cuisine,      calc: calcCuisineProgress },
+    bureaux:      { key: SECTEUR_DATA_KEYS.bureaux,      calc: calcBureauxProgress },
+    parking:      { key: SECTEUR_DATA_KEYS.parking,      calc: calcParkingProgress },
+    sport:        { key: SECTEUR_DATA_KEYS.sport,        calc: calcSportProgress },
+    reunion:      { key: SECTEUR_DATA_KEYS.reunion,      calc: calcReunionProgress },
+    jeux:         { key: SECTEUR_DATA_KEYS.jeux,         calc: calcJeuxProgress }
 };
 
 function calcModuleProgress(moduleId, quantity) {
