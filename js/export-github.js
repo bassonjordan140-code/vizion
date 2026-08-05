@@ -1,7 +1,9 @@
 /* ============================================================
-   ViZion — Export GitHub
-   Collecte toutes les données d'audit + photos IndexedDB
-   et pousse un dossier structuré sur GitHub via l'API.
+   ViZion — Export GitHub (repli)
+   Helpers bas niveau pour pousser des fichiers (rapport.xlsx,
+   photos.zip) dans un dossier du repo, via l'API Git Data de
+   GitHub. Utilisé par js/report-export.js comme repli quand
+   l'envoi email échoue.
 ============================================================ */
 
 window.ExportGitHub = (function () {
@@ -94,78 +96,8 @@ window.ExportGitHub = (function () {
     }
 
     /* =========================
-       COLLECTE DES DONNÉES
+       HELPERS BLOB
     ========================= */
-
-    function collectAuditData() {
-
-        var selectedModules = JSON.parse(localStorage.getItem("selectedModules")) || [];
-
-        var moduleDataKeys = {
-            hebergements: "hebergementsData",
-            piscines: "piscinesData",
-            restaurant: "restaurantData",
-            bar: "barData",
-            spa: "spaData",
-            buanderie: "buanderieData",
-            cuisine: "cuisineData",
-            jeux: "jeuxData",
-            reunion: "reunionData",
-            sport: "sportData",
-            bureaux: "bureauxData",
-            parking: "parkingData"
-        };
-
-        var audit = {
-            meta: {
-                exportDate: new Date().toISOString(),
-                exportDateFormatted: new Date().toLocaleDateString("fr-FR", {
-                    day: "2-digit", month: "2-digit", year: "numeric",
-                    hour: "2-digit", minute: "2-digit"
-                }),
-                appVersion: "0.1"
-            },
-            modulesSelectionnes: selectedModules,
-            donnees: {}
-        };
-
-        selectedModules.forEach(function (mod) {
-            var key = moduleDataKeys[mod.id];
-            if (key) {
-                var data = JSON.parse(localStorage.getItem(key));
-                if (data) {
-                    audit.donnees[mod.id] = data;
-                }
-            }
-        });
-
-        return audit;
-    }
-
-    /* =========================
-       COLLECTE DES PHOTOS
-    ========================= */
-
-    function collectAllPhotos() {
-        return new Promise(function (resolve, reject) {
-            var req = indexedDB.open("vizion-photos", 1);
-            req.onerror = function () { resolve([]); };
-            req.onsuccess = function (e) {
-                var db = e.target.result;
-                if (!db.objectStoreNames.contains("photos")) {
-                    resolve([]);
-                    return;
-                }
-                var tx = db.transaction("photos", "readonly");
-                var store = tx.objectStore("photos");
-                var getAll = store.getAll();
-                getAll.onsuccess = function () {
-                    resolve(getAll.result || []);
-                };
-                getAll.onerror = function () { resolve([]); };
-            };
-        });
-    }
 
     function blobToBase64(blob) {
         return new Promise(function (resolve) {
@@ -183,115 +115,53 @@ window.ExportGitHub = (function () {
        NOM DU DOSSIER
     ========================= */
 
-    function buildFolderName() {
+    function buildFolderName(nomSite) {
         var now = new Date();
         var date = now.toISOString().slice(0, 10); // 2026-05-19
         var heure = now.toTimeString().slice(0, 5).replace(":", "h"); // 14h30
 
-        // Tenter de trouver un nom d'établissement
-        var selectedModules = JSON.parse(localStorage.getItem("selectedModules")) || [];
-        var nomSite = "audit";
-
-        // Chercher le nom dans les données d'hébergement ou autre
-        var hebergData = JSON.parse(localStorage.getItem("hebergementsData"));
-        if (hebergData) {
-            var firstKey = Object.keys(hebergData)[0];
-            if (firstKey && hebergData[firstKey].nom) {
-                nomSite = hebergData[firstKey].nom;
-            }
-        }
-
-        // Nettoyer le nom (pas de caractères spéciaux)
-        nomSite = nomSite
+        var nom = (nomSite || "audit")
             .replace(/[^a-zA-Z0-9àâäéèêëïîôùûüÿçœæÀÂÄÉÈÊËÏÎÔÙÛÜŸÇŒÆ\s-]/g, "")
             .replace(/\s+/g, "_")
             .substring(0, 40);
 
-        return "rapports/" + date + "_" + heure + "_" + nomSite;
+        return "rapports/" + date + "_" + heure + "_" + (nom || "audit");
     }
 
     /* =========================
-       EXPORT PRINCIPAL
+       PUSH GÉNÉRIQUE DE FICHIERS
     ========================= */
 
-    function exportToGitHub(onProgress) {
+    // files = [{ path: "rapport.xlsx", blob: Blob }, { path: "photos.zip", blob: Blob }]
+    function pushFiles(folderName, files, commitMessage, onProgress) {
 
         if (!hasToken()) {
             return Promise.reject(new Error("Token GitHub non configuré"));
         }
 
-        var folderName = buildFolderName();
         var treeItems = [];
 
-        if (onProgress) onProgress("Collecte des données...");
+        if (onProgress) onProgress("Préparation des fichiers...");
 
-        var auditData = collectAuditData();
-
-        // 1. Créer le blob JSON
-        var jsonString = JSON.stringify(auditData, null, 2);
-        var jsonBase64 = btoa(unescape(encodeURIComponent(jsonString)));
-
-        return collectAllPhotos().then(function (photos) {
-
-            if (onProgress) onProgress("Préparation de " + photos.length + " photo(s)...");
-
-            // Ajouter les noms de fichiers photos dans le JSON
-            var photoIndex = [];
-            photos.forEach(function (photo, idx) {
-                var num = String(idx + 1).padStart(3, "0");
-                var filename = num + "_" + photo.key + ".jpg";
-                photoIndex.push({
-                    numero: idx + 1,
-                    fichier: filename,
-                    cle: photo.key,
-                    date: photo.timestamp ? new Date(photo.timestamp).toISOString() : null
-                });
-            });
-
-            // Mettre à jour le JSON avec l'index photos
-            auditData.photosIndex = photoIndex;
-            auditData.meta.nbPhotos = photos.length;
-            jsonString = JSON.stringify(auditData, null, 2);
-            jsonBase64 = btoa(unescape(encodeURIComponent(jsonString)));
-
-            // 2. Créer les blobs (JSON + photos)
-            if (onProgress) onProgress("Upload du fichier JSON...");
-
-            return createBlob(jsonBase64).then(function (jsonBlob) {
-
-                treeItems.push({
-                    path: folderName + "/audit.json",
-                    mode: "100644",
-                    type: "blob",
-                    sha: jsonBlob.sha
-                });
-
-                // 3. Upload les photos une par une
-                var chain = Promise.resolve();
-                photos.forEach(function (photo, idx) {
-                    chain = chain.then(function () {
-                        if (onProgress) onProgress("Upload photo " + (idx + 1) + "/" + photos.length + "...");
-                        return blobToBase64(photo.blob).then(function (b64) {
-                            return createBlob(b64).then(function (photoBlob) {
-                                var num = String(idx + 1).padStart(3, "0");
-                                var filename = num + "_" + photo.key + ".jpg";
-                                treeItems.push({
-                                    path: folderName + "/photos/" + filename,
-                                    mode: "100644",
-                                    type: "blob",
-                                    sha: photoBlob.sha
-                                });
-                            });
+        var chain = Promise.resolve();
+        files.forEach(function (file) {
+            chain = chain.then(function () {
+                if (onProgress) onProgress("Upload de " + file.path + "...");
+                return blobToBase64(file.blob).then(function (b64) {
+                    return createBlob(b64).then(function (blob) {
+                        treeItems.push({
+                            path: folderName + "/" + file.path,
+                            mode: "100644",
+                            type: "blob",
+                            sha: blob.sha
                         });
                     });
                 });
-
-                return chain;
             });
+        });
 
-        }).then(function () {
+        return chain.then(function () {
 
-            // 4. Créer l'arbre et le commit
             if (onProgress) onProgress("Création du commit...");
 
             return getRef().then(function (ref) {
@@ -299,9 +169,7 @@ window.ExportGitHub = (function () {
                 return getCommit(latestCommitSha).then(function (commit) {
                     var baseTreeSha = commit.tree.sha;
                     return createTree(baseTreeSha, treeItems).then(function (tree) {
-                        var msg = "📋 Export audit — " + new Date().toLocaleDateString("fr-FR") +
-                                  " (" + treeItems.length + " fichier(s))";
-                        return createCommit(msg, tree.sha, latestCommitSha).then(function (newCommit) {
+                        return createCommit(commitMessage, tree.sha, latestCommitSha).then(function (newCommit) {
                             return updateRef(newCommit.sha);
                         });
                     });
@@ -329,8 +197,9 @@ window.ExportGitHub = (function () {
         getToken: getToken,
         setToken: setToken,
         hasToken: hasToken,
-        collectAuditData: collectAuditData,
-        exportToGitHub: exportToGitHub
+        blobToBase64: blobToBase64,
+        buildFolderName: buildFolderName,
+        pushFiles: pushFiles
     };
 
 })();

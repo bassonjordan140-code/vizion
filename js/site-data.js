@@ -46,14 +46,80 @@ selectedModules.forEach(function (module) {
 });
 
 /* =========================
-   EXPORT GITHUB
+   INFORMATIONS DU SITE
+========================= */
+
+var siteNomInput = document.getElementById("siteNomInput");
+var siteTypeInput = document.getElementById("siteTypeInput");
+var siteAdresseInput = document.getElementById("siteAdresseInput");
+var destinataireEmailInput = document.getElementById("destinataireEmailInput");
+
+var siteInfo = ReportExport.getSiteInfo();
+siteNomInput.value = siteInfo.nom || "";
+siteTypeInput.value = siteInfo.typeConstruction || "";
+siteAdresseInput.value = siteInfo.adresse || "";
+destinataireEmailInput.value = siteInfo.email || "";
+
+function saveSiteInfo() {
+    ReportExport.setSiteInfo({
+        nom: siteNomInput.value.trim(),
+        typeConstruction: siteTypeInput.value.trim(),
+        adresse: siteAdresseInput.value.trim(),
+        email: destinataireEmailInput.value.trim()
+    });
+}
+
+[siteNomInput, siteTypeInput, siteAdresseInput, destinataireEmailInput].forEach(function (input) {
+    input.addEventListener("change", saveSiteInfo);
+});
+
+/* =========================
+   CONFIGURATION EMAILJS
+========================= */
+
+var emailjsServiceInput = document.getElementById("emailjsServiceInput");
+var emailjsTemplateInput = document.getElementById("emailjsTemplateInput");
+var emailjsPublicKeyInput = document.getElementById("emailjsPublicKeyInput");
+var saveEmailConfigBtn = document.getElementById("saveEmailConfigBtn");
+
+var emailConfig = ReportExport.getEmailConfig();
+emailjsServiceInput.value = emailConfig.serviceId;
+emailjsTemplateInput.value = emailConfig.templateId;
+emailjsPublicKeyInput.value = emailConfig.publicKey;
+
+saveEmailConfigBtn.addEventListener("click", function () {
+    ReportExport.setEmailConfig({
+        serviceId: emailjsServiceInput.value,
+        templateId: emailjsTemplateInput.value,
+        publicKey: emailjsPublicKeyInput.value
+    });
+    alert("Configuration email enregistrée.");
+});
+
+/* =========================
+   CONFIGURATION GITHUB (repli)
+========================= */
+
+var saveTokenBtn = document.getElementById("saveTokenBtn");
+var githubTokenInput = document.getElementById("githubTokenInput");
+
+githubTokenInput.value = ExportGitHub.getToken();
+
+saveTokenBtn.addEventListener("click", function () {
+    var token = githubTokenInput.value.trim();
+    if (token === "") {
+        alert("Veuillez entrer un token GitHub valide.");
+        return;
+    }
+    ExportGitHub.setToken(token);
+    alert("Token GitHub enregistré.");
+});
+
+/* =========================
+   ENVOI DU RAPPORT
 ========================= */
 
 var exportSection = document.getElementById("exportSection");
-var tokenSetup = document.getElementById("tokenSetup");
-var exportReady = document.getElementById("exportReady");
-var saveTokenBtn = document.getElementById("saveTokenBtn");
-var githubTokenInput = document.getElementById("githubTokenInput");
 var exportBtn = document.getElementById("exportBtn");
 var exportStatus = document.getElementById("exportStatus");
 var exportLink = document.getElementById("exportLink");
@@ -63,47 +129,36 @@ if (selectedModules.length > 0) {
     exportSection.classList.remove("hidden");
 }
 
-// Si token déjà configuré, afficher le bouton export
-if (ExportGitHub.hasToken()) {
-    tokenSetup.classList.add("hidden");
-    exportReady.classList.remove("hidden");
-}
-
-saveTokenBtn.addEventListener("click", function () {
-    var token = githubTokenInput.value.trim();
-    if (token === "") {
-        alert("Veuillez entrer un token GitHub valide.");
-        return;
-    }
-    ExportGitHub.setToken(token);
-    tokenSetup.classList.add("hidden");
-    exportReady.classList.remove("hidden");
-});
-
 exportBtn.addEventListener("click", function () {
 
     if (!allComplete) {
-        if (!confirm("Certains modules ne sont pas à 100%. Voulez-vous quand même exporter ?")) {
+        if (!confirm("Certains modules ne sont pas à 100%. Voulez-vous quand même envoyer le rapport ?")) {
             return;
         }
     }
 
+    saveSiteInfo();
+
+    var email = destinataireEmailInput.value.trim();
+
     exportBtn.disabled = true;
-    exportBtn.textContent = "⏳ Export en cours...";
+    exportBtn.textContent = "⏳ Envoi en cours...";
     exportStatus.textContent = "";
     exportLink.classList.add("hidden");
 
-    ExportGitHub.exportToGitHub(function (msg) {
+    ReportExport.sendReport(email, function (msg) {
         exportStatus.textContent = msg;
     }).then(function (result) {
         exportBtn.disabled = false;
-        exportBtn.textContent = "📤 Valider & Exporter l'audit";
-        exportStatus.textContent = "✅ Export réussi ! " + result.nbFiles + " fichier(s) envoyé(s).";
-        exportLink.href = result.url;
-        exportLink.classList.remove("hidden");
+        exportBtn.textContent = "📤 Valider & Envoyer le rapport";
+        exportStatus.textContent = (result.channel === "local" ? "⚠️ " : "✅ ") + result.detail;
+        if (result.url) {
+            exportLink.href = result.url;
+            exportLink.classList.remove("hidden");
+        }
     }).catch(function (err) {
         exportBtn.disabled = false;
-        exportBtn.textContent = "📤 Valider & Exporter l'audit";
+        exportBtn.textContent = "📤 Valider & Envoyer le rapport";
         exportStatus.textContent = "❌ Erreur : " + err.message;
         console.error("Export error:", err);
     });
