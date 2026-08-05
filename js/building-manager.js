@@ -1,11 +1,11 @@
 /* ============================================================
    ViZion — Gestion des bâtiments
    Un audit d'hôtel peut couvrir plusieurs bâtiments (Bâtiment A,
-   Restaurant, ...), chacun avec ses propres secteurs cochés et
-   ses propres fiches. À tout instant, les clés localStorage
-   plates (selectedSecteurs, hebergementsData, ...) et le store
-   IndexedDB "photos" représentent le bâtiment ACTIF. Changer de
-   bâtiment = échanger (swap) ce contenu avec une archive.
+   Restaurant, ...), chacun avec ses propres localisations par
+   secteur. À tout instant, les clés localStorage plates
+   (hebergementsData, ...) et le store IndexedDB "photos"
+   représentent le bâtiment ACTIF. Changer de bâtiment = échanger
+   (swap) ce contenu avec une archive.
    Dépend de js/secteur-config.js et js/photo-manager.js.
 ============================================================ */
 
@@ -51,9 +51,7 @@ window.BuildingManager = (function () {
         var currentId = getCurrentBuildingId();
         if (!currentId) return Promise.resolve();
 
-        var snapshot = {
-            selectedSecteurs: JSON.parse(localStorage.getItem("selectedSecteurs")) || []
-        };
+        var snapshot = {};
         Object.keys(SECTEUR_DATA_KEYS).forEach(function (secteurId) {
             var key = SECTEUR_DATA_KEYS[secteurId];
             var data = localStorage.getItem(key);
@@ -68,9 +66,8 @@ window.BuildingManager = (function () {
     // Écrit l'instantané du bâtiment ciblé dans les clés plates actives.
     function loadBuildingSnapshot(buildingId) {
         var raw = localStorage.getItem(snapshotKey(buildingId));
-        var snapshot = raw ? JSON.parse(raw) : { selectedSecteurs: [] };
+        var snapshot = raw ? JSON.parse(raw) : {};
 
-        localStorage.setItem("selectedSecteurs", JSON.stringify(snapshot.selectedSecteurs || []));
         Object.keys(SECTEUR_DATA_KEYS).forEach(function (secteurId) {
             var key = SECTEUR_DATA_KEYS[secteurId];
             if (snapshot[key]) {
@@ -102,11 +99,15 @@ window.BuildingManager = (function () {
         });
     }
 
+    // Vrai si au moins une localisation a été ajoutée dans un secteur quelconque.
     function hasSecteursConfigured(buildingId) {
         var raw = localStorage.getItem(snapshotKey(buildingId));
         if (!raw) return false;
         var snapshot = JSON.parse(raw);
-        return !!(snapshot.selectedSecteurs && snapshot.selectedSecteurs.length > 0);
+        return Object.keys(SECTEUR_DATA_KEYS).some(function (secteurId) {
+            var data = snapshot[SECTEUR_DATA_KEYS[secteurId]];
+            return data && Object.keys(data).length > 0;
+        });
     }
 
     /* =========================
@@ -120,7 +121,6 @@ window.BuildingManager = (function () {
         localStorage.removeItem(BUILDINGS_KEY);
         localStorage.removeItem(CURRENT_BUILDING_KEY);
         localStorage.removeItem("siteInfo");
-        localStorage.removeItem("selectedSecteurs");
         localStorage.removeItem("currentSecteur");
         Object.keys(SECTEUR_DATA_KEYS).forEach(function (secteurId) {
             localStorage.removeItem(SECTEUR_DATA_KEYS[secteurId]);

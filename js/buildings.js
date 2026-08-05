@@ -70,12 +70,11 @@ function renderBuildings() {
                 '<strong>' + building.nom + '</strong>' +
                 '<span>' + (configured ? "✅" : "à configurer") + '</span>' +
             '</div>' +
-            '<small>' + (configured ? "Modifier les secteurs / fiches" : "Choisir les secteurs présents") + '</small>';
+            '<small>' + (configured ? "Modifier les secteurs / localisations" : "Ajouter des localisations") + '</small>';
 
         card.addEventListener("click", function () {
             BuildingManager.switchToBuilding(building.id).then(function () {
-                var target = BuildingManager.hasSecteursConfigured(building.id) ? "site-data.html" : "audit.html";
-                window.location.href = target;
+                window.location.href = "audit.html";
             });
         });
 

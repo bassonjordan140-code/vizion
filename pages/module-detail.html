@@ -7,7 +7,7 @@
     <meta name="viewport"
           content="width=device-width, initial-scale=1.0">
 
-    <title>Secteur terrain</title>
+    <title>Localisation</title>
 
     <link rel="stylesheet"
           href="../css/style.css">
@@ -18,7 +18,7 @@
     <div class="container">
 
         <button class="back-icon-button"
-                onclick="window.location.href='site-data.html'">
+                onclick="window.location.href='audit.html'">
             ←
         </button>
 
@@ -28,8 +28,18 @@
 
         <p class="subtitle"
            id="moduleSubtitle">
-            Sélectionnez l’élément à auditer.
+            Sélectionnez la localisation à auditer, ou ajoutez-en une nouvelle.
         </p>
+
+        <div class="module-detail-card">
+            <div class="field-group">
+                <label for="newLocalisationInput">Nouvelle localisation</label>
+                <input type="text" id="newLocalisationInput" placeholder="Ex : Chambre de luxe, Bureau direction…">
+            </div>
+            <button type="button" id="addLocalisationBtn" class="secondary-button">
+                + Ajouter une localisation
+            </button>
+        </div>
 
         <div id="moduleContent"
              class="dashboard-list">

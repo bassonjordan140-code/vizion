@@ -550,18 +550,22 @@ var progressCalculators = {
     jeux:         { key: SECTEUR_DATA_KEYS.jeux,         calc: calcJeuxProgress }
 };
 
-function calcModuleProgress(moduleId, quantity) {
+// Moyenne de progression sur toutes les localisations existantes d'un secteur
+// (plus de quantité fixe : chaque localisation est ajoutée librement par l'utilisateur).
+function calcModuleProgress(moduleId) {
     var config = progressCalculators[moduleId];
     if (!config) return 0;
 
     var data = JSON.parse(localStorage.getItem(config.key)) || {};
+    var numeros = Object.keys(data);
+    if (!numeros.length) return 0;
+
     var totalPct = 0;
+    numeros.forEach(function (numero) {
+        totalPct += config.calc(data[numero]);
+    });
 
-    for (var i = 1; i <= quantity; i++) {
-        totalPct += config.calc(data[i]);
-    }
-
-    return Math.round(totalPct / quantity);
+    return Math.round(totalPct / numeros.length);
 }
 
 function calcItemProgress(moduleId, itemData) {

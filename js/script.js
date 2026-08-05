@@ -1,166 +1,61 @@
-// Secteurs auditables (id, label, hasCounter) — voir js/secteur-config.js
+/* ============================================================
+   ViZion — Tableau de bord des secteurs (audit.html)
+   Liste les 12 secteurs avec leur progression. Un clic ouvre
+   directement l'écran "Localisation" du secteur (module-detail.js) ;
+   plus de case à cocher ni de quantité fixe.
+============================================================ */
 
-const secteurList = document.getElementById("moduleList");
-const continueButton = document.getElementById("continueButton");
-const backToHomeButton = document.getElementById("backToHomeButton");
+var secteurDashboard = document.getElementById("secteurDashboard");
+var backToHomeButton = document.getElementById("backToHomeButton");
 
-const savedSecteurs =
-    JSON.parse(localStorage.getItem("selectedSecteurs")) || [];
+function renderSecteurs() {
 
-SECTEURS.forEach(function (secteur) {
+    secteurDashboard.innerHTML = "";
 
-    const card = document.createElement("label");
-    card.className = "module-card";
+    SECTEURS.forEach(function (secteur) {
 
-    card.innerHTML = `
-        <div class="module-content">
+        var data = JSON.parse(localStorage.getItem(SECTEUR_DATA_KEYS[secteur.id])) || {};
+        var count = Object.keys(data).length;
+        var progress = calcModuleProgress(secteur.id);
 
-            <div class="module-header">
-                <input type="checkbox" id="${secteur.id}Check">
-                <span>${secteur.label}</span>
-            </div>
+        var card = document.createElement("button");
+        card.className = "dashboard-card";
 
-            <div class="counter hidden" id="${secteur.id}Counter">
+        card.innerHTML =
+            '<div class="dashboard-header">' +
+                '<strong>' + secteur.label + '</strong>' +
+                '<span>' + progress + '% ' + (progress === 100 && count ? "✅" : "") + '</span>' +
+            '</div>' +
+            '<div class="progress-bar">' +
+                '<div class="progress-fill" style="width: ' + progress + '%"></div>' +
+            '</div>' +
+            '<small>' +
+                (count ? count + " localisation(s)" : "Aucune localisation — cliquez pour en ajouter") +
+            '</small>';
 
-                <button type="button"
-                        class="counter-button"
-                        id="minus-${secteur.id}">
-                    -
-                </button>
+        card.addEventListener("click", function () {
 
-                <span id="${secteur.id}Value">1</span>
+            localStorage.setItem(
+                "currentSecteur",
+                JSON.stringify({ id: secteur.id, label: secteur.label })
+            );
 
-                <button type="button"
-                        class="counter-button"
-                        id="plus-${secteur.id}">
-                    +
-                </button>
+            window.location.href = "module-detail.html";
 
-            </div>
-
-        </div>
-    `;
-
-    secteurList.appendChild(card);
-
-    let value = 1;
-
-    const savedSecteur =
-        savedSecteurs.find(function (item) {
-            return item.id === secteur.id;
         });
 
-    if (savedSecteur) {
-        value = savedSecteur.quantity;
-    }
-
-    const checkbox = document.getElementById(`${secteur.id}Check`);
-    const counter = document.getElementById(`${secteur.id}Counter`);
-    const display = document.getElementById(`${secteur.id}Value`);
-    const plusButton = document.getElementById(`plus-${secteur.id}`);
-    const minusButton = document.getElementById(`minus-${secteur.id}`);
-
-    if (savedSecteur) {
-        checkbox.checked = true;
-        counter.classList.remove("hidden");
-        display.textContent = value;
-    }
-
-    checkbox.addEventListener("change", function () {
-
-        if (checkbox.checked) {
-            value = 1;
-            display.textContent = value;
-            counter.classList.remove("hidden");
-        } else {
-            counter.classList.add("hidden");
-        }
+        secteurDashboard.appendChild(card);
 
     });
 
-    plusButton.addEventListener("click", function () {
-        value++;
-        display.textContent = value;
-    });
-
-    minusButton.addEventListener("click", function () {
-
-        if (value > 1) {
-            value--;
-            display.textContent = value;
-        }
-
-    });
-
-});
-
-/* =========================
-   NETTOYAGE DES DONNÉES
-========================= */
-
-function clearSecteurData(secteurId) {
-    const key = SECTEUR_DATA_KEYS[secteurId];
-    if (key) localStorage.removeItem(key);
 }
 
-function clearAllSecteurData() {
-    Object.keys(SECTEUR_DATA_KEYS).forEach(function (secteurId) {
-        clearSecteurData(secteurId);
-    });
-    Object.keys(SECTEUR_CURRENT_KEYS).forEach(function (secteurId) {
-        localStorage.removeItem(SECTEUR_CURRENT_KEYS[secteurId]);
-    });
-}
-
-continueButton.addEventListener("click", function () {
-
-    const selectedSecteurs = [];
-    const selectedIds = new Set();
-
-    SECTEURS.forEach(function (secteur) {
-
-        const checkbox =
-            document.getElementById(`${secteur.id}Check`);
-
-        if (checkbox.checked) {
-
-            const quantity =
-                parseInt(
-                    document.getElementById(`${secteur.id}Value`).textContent
-                );
-
-            selectedSecteurs.push({
-                id: secteur.id,
-                label: secteur.label,
-                quantity: quantity
-            });
-
-            selectedIds.add(secteur.id);
-
-        }
-
-    });
-
-    // Pour chaque secteur non coché, on efface ses fiches.
-    SECTEURS.forEach(function (secteur) {
-        if (!selectedIds.has(secteur.id)) {
-            clearSecteurData(secteur.id);
-        }
-    });
-
-    localStorage.setItem(
-        "selectedSecteurs",
-        JSON.stringify(selectedSecteurs)
-    );
-
-    window.location.href = "site-data.html";
-
-});
+renderSecteurs();
 
 backToHomeButton.addEventListener("click", function () {
 
     // Retour au hub des bâtiments : on sauvegarde le bâtiment en cours,
-    // rien n'est perdu (contrairement à l'ancien reset complet ici).
+    // rien n'est perdu.
     BuildingManager.saveCurrentBuildingSnapshot().then(function () {
         window.location.href = "buildings.html";
     });
