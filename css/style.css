@@ -7,21 +7,28 @@
 }
 
 /* Badge de version — a incrementer a chaque lot de modifications livre,
-   pour que l'utilisateur puisse verifier qu'il a bien la derniere version. */
-body::after {
-    content: "v2026.08.06-5";
-    position: fixed;
-    top: 10px;
-    right: 10px;
-    font-size: 14px;
+   pour que l'utilisateur puisse verifier qu'il a bien la derniere version.
+   Place a l'interieur de la carte .container (meme "rectangle" que le
+   bouton retour), pas en position fixe sur la page : plus fiable sur
+   mobile (barre d'adresse, encoches, etc. peuvent masquer un element fixe). */
+.container {
+    position: relative;
+}
+
+.container::before {
+    content: "v2026.08.06-6";
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    font-size: 12px;
     font-weight: 700;
     font-family: monospace;
     color: #ffffff;
     background: #E63946;
-    padding: 4px 10px;
+    padding: 3px 8px;
     border-radius: 6px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
-    z-index: 9999;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+    z-index: 10;
     pointer-events: none;
 }
 
