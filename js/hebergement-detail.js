@@ -908,10 +908,13 @@ const ecsDistribution =
 const ecsEnergie =
     document.getElementById("ecsEnergie");
 
+const ecsPuissance =
+    document.getElementById("ecsPuissance");
+
 let ecs =
     savedData && savedData.ecs
         ? JSON.parse(JSON.stringify(savedData.ecs))
-        : { present: false, distribution: "Centralisée", energie: "Électrique" };
+        : { present: false, distribution: "Centralisée", energie: "Électrique", puissance: 0 };
 
 function updateEcsToggle() {
 
@@ -962,9 +965,15 @@ ecsEnergie.addEventListener("change", function () {
     ecs.energie = ecsEnergie.value;
 });
 
+ecsPuissance.addEventListener("input", function () {
+    var v = parseFloat(ecsPuissance.value);
+    ecs.puissance = isNaN(v) || v < 0 ? 0 : v;
+});
+
 if (savedData && savedData.ecs) {
     ecsDistribution.value = ecs.distribution;
     ecsEnergie.value = ecs.energie;
+    ecsPuissance.value = ecs.puissance || "";
 }
 
 updateEcsToggle();

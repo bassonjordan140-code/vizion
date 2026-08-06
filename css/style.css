@@ -6,6 +6,23 @@
     box-sizing: border-box;
 }
 
+/* Badge de version — a incrementer a chaque lot de modifications livre,
+   pour que l'utilisateur puisse verifier qu'il a bien la derniere version. */
+body::after {
+    content: "v2026.08.06-3";
+    position: fixed;
+    top: 6px;
+    right: 8px;
+    font-size: 10px;
+    font-family: monospace;
+    color: #6b7280;
+    background: rgba(6, 9, 21, 0.7);
+    padding: 2px 6px;
+    border-radius: 4px;
+    z-index: 9999;
+    pointer-events: none;
+}
+
 /* Masquer les spinners sur tous les inputs number (mobile-friendly) */
 
 input[type="number"]::-webkit-outer-spin-button,

@@ -165,6 +165,7 @@ if (savedData) {
 
 var ecsDistribution = document.getElementById("ecsDistribution");
 var nbDouches = document.getElementById("nbDouches");
+var ecsPuissance = document.getElementById("ecsPuissance");
 var ecsDedieePhoto = document.getElementById("ecsDedieePhoto");
 
 function updateEcsPhotoVisibility() {
@@ -180,6 +181,7 @@ ecsDistribution.addEventListener("change", updateEcsPhotoVisibility);
 if (savedData) {
     ecsDistribution.value = savedData.ecsDistribution || "Dédiée";
     nbDouches.value = savedData.nbDouches || "";
+    ecsPuissance.value = savedData.ecsPuissance || "";
 }
 
 updateEcsPhotoVisibility();
@@ -553,6 +555,7 @@ saveButton.addEventListener("click", function () {
         chauffeGlobalPuissance: parseFloat(chauffeGlobalPuissance.value) || 0,
         ecsDistribution: ecsDistribution.value,
         nbDouches: parseInt(nbDouches.value) || 0,
+        ecsPuissance: parseFloat(ecsPuissance.value) || 0,
         bainsRemous: bainsRemous,
         hammams: hammams,
         saunas: saunas,

@@ -219,6 +219,7 @@ window.LotMapping = (function () {
             var ecsLot = { "Électrique": "2-1", "Solaire": "2-4", "Thermodynamique": "2-5", "Gaz": "2-3" }[fiche.ecs.energie] || "9-1";
             rows.push(makeRow({
                 localisation: localisation, secteur: ctx.secteur,
+                puissance: fiche.ecs.puissance,
                 description: "ECS " + (fiche.ecs.distribution || "") + (fiche.ecs.energie ? " (" + fiche.ecs.energie + ")" : ""),
                 lot: ecsLot, formulaireOrigine: ctx.formulaireOrigine, nomFormulaire: ctx.nomFormulaire
             }));
@@ -433,9 +434,10 @@ window.LotMapping = (function () {
         addClimatisationRow(rows, fiche.climatisation, ctx);
         addBrasseurRow(rows, fiche.brasseurAir, ctx);
 
-        if (fiche.ecsDistribution === "Dédiée au spa") {
+        if (fiche.ecsDistribution === "Dédiée") {
             rows.push(makeRow({
                 localisation: localisation, secteur: ctx.secteur, nombre: fiche.nbDouches,
+                puissance: fiche.ecsPuissance,
                 description: "ECS dédiée spa", lot: "9-1", // TODO lot à confirmer — énergie ECS spa non collectée
                 formulaireOrigine: ctx.formulaireOrigine, nomFormulaire: ctx.nomFormulaire
             }));
