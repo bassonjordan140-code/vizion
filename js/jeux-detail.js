@@ -143,18 +143,18 @@ updateBrasseurToggle();
    ÉQUIPEMENTS (cases à cocher)
 ========================= */
 
-// puissanceDefaut (kW) : estimations typiques pour pré-remplir le champ, à
+// puissanceDefaut (W) : estimations typiques pour pré-remplir le champ, à
 // ajuster par l'utilisateur selon le matériel réellement présent.
 var equipementsDef = [
     { id: "billard",      label: "Billard",                fields: ["nombre", "puissance"], puissanceDefaut: 0 },
     { id: "babyFoot",     label: "Baby-foot",              fields: ["nombre", "puissance"], puissanceDefaut: 0 },
     { id: "pingPong",     label: "Table de ping-pong",     fields: ["nombre", "puissance"], puissanceDefaut: 0 },
-    { id: "flipper",      label: "Flipper",                fields: ["nombre", "puissance"], puissanceDefaut: 0.15 },
-    { id: "arcades",      label: "Bornes d'arcade",        fields: ["nombre", "puissance"], puissanceDefaut: 0.2 },
-    { id: "flechettes",   label: "Fléchettes",             fields: ["nombre", "puissance"], puissanceDefaut: 0.02 },
-    { id: "consoleJeux",  label: "Console de jeux vidéo",  fields: ["nombre", "puissance"], puissanceDefaut: 0.15 },
-    { id: "simulateur",   label: "Simulateur (VR, racing…)", fields: ["nombre", "puissance"], puissanceDefaut: 1.0 },
-    { id: "airHockey",    label: "Air hockey",             fields: ["nombre", "puissance"], puissanceDefaut: 0.1 },
+    { id: "flipper",      label: "Flipper",                fields: ["nombre", "puissance"], puissanceDefaut: 150 },
+    { id: "arcades",      label: "Bornes d'arcade",        fields: ["nombre", "puissance"], puissanceDefaut: 200 },
+    { id: "flechettes",   label: "Fléchettes",             fields: ["nombre", "puissance"], puissanceDefaut: 20 },
+    { id: "consoleJeux",  label: "Console de jeux vidéo",  fields: ["nombre", "puissance"], puissanceDefaut: 150 },
+    { id: "simulateur",   label: "Simulateur (VR, racing…)", fields: ["nombre", "puissance"], puissanceDefaut: 1000 },
+    { id: "airHockey",    label: "Air hockey",             fields: ["nombre", "puissance"], puissanceDefaut: 100 },
     { id: "jeuxSociete",  label: "Espace jeux de société", fields: [] },
     { id: "autre",        label: "Autre",                  fields: ["nombre", "puissance"] }
 ];
@@ -171,9 +171,9 @@ function buildFieldHTML(eqId, fieldName, savedEq, puissanceDefaut) {
     }
     if (fieldName === "puissance") {
         if (val === "" && puissanceDefaut !== undefined) { val = puissanceDefaut; }
-        return '<div class="field-group"><label>Puissance unitaire (kW)</label>' +
-            '<input type="number" min="0" step="0.05" inputmode="numeric" ' +
-            'id="eq-' + eqId + '-puissance" placeholder="Ex : 0.2" value="' + val + '"></div>';
+        return '<div class="field-group"><label>Puissance unitaire (W)</label>' +
+            '<input type="number" min="0" step="1" inputmode="numeric" ' +
+            'id="eq-' + eqId + '-puissance" placeholder="Ex : 200" value="' + val + '"></div>';
     }
     return "";
 }
@@ -237,18 +237,16 @@ function renderCustomEquipements() {
     customEquipements.forEach(function (equip, idx) {
 
         var item = document.createElement("div");
-        item.className = "equipement-item checked";
+        item.className = "custom-equip-card";
 
         item.innerHTML =
-            '<div class="equipement-header-row">' +
-                '<span>' + equip.nom + '</span>' +
-                '<button type="button" class="parois-delete-btn" data-idx="' + idx + '" aria-label="Supprimer cet équipement">✕</button>' +
-            '</div>' +
-            '<div class="equipement-fields">' +
+            '<button type="button" class="custom-equip-delete" data-idx="' + idx + '" aria-label="Supprimer cet équipement">✕</button>' +
+            '<div class="custom-equip-name">' + equip.nom + '</div>' +
+            '<div class="custom-equip-fields">' +
                 '<div class="field-group"><label>Nombre</label>' +
                 '<input type="number" min="1" step="1" inputmode="numeric" class="custom-equip-nombre" data-idx="' + idx + '" value="' + (equip.nombre || 1) + '"></div>' +
-                '<div class="field-group"><label>Puissance unitaire (kW)</label>' +
-                '<input type="number" min="0" step="0.1" inputmode="numeric" class="custom-equip-puissance" data-idx="' + idx + '" value="' + (equip.puissance !== undefined ? equip.puissance : "") + '" placeholder="Ex : 0.2"></div>' +
+                '<div class="field-group"><label>Puissance unitaire (W)</label>' +
+                '<input type="number" min="0" step="1" inputmode="numeric" class="custom-equip-puissance" data-idx="' + idx + '" value="' + (equip.puissance !== undefined ? equip.puissance : "") + '" placeholder="Ex : 200"></div>' +
                 '<div class="field-group">' + PhotoManager.createPhotoWidget("jeux_" + currentJeux.numero + "_customeq_" + equip.nom) + '</div>' +
             '</div>';
 
@@ -256,7 +254,7 @@ function renderCustomEquipements() {
 
     });
 
-    customEquipementsList.querySelectorAll(".parois-delete-btn").forEach(function (btn) {
+    customEquipementsList.querySelectorAll(".custom-equip-delete").forEach(function (btn) {
         btn.addEventListener("click", function () {
             customEquipements.splice(parseInt(btn.dataset.idx), 1);
             renderCustomEquipements();

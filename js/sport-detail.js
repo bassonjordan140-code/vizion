@@ -143,19 +143,19 @@ updateBrasseurToggle();
    ÉQUIPEMENTS (cases à cocher)
 ========================= */
 
-// puissanceDefaut (kW) : estimations typiques pour pré-remplir le champ, à
+// puissanceDefaut (W) : estimations typiques pour pré-remplir le champ, à
 // ajuster par l'utilisateur selon le matériel réellement présent.
 var equipementsDef = [
-    { id: "tapisDesCourse",  label: "Tapis de course",        fields: ["nombre", "puissance"], puissanceDefaut: 2.5 },
-    { id: "veloElliptique",  label: "Vélo elliptique",        fields: ["nombre", "puissance"], puissanceDefaut: 0.05 },
-    { id: "veloStatique",    label: "Vélo stationnaire",      fields: ["nombre", "puissance"], puissanceDefaut: 0.05 },
-    { id: "rameur",          label: "Rameur",                  fields: ["nombre", "puissance"], puissanceDefaut: 0.02 },
-    { id: "stepper",         label: "Stepper / Escalier",     fields: ["nombre", "puissance"], puissanceDefaut: 0.05 },
+    { id: "tapisDesCourse",  label: "Tapis de course",        fields: ["nombre", "puissance"], puissanceDefaut: 2500 },
+    { id: "veloElliptique",  label: "Vélo elliptique",        fields: ["nombre", "puissance"], puissanceDefaut: 50 },
+    { id: "veloStatique",    label: "Vélo stationnaire",      fields: ["nombre", "puissance"], puissanceDefaut: 50 },
+    { id: "rameur",          label: "Rameur",                  fields: ["nombre", "puissance"], puissanceDefaut: 20 },
+    { id: "stepper",         label: "Stepper / Escalier",     fields: ["nombre", "puissance"], puissanceDefaut: 50 },
     { id: "musculation",     label: "Machines de musculation", fields: ["nombre", "puissance"], puissanceDefaut: 0 },
     { id: "poidsLibres",     label: "Espace poids libres",    fields: [] },
-    { id: "sauna",           label: "Sauna",                   fields: ["nombre", "puissance"], puissanceDefaut: 6 },
-    { id: "hammam",          label: "Hammam",                  fields: ["nombre", "puissance"], puissanceDefaut: 6 },
-    { id: "jacuzzi",         label: "Jacuzzi",                 fields: ["nombre", "puissance"], puissanceDefaut: 3 }
+    { id: "sauna",           label: "Sauna",                   fields: ["nombre", "puissance"], puissanceDefaut: 6000 },
+    { id: "hammam",          label: "Hammam",                  fields: ["nombre", "puissance"], puissanceDefaut: 6000 },
+    { id: "jacuzzi",         label: "Jacuzzi",                 fields: ["nombre", "puissance"], puissanceDefaut: 3000 }
 ];
 
 var savedEquipements = savedData && savedData.equipements ? savedData.equipements : {};
@@ -170,9 +170,9 @@ function buildFieldHTML(eqId, fieldName, savedEq, puissanceDefaut) {
     }
     if (fieldName === "puissance") {
         if (val === "" && puissanceDefaut !== undefined) { val = puissanceDefaut; }
-        return '<div class="field-group"><label>Puissance unitaire (kW)</label>' +
-            '<input type="number" min="0" step="0.05" inputmode="numeric" ' +
-            'id="eq-' + eqId + '-puissance" placeholder="Ex : 2.5" value="' + val + '"></div>';
+        return '<div class="field-group"><label>Puissance unitaire (W)</label>' +
+            '<input type="number" min="0" step="1" inputmode="numeric" ' +
+            'id="eq-' + eqId + '-puissance" placeholder="Ex : 2500" value="' + val + '"></div>';
     }
     return "";
 }
@@ -237,18 +237,16 @@ function renderCustomEquipements() {
     customEquipements.forEach(function (equip, idx) {
 
         var item = document.createElement("div");
-        item.className = "equipement-item checked";
+        item.className = "custom-equip-card";
 
         item.innerHTML =
-            '<div class="equipement-header-row">' +
-                '<span>' + equip.nom + '</span>' +
-                '<button type="button" class="parois-delete-btn" data-idx="' + idx + '" aria-label="Supprimer cet équipement">✕</button>' +
-            '</div>' +
-            '<div class="equipement-fields">' +
+            '<button type="button" class="custom-equip-delete" data-idx="' + idx + '" aria-label="Supprimer cet équipement">✕</button>' +
+            '<div class="custom-equip-name">' + equip.nom + '</div>' +
+            '<div class="custom-equip-fields">' +
                 '<div class="field-group"><label>Nombre</label>' +
                 '<input type="number" min="1" step="1" inputmode="numeric" class="custom-equip-nombre" data-idx="' + idx + '" value="' + (equip.nombre || 1) + '"></div>' +
-                '<div class="field-group"><label>Puissance unitaire (kW)</label>' +
-                '<input type="number" min="0" step="0.1" inputmode="numeric" class="custom-equip-puissance" data-idx="' + idx + '" value="' + (equip.puissance !== undefined ? equip.puissance : "") + '" placeholder="Ex : 1.5"></div>' +
+                '<div class="field-group"><label>Puissance unitaire (W)</label>' +
+                '<input type="number" min="0" step="1" inputmode="numeric" class="custom-equip-puissance" data-idx="' + idx + '" value="' + (equip.puissance !== undefined ? equip.puissance : "") + '" placeholder="Ex : 1500"></div>' +
                 '<div class="field-group">' + PhotoManager.createPhotoWidget("sport_" + currentSport.numero + "_customeq_" + equip.nom) + '</div>' +
             '</div>';
 
@@ -256,7 +254,7 @@ function renderCustomEquipements() {
 
     });
 
-    customEquipementsList.querySelectorAll(".parois-delete-btn").forEach(function (btn) {
+    customEquipementsList.querySelectorAll(".custom-equip-delete").forEach(function (btn) {
         btn.addEventListener("click", function () {
             customEquipements.splice(parseInt(btn.dataset.idx), 1);
             renderCustomEquipements();

@@ -164,15 +164,15 @@ if (savedData) {
    ÉQUIPEMENTS PARTAGÉS (cases à cocher)
 ========================= */
 
-// puissanceDefaut (kW) : estimations typiques pour pré-remplir le champ, à
+// puissanceDefaut (W) : estimations typiques pour pré-remplir le champ, à
 // ajuster par l'utilisateur selon le matériel réellement présent.
 var equipPartagesDef = [
-    { id: "photocopieur",   label: "Photocopieur / multifonction", fields: ["nombre", "puissance"], puissanceDefaut: 1.5 },
-    { id: "distributeur",   label: "Distributeur de boissons",     fields: ["nombre", "puissance"], puissanceDefaut: 0.15 },
-    { id: "fontaineEau",    label: "Fontaine à eau",               fields: ["nombre", "puissance"], puissanceDefaut: 0.1 },
-    { id: "machineCafe",    label: "Machine à café",               fields: ["nombre", "puissance"], puissanceDefaut: 1.2 },
-    { id: "microOndes",     label: "Micro-ondes",                  fields: ["nombre", "puissance"], puissanceDefaut: 1.0 },
-    { id: "refrigerateur",  label: "Réfrigérateur",                fields: ["nombre", "puissance"], puissanceDefaut: 0.15 }
+    { id: "photocopieur",   label: "Photocopieur / multifonction", fields: ["nombre", "puissance"], puissanceDefaut: 1500 },
+    { id: "distributeur",   label: "Distributeur de boissons",     fields: ["nombre", "puissance"], puissanceDefaut: 150 },
+    { id: "fontaineEau",    label: "Fontaine à eau",               fields: ["nombre", "puissance"], puissanceDefaut: 100 },
+    { id: "machineCafe",    label: "Machine à café",               fields: ["nombre", "puissance"], puissanceDefaut: 1200 },
+    { id: "microOndes",     label: "Micro-ondes",                  fields: ["nombre", "puissance"], puissanceDefaut: 1000 },
+    { id: "refrigerateur",  label: "Réfrigérateur",                fields: ["nombre", "puissance"], puissanceDefaut: 150 }
 ];
 
 var savedEquipPartages = savedData && savedData.equipPartages ? savedData.equipPartages : {};
@@ -189,9 +189,9 @@ function buildFieldHTML(eqId, fieldName, savedEq, puissanceDefaut) {
     }
     if (fieldName === "puissance") {
         if (val === "" && puissanceDefaut !== undefined) { val = puissanceDefaut; }
-        return '<div class="field-group"><label>Puissance unitaire (kW)</label>' +
-            '<input type="number" min="0" step="0.05" inputmode="numeric" ' +
-            'id="eq-' + eqId + '-puissance" placeholder="Ex : 1.5" value="' + val + '"></div>';
+        return '<div class="field-group"><label>Puissance unitaire (W)</label>' +
+            '<input type="number" min="0" step="1" inputmode="numeric" ' +
+            'id="eq-' + eqId + '-puissance" placeholder="Ex : 1500" value="' + val + '"></div>';
     }
     return "";
 }
@@ -251,18 +251,16 @@ function renderCustomEquipements() {
     customEquipements.forEach(function (equip, idx) {
 
         var item = document.createElement("div");
-        item.className = "equipement-item checked";
+        item.className = "custom-equip-card";
 
         item.innerHTML =
-            '<div class="equipement-header-row">' +
-                '<span>' + equip.nom + '</span>' +
-                '<button type="button" class="parois-delete-btn" data-idx="' + idx + '" aria-label="Supprimer cet équipement">✕</button>' +
-            '</div>' +
-            '<div class="equipement-fields">' +
+            '<button type="button" class="custom-equip-delete" data-idx="' + idx + '" aria-label="Supprimer cet équipement">✕</button>' +
+            '<div class="custom-equip-name">' + equip.nom + '</div>' +
+            '<div class="custom-equip-fields">' +
                 '<div class="field-group"><label>Nombre</label>' +
                 '<input type="number" min="1" step="1" inputmode="numeric" class="custom-equip-nombre" data-idx="' + idx + '" value="' + (equip.nombre || 1) + '"></div>' +
-                '<div class="field-group"><label>Puissance unitaire (kW)</label>' +
-                '<input type="number" min="0" step="0.1" inputmode="numeric" class="custom-equip-puissance" data-idx="' + idx + '" value="' + (equip.puissance !== undefined ? equip.puissance : "") + '" placeholder="Ex : 1.5"></div>' +
+                '<div class="field-group"><label>Puissance unitaire (W)</label>' +
+                '<input type="number" min="0" step="1" inputmode="numeric" class="custom-equip-puissance" data-idx="' + idx + '" value="' + (equip.puissance !== undefined ? equip.puissance : "") + '" placeholder="Ex : 1500"></div>' +
                 '<div class="field-group">' + PhotoManager.createPhotoWidget("bureaux_" + currentBureaux.numero + "_customeq_" + equip.nom) + '</div>' +
             '</div>';
 
@@ -270,7 +268,7 @@ function renderCustomEquipements() {
 
     });
 
-    customEquipementsList.querySelectorAll(".parois-delete-btn").forEach(function (btn) {
+    customEquipementsList.querySelectorAll(".custom-equip-delete").forEach(function (btn) {
         btn.addEventListener("click", function () {
             customEquipements.splice(parseInt(btn.dataset.idx), 1);
             renderCustomEquipements();

@@ -168,18 +168,16 @@ function renderEquipements() {
     equipements.forEach(function (equip, idx) {
 
         var item = document.createElement("div");
-        item.className = "equipement-item checked";
+        item.className = "custom-equip-card";
 
         item.innerHTML =
-            '<div class="equipement-header-row">' +
-                '<span>' + equip.nom + '</span>' +
-                '<button type="button" class="parois-delete-btn" data-idx="' + idx + '" aria-label="Supprimer cet équipement">✕</button>' +
-            '</div>' +
-            '<div class="equipement-fields">' +
+            '<button type="button" class="custom-equip-delete" data-idx="' + idx + '" aria-label="Supprimer cet équipement">✕</button>' +
+            '<div class="custom-equip-name">' + equip.nom + '</div>' +
+            '<div class="custom-equip-fields">' +
                 '<div class="field-group"><label>Nombre</label>' +
                 '<input type="number" min="1" step="1" inputmode="numeric" class="custom-equip-nombre" data-idx="' + idx + '" value="' + (equip.nombre || 1) + '"></div>' +
-                '<div class="field-group"><label>Puissance unitaire (kW)</label>' +
-                '<input type="number" min="0" step="0.1" inputmode="numeric" class="custom-equip-puissance" data-idx="' + idx + '" value="' + (equip.puissance !== undefined ? equip.puissance : "") + '" placeholder="Ex : 1.5"></div>' +
+                '<div class="field-group"><label>Puissance unitaire (W)</label>' +
+                '<input type="number" min="0" step="1" inputmode="numeric" class="custom-equip-puissance" data-idx="' + idx + '" value="' + (equip.puissance !== undefined ? equip.puissance : "") + '" placeholder="Ex : 1500"></div>' +
                 '<div class="field-group">' + PhotoManager.createPhotoWidget(currentCustom.secteurId + "_" + currentCustom.numero + "_customeq_" + equip.nom) + '</div>' +
             '</div>';
 
@@ -187,7 +185,7 @@ function renderEquipements() {
 
     });
 
-    customEquipementsList.querySelectorAll(".parois-delete-btn").forEach(function (btn) {
+    customEquipementsList.querySelectorAll(".custom-equip-delete").forEach(function (btn) {
         btn.addEventListener("click", function () {
             equipements.splice(parseInt(btn.dataset.idx), 1);
             renderEquipements();

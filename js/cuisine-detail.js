@@ -144,26 +144,26 @@ updateBrasseurToggle();
    ÉQUIPEMENTS (cases à cocher)
 ========================= */
 
-// puissanceDefaut (kW) : estimations typiques pour pré-remplir le champ, à
+// puissanceDefaut (W) : estimations typiques pour pré-remplir le champ, à
 // ajuster par l'utilisateur selon le matériel réellement présent.
 var equipementsDef = [
     { id: "pianoGaz",         label: "Piano de cuisson gaz",     fields: ["nombre", "puissance"], puissanceDefaut: 0 },
-    { id: "pianoElec",        label: "Piano de cuisson électrique", fields: ["nombre", "puissance"], puissanceDefaut: 10 },
-    { id: "pianoInduction",   label: "Piano de cuisson induction", fields: ["nombre", "puissance"], puissanceDefaut: 10 },
-    { id: "plaqueVitro",      label: "Plaque vitrocéramique",     fields: ["nombre", "puissance"], puissanceDefaut: 3 },
-    { id: "wok",              label: "Wok",                       fields: ["nombre", "puissance"], puissanceDefaut: 5 },
-    { id: "grillPlancha",     label: "Grill / Plancha",           fields: ["nombre", "puissance"], puissanceDefaut: 6 },
-    { id: "sauteuseBasc",     label: "Sauteuse basculante",       fields: ["nombre", "puissance"], puissanceDefaut: 12 },
-    { id: "marmite",          label: "Marmite",                   fields: ["nombre", "puissance"], puissanceDefaut: 15 },
-    { id: "fourMixte",        label: "Four mixte (convection + vapeur)", fields: ["nombre", "puissance"], puissanceDefaut: 10 },
-    { id: "fourConvection",   label: "Four à convection",         fields: ["nombre", "puissance"], puissanceDefaut: 6 },
-    { id: "fourPizza",        label: "Four à pizza",              fields: ["nombre", "puissance"], puissanceDefaut: 8 },
-    { id: "microOndes",       label: "Micro-ondes professionnel", fields: ["nombre", "puissance"], puissanceDefaut: 1.2 },
-    { id: "friteuse",         label: "Friteuse",                  fields: ["nombre", "energie", "puissance"], puissanceDefaut: 7 },
-    { id: "laveVaisselle",    label: "Lave-vaisselle",            fields: ["nombre", "typeLV", "ecs", "puissance"], puissanceDefaut: 6 },
-    { id: "cfPositive",       label: "Chambre froide positive",   fields: ["nombre", "volume", "puissance"], puissanceDefaut: 0.5 },
-    { id: "cfNegative",       label: "Chambre froide négative",   fields: ["nombre", "volume", "puissance"], puissanceDefaut: 1.0 },
-    { id: "armoireRefrig",    label: "Armoire réfrigérée",        fields: ["nombre", "puissance"], puissanceDefaut: 0.3 }
+    { id: "pianoElec",        label: "Piano de cuisson électrique", fields: ["nombre", "puissance"], puissanceDefaut: 10000 },
+    { id: "pianoInduction",   label: "Piano de cuisson induction", fields: ["nombre", "puissance"], puissanceDefaut: 10000 },
+    { id: "plaqueVitro",      label: "Plaque vitrocéramique",     fields: ["nombre", "puissance"], puissanceDefaut: 3000 },
+    { id: "wok",              label: "Wok",                       fields: ["nombre", "puissance"], puissanceDefaut: 5000 },
+    { id: "grillPlancha",     label: "Grill / Plancha",           fields: ["nombre", "puissance"], puissanceDefaut: 6000 },
+    { id: "sauteuseBasc",     label: "Sauteuse basculante",       fields: ["nombre", "puissance"], puissanceDefaut: 12000 },
+    { id: "marmite",          label: "Marmite",                   fields: ["nombre", "puissance"], puissanceDefaut: 15000 },
+    { id: "fourMixte",        label: "Four mixte (convection + vapeur)", fields: ["nombre", "puissance"], puissanceDefaut: 10000 },
+    { id: "fourConvection",   label: "Four à convection",         fields: ["nombre", "puissance"], puissanceDefaut: 6000 },
+    { id: "fourPizza",        label: "Four à pizza",              fields: ["nombre", "puissance"], puissanceDefaut: 8000 },
+    { id: "microOndes",       label: "Micro-ondes professionnel", fields: ["nombre", "puissance"], puissanceDefaut: 1200 },
+    { id: "friteuse",         label: "Friteuse",                  fields: ["nombre", "energie", "puissance"], puissanceDefaut: 7000 },
+    { id: "laveVaisselle",    label: "Lave-vaisselle",            fields: ["nombre", "typeLV", "ecs", "puissance"], puissanceDefaut: 6000 },
+    { id: "cfPositive",       label: "Chambre froide positive",   fields: ["nombre", "volume", "puissance"], puissanceDefaut: 500 },
+    { id: "cfNegative",       label: "Chambre froide négative",   fields: ["nombre", "volume", "puissance"], puissanceDefaut: 1000 },
+    { id: "armoireRefrig",    label: "Armoire réfrigérée",        fields: ["nombre", "puissance"], puissanceDefaut: 300 }
 ];
 
 var savedEquipements = savedData && savedData.equipements ? savedData.equipements : {};
@@ -181,9 +181,9 @@ function buildFieldHTML(eqId, fieldName, savedEq, puissanceDefaut) {
     }
     if (fieldName === "puissance") {
         if (val === "" && puissanceDefaut !== undefined) { val = puissanceDefaut; }
-        return '<div class="field-group"><label>Puissance unitaire (kW)</label>' +
-            '<input type="number" min="0" step="0.1" inputmode="numeric" ' +
-            'id="eq-' + eqId + '-puissance" placeholder="Ex : 8" value="' + val + '"></div>';
+        return '<div class="field-group"><label>Puissance unitaire (W)</label>' +
+            '<input type="number" min="0" step="1" inputmode="numeric" ' +
+            'id="eq-' + eqId + '-puissance" placeholder="Ex : 8000" value="' + val + '"></div>';
     }
     if (fieldName === "energie") {
         var selElec = val === "Gaz" ? "" : " selected";
@@ -275,18 +275,16 @@ function renderCustomEquipements() {
     customEquipements.forEach(function (equip, idx) {
 
         var item = document.createElement("div");
-        item.className = "equipement-item checked";
+        item.className = "custom-equip-card";
 
         item.innerHTML =
-            '<div class="equipement-header-row">' +
-                '<span>' + equip.nom + '</span>' +
-                '<button type="button" class="parois-delete-btn" data-idx="' + idx + '" aria-label="Supprimer cet équipement">✕</button>' +
-            '</div>' +
-            '<div class="equipement-fields">' +
+            '<button type="button" class="custom-equip-delete" data-idx="' + idx + '" aria-label="Supprimer cet équipement">✕</button>' +
+            '<div class="custom-equip-name">' + equip.nom + '</div>' +
+            '<div class="custom-equip-fields">' +
                 '<div class="field-group"><label>Nombre</label>' +
                 '<input type="number" min="1" step="1" inputmode="numeric" class="custom-equip-nombre" data-idx="' + idx + '" value="' + (equip.nombre || 1) + '"></div>' +
-                '<div class="field-group"><label>Puissance unitaire (kW)</label>' +
-                '<input type="number" min="0" step="0.1" inputmode="numeric" class="custom-equip-puissance" data-idx="' + idx + '" value="' + (equip.puissance !== undefined ? equip.puissance : "") + '" placeholder="Ex : 1.5"></div>' +
+                '<div class="field-group"><label>Puissance unitaire (W)</label>' +
+                '<input type="number" min="0" step="1" inputmode="numeric" class="custom-equip-puissance" data-idx="' + idx + '" value="' + (equip.puissance !== undefined ? equip.puissance : "") + '" placeholder="Ex : 1500"></div>' +
                 '<div class="field-group">' + PhotoManager.createPhotoWidget("cuisine_" + currentCuisine.numero + "_customeq_" + equip.nom) + '</div>' +
             '</div>';
 
@@ -294,7 +292,7 @@ function renderCustomEquipements() {
 
     });
 
-    customEquipementsList.querySelectorAll(".parois-delete-btn").forEach(function (btn) {
+    customEquipementsList.querySelectorAll(".custom-equip-delete").forEach(function (btn) {
         btn.addEventListener("click", function () {
             customEquipements.splice(parseInt(btn.dataset.idx), 1);
             renderCustomEquipements();

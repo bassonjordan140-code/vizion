@@ -980,22 +980,22 @@ const equipementsList = [
     "Micro-ondes"
 ];
 
-// Puissance unitaire estimée (kW) — valeurs typiques constructeur, à ajuster
+// Puissance unitaire estimée (W) — valeurs typiques constructeur, à ajuster
 // par l'utilisateur selon le matériel réellement présent.
 const equipementsPuissanceDefaut = {
-    "Télé": 0.1,
-    "Minibar": 0.07,
-    "Frigo": 0.15,
-    "Machine café": 1.0,
-    "Sèche-cheveux": 1.8,
-    "Téléphone": 0.005,
-    "Cave vin": 0.12,
-    "Machine glaçons": 0.15,
-    "Bain remous": 1.5,
-    "Brasseur air": 0.075,
-    "Bouilloire": 2.0,
-    "Plaques cuisson": 2.0,
-    "Micro-ondes": 1.0
+    "Télé": 100,
+    "Minibar": 70,
+    "Frigo": 150,
+    "Machine café": 1000,
+    "Sèche-cheveux": 1800,
+    "Téléphone": 5,
+    "Cave vin": 120,
+    "Machine glaçons": 150,
+    "Bain remous": 1500,
+    "Brasseur air": 75,
+    "Bouilloire": 2000,
+    "Plaques cuisson": 2000,
+    "Micro-ondes": 1000
 };
 
 const equipementsGrid =
@@ -1033,8 +1033,8 @@ function renderEquipements() {
               '<input type="number" min="1" step="1" inputmode="numeric" class="equipement-nombre-input" data-equip="' + nom + '" value="' + (equip.nombre || 1) + '">' +
               '</div>' +
               '<div class="equipement-nombre-group">' +
-              '<label class="equipement-nombre-label">Puissance unitaire (kW)</label>' +
-              '<input type="number" min="0" step="0.01" inputmode="numeric" class="equipement-puissance-input" data-equip="' + nom + '" value="' + puissanceVal + '">' +
+              '<label class="equipement-nombre-label">Puissance unitaire (W)</label>' +
+              '<input type="number" min="0" step="1" inputmode="numeric" class="equipement-puissance-input" data-equip="' + nom + '" value="' + puissanceVal + '">' +
               '</div>' +
               PhotoManager.createPhotoWidget("hebergement_" + currentHebergement.numero + "_equip_" + nom) +
               '</div>'
@@ -1057,21 +1057,19 @@ function renderEquipements() {
         .forEach(function (equip) {
 
             var item = document.createElement("div");
-            item.className = "equipement-item checked";
+            item.className = "custom-equip-card";
 
             item.innerHTML =
-                '<div class="equipement-header-row">' +
-                '<span>' + equip.nom + '</span>' +
-                '<button type="button" class="parois-delete-btn" data-custom-equip="' + equip.nom + '" aria-label="Supprimer cet équipement">✕</button>' +
-                '</div>' +
-                '<div class="equipement-detail-group">' +
+                '<button type="button" class="custom-equip-delete" data-custom-equip="' + equip.nom + '" aria-label="Supprimer cet équipement">✕</button>' +
+                '<div class="custom-equip-name">' + equip.nom + '</div>' +
+                '<div class="custom-equip-fields">' +
                 '<div class="equipement-nombre-group">' +
                 '<label class="equipement-nombre-label">Nombre</label>' +
                 '<input type="number" min="1" step="1" inputmode="numeric" class="equipement-nombre-input" data-equip="' + equip.nom + '" value="' + (equip.nombre || 1) + '">' +
                 '</div>' +
                 '<div class="equipement-nombre-group">' +
-                '<label class="equipement-nombre-label">Puissance unitaire (kW)</label>' +
-                '<input type="number" min="0" step="0.01" inputmode="numeric" class="equipement-puissance-input" data-equip="' + equip.nom + '" value="' + (equip.puissance !== undefined ? equip.puissance : "") + '" placeholder="Ex : 0.5">' +
+                '<label class="equipement-nombre-label">Puissance unitaire (W)</label>' +
+                '<input type="number" min="0" step="1" inputmode="numeric" class="equipement-puissance-input" data-equip="' + equip.nom + '" value="' + (equip.puissance !== undefined ? equip.puissance : "") + '" placeholder="Ex : 500">' +
                 '</div>' +
                 PhotoManager.createPhotoWidget("hebergement_" + currentHebergement.numero + "_equip_" + equip.nom) +
                 '</div>';
