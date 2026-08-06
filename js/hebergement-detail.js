@@ -26,8 +26,8 @@ PhotoManager.initPage("hebergement", currentHebergement.numero);
 const counters = [
     { id: "nbEtages", label: "Nombre d’étages", value: 0 },
     { id: "nbHebergements", label: "Nombre d’hébergements", value: 1 },
-    { id: "nbChambres", label: "Nombre de chambres", value: 1 },
-    { id: "capacite", label: "Capacité", value: 2 }
+    { id: "nbChambres", label: "Nombre de pièces", value: 1 },
+    { id: "capacite", label: "Capacité d’accueil (nombre de personnes)", value: 2 }
 ];
 
 counters.forEach(function (counter) {
@@ -1025,6 +1025,45 @@ function renderEquipements() {
 
     });
 
+    // Équipements ajoutés librement par l'utilisateur (hors liste fixe ci-dessus).
+    equipements
+        .filter(function (e) { return equipementsList.indexOf(e.nom) === -1; })
+        .forEach(function (equip) {
+
+            var item = document.createElement("div");
+            item.className = "equipement-item checked";
+
+            item.innerHTML =
+                '<div class="equipement-header-row">' +
+                '<span>' + equip.nom + '</span>' +
+                '<button type="button" class="parois-delete-btn" data-custom-equip="' + equip.nom + '" aria-label="Supprimer cet équipement">✕</button>' +
+                '</div>' +
+                '<div class="equipement-detail-group">' +
+                '<div class="equipement-nombre-group">' +
+                '<label class="equipement-nombre-label">Nombre</label>' +
+                '<input type="number" min="1" step="1" inputmode="numeric" class="equipement-nombre-input" data-equip="' + equip.nom + '" value="' + (equip.nombre || 1) + '">' +
+                '</div>' +
+                PhotoManager.createPhotoWidget("hebergement_" + currentHebergement.numero + "_equip_" + equip.nom) +
+                '</div>';
+
+            equipementsGrid.appendChild(item);
+
+        });
+
+    equipementsGrid
+        .querySelectorAll("[data-custom-equip]")
+        .forEach(function (btn) {
+
+            btn.addEventListener("click", function (e) {
+                e.stopPropagation();
+                var nom = btn.dataset.customEquip;
+                var idx = equipements.findIndex(function (eq) { return eq.nom === nom; });
+                if (idx !== -1) { equipements.splice(idx, 1); }
+                renderEquipements();
+            });
+
+        });
+
     equipementsGrid
         .querySelectorAll("input[type='checkbox']")
         .forEach(function (cb) {
@@ -1072,6 +1111,34 @@ function renderEquipements() {
 }
 
 renderEquipements();
+
+const nouvelEquipementInput =
+    document.getElementById("nouvelEquipementInput");
+
+const addEquipementButton =
+    document.getElementById("addEquipementButton");
+
+addEquipementButton.addEventListener("click", function () {
+
+    var nom = nouvelEquipementInput.value.trim();
+    if (nom === "") {
+        alert("Veuillez entrer un nom d'équipement.");
+        return;
+    }
+
+    var exists = equipements.some(function (e) {
+        return e.nom.toLowerCase() === nom.toLowerCase();
+    });
+    if (exists) {
+        alert("Cet équipement est déjà dans la liste.");
+        return;
+    }
+
+    equipements.push({ nom: nom, nombre: 1 });
+    nouvelEquipementInput.value = "";
+    renderEquipements();
+
+});
 
 /* =========================
    BLOC 8 — PISCINE PRIVÉE
