@@ -980,6 +980,24 @@ const equipementsList = [
     "Micro-ondes"
 ];
 
+// Puissance unitaire estimée (kW) — valeurs typiques constructeur, à ajuster
+// par l'utilisateur selon le matériel réellement présent.
+const equipementsPuissanceDefaut = {
+    "Télé": 0.1,
+    "Minibar": 0.07,
+    "Frigo": 0.15,
+    "Machine café": 1.0,
+    "Sèche-cheveux": 1.8,
+    "Téléphone": 0.005,
+    "Cave vin": 0.12,
+    "Machine glaçons": 0.15,
+    "Bain remous": 1.5,
+    "Brasseur air": 0.075,
+    "Bouilloire": 2.0,
+    "Plaques cuisson": 2.0,
+    "Micro-ondes": 1.0
+};
+
 const equipementsGrid =
     document.getElementById("equipementsGrid");
 
@@ -1004,11 +1022,19 @@ function renderEquipements() {
         var item = document.createElement("div");
         item.className = "equipement-item" + (checked ? " checked" : "");
 
+        var puissanceVal = equip && equip.puissance !== undefined && equip.puissance !== ""
+            ? equip.puissance
+            : (equipementsPuissanceDefaut[nom] !== undefined ? equipementsPuissanceDefaut[nom] : "");
+
         var detailHTML = checked
             ? '<div class="equipement-detail-group">' +
               '<div class="equipement-nombre-group">' +
               '<label class="equipement-nombre-label">Nombre</label>' +
               '<input type="number" min="1" step="1" inputmode="numeric" class="equipement-nombre-input" data-equip="' + nom + '" value="' + (equip.nombre || 1) + '">' +
+              '</div>' +
+              '<div class="equipement-nombre-group">' +
+              '<label class="equipement-nombre-label">Puissance unitaire (kW)</label>' +
+              '<input type="number" min="0" step="0.01" inputmode="numeric" class="equipement-puissance-input" data-equip="' + nom + '" value="' + puissanceVal + '">' +
               '</div>' +
               PhotoManager.createPhotoWidget("hebergement_" + currentHebergement.numero + "_equip_" + nom) +
               '</div>'
@@ -1043,6 +1069,10 @@ function renderEquipements() {
                 '<label class="equipement-nombre-label">Nombre</label>' +
                 '<input type="number" min="1" step="1" inputmode="numeric" class="equipement-nombre-input" data-equip="' + equip.nom + '" value="' + (equip.nombre || 1) + '">' +
                 '</div>' +
+                '<div class="equipement-nombre-group">' +
+                '<label class="equipement-nombre-label">Puissance unitaire (kW)</label>' +
+                '<input type="number" min="0" step="0.01" inputmode="numeric" class="equipement-puissance-input" data-equip="' + equip.nom + '" value="' + (equip.puissance !== undefined ? equip.puissance : "") + '" placeholder="Ex : 0.5">' +
+                '</div>' +
                 PhotoManager.createPhotoWidget("hebergement_" + currentHebergement.numero + "_equip_" + equip.nom) +
                 '</div>';
 
@@ -1074,7 +1104,11 @@ function renderEquipements() {
 
                 if (cb.checked) {
                     if (!findEquip(nom)) {
-                        equipements.push({ nom: nom, nombre: 1 });
+                        equipements.push({
+                            nom: nom,
+                            nombre: 1,
+                            puissance: equipementsPuissanceDefaut[nom] !== undefined ? equipementsPuissanceDefaut[nom] : ""
+                        });
                     }
                 } else {
                     var idx = equipements.findIndex(function (e) { return e.nom === nom; });
@@ -1097,6 +1131,25 @@ function renderEquipements() {
                 if (equip) {
                     var v = parseInt(input.value);
                     equip.nombre = isNaN(v) || v < 1 ? 1 : v;
+                }
+            });
+
+            input.addEventListener("click", function (e) {
+                e.stopPropagation();
+            });
+
+        });
+
+    equipementsGrid
+        .querySelectorAll(".equipement-puissance-input")
+        .forEach(function (input) {
+
+            input.addEventListener("input", function () {
+                var nom = input.dataset.equip;
+                var equip = findEquip(nom);
+                if (equip) {
+                    var v = parseFloat(input.value);
+                    equip.puissance = isNaN(v) || v < 0 ? 0 : v;
                 }
             });
 
@@ -1134,7 +1187,7 @@ addEquipementButton.addEventListener("click", function () {
         return;
     }
 
-    equipements.push({ nom: nom, nombre: 1 });
+    equipements.push({ nom: nom, nombre: 1, puissance: "" });
     nouvelEquipementInput.value = "";
     renderEquipements();
 

@@ -144,24 +144,26 @@ updateBrasseurToggle();
    ÉQUIPEMENTS (cases à cocher)
 ========================= */
 
+// puissanceDefaut (kW) : estimations typiques pour pré-remplir le champ, à
+// ajuster par l'utilisateur selon le matériel réellement présent.
 var equipementsDef = [
-    { id: "pianoGaz",         label: "Piano de cuisson gaz",     fields: ["nombre"] },
-    { id: "pianoElec",        label: "Piano de cuisson électrique", fields: ["nombre"] },
-    { id: "pianoInduction",   label: "Piano de cuisson induction", fields: ["nombre"] },
-    { id: "plaqueVitro",      label: "Plaque vitrocéramique",     fields: ["nombre"] },
-    { id: "wok",              label: "Wok",                       fields: ["nombre"] },
-    { id: "grillPlancha",     label: "Grill / Plancha",           fields: ["nombre"] },
-    { id: "sauteuseBasc",     label: "Sauteuse basculante",       fields: ["nombre"] },
-    { id: "marmite",          label: "Marmite",                   fields: ["nombre"] },
-    { id: "fourMixte",        label: "Four mixte (convection + vapeur)", fields: ["nombre", "puissance"] },
-    { id: "fourConvection",   label: "Four à convection",         fields: ["nombre", "puissance"] },
-    { id: "fourPizza",        label: "Four à pizza",              fields: ["nombre", "puissance"] },
-    { id: "microOndes",       label: "Micro-ondes professionnel", fields: ["nombre"] },
-    { id: "friteuse",         label: "Friteuse",                  fields: ["nombre", "energie", "puissance"] },
-    { id: "laveVaisselle",    label: "Lave-vaisselle",            fields: ["nombre", "typeLV", "ecs"] },
-    { id: "cfPositive",       label: "Chambre froide positive",   fields: ["nombre", "volume", "puissance"] },
-    { id: "cfNegative",       label: "Chambre froide négative",   fields: ["nombre", "volume", "puissance"] },
-    { id: "armoireRefrig",    label: "Armoire réfrigérée",        fields: ["nombre"] }
+    { id: "pianoGaz",         label: "Piano de cuisson gaz",     fields: ["nombre", "puissance"], puissanceDefaut: 0 },
+    { id: "pianoElec",        label: "Piano de cuisson électrique", fields: ["nombre", "puissance"], puissanceDefaut: 10 },
+    { id: "pianoInduction",   label: "Piano de cuisson induction", fields: ["nombre", "puissance"], puissanceDefaut: 10 },
+    { id: "plaqueVitro",      label: "Plaque vitrocéramique",     fields: ["nombre", "puissance"], puissanceDefaut: 3 },
+    { id: "wok",              label: "Wok",                       fields: ["nombre", "puissance"], puissanceDefaut: 5 },
+    { id: "grillPlancha",     label: "Grill / Plancha",           fields: ["nombre", "puissance"], puissanceDefaut: 6 },
+    { id: "sauteuseBasc",     label: "Sauteuse basculante",       fields: ["nombre", "puissance"], puissanceDefaut: 12 },
+    { id: "marmite",          label: "Marmite",                   fields: ["nombre", "puissance"], puissanceDefaut: 15 },
+    { id: "fourMixte",        label: "Four mixte (convection + vapeur)", fields: ["nombre", "puissance"], puissanceDefaut: 10 },
+    { id: "fourConvection",   label: "Four à convection",         fields: ["nombre", "puissance"], puissanceDefaut: 6 },
+    { id: "fourPizza",        label: "Four à pizza",              fields: ["nombre", "puissance"], puissanceDefaut: 8 },
+    { id: "microOndes",       label: "Micro-ondes professionnel", fields: ["nombre", "puissance"], puissanceDefaut: 1.2 },
+    { id: "friteuse",         label: "Friteuse",                  fields: ["nombre", "energie", "puissance"], puissanceDefaut: 7 },
+    { id: "laveVaisselle",    label: "Lave-vaisselle",            fields: ["nombre", "typeLV", "ecs", "puissance"], puissanceDefaut: 6 },
+    { id: "cfPositive",       label: "Chambre froide positive",   fields: ["nombre", "volume", "puissance"], puissanceDefaut: 0.5 },
+    { id: "cfNegative",       label: "Chambre froide négative",   fields: ["nombre", "volume", "puissance"], puissanceDefaut: 1.0 },
+    { id: "armoireRefrig",    label: "Armoire réfrigérée",        fields: ["nombre", "puissance"], puissanceDefaut: 0.3 }
 ];
 
 var savedEquipements = savedData && savedData.equipements ? savedData.equipements : {};
@@ -169,7 +171,7 @@ var savedEquipements = savedData && savedData.equipements ? savedData.equipement
 var equipementsList = document.getElementById("equipementsList");
 
 /* Génère le HTML de chaque champ d'un équipement */
-function buildFieldHTML(eqId, fieldName, savedEq) {
+function buildFieldHTML(eqId, fieldName, savedEq, puissanceDefaut) {
     var val = savedEq ? savedEq[fieldName] || "" : "";
 
     if (fieldName === "nombre") {
@@ -178,6 +180,7 @@ function buildFieldHTML(eqId, fieldName, savedEq) {
             'id="eq-' + eqId + '-nombre" placeholder="Ex : 2" value="' + val + '"></div>';
     }
     if (fieldName === "puissance") {
+        if (val === "" && puissanceDefaut !== undefined) { val = puissanceDefaut; }
         return '<div class="field-group"><label>Puissance unitaire (kW)</label>' +
             '<input type="number" min="0" step="0.1" inputmode="numeric" ' +
             'id="eq-' + eqId + '-puissance" placeholder="Ex : 8" value="' + val + '"></div>';
@@ -230,7 +233,7 @@ equipementsDef.forEach(function (eq) {
 
     var fieldsHTML = '<div class="equipement-fields' + (isChecked ? '' : ' hidden') + '" id="eqFields-' + eq.id + '">';
     eq.fields.forEach(function (f) {
-        fieldsHTML += buildFieldHTML(eq.id, f, savedEq);
+        fieldsHTML += buildFieldHTML(eq.id, f, savedEq, eq.puissanceDefaut);
     });
     fieldsHTML += '<div class="field-group">' + PhotoManager.createPhotoWidget("cuisine_" + currentCuisine.numero + "_eq_" + eq.id) + '</div>';
     fieldsHTML += '</div>';
@@ -282,6 +285,9 @@ function renderCustomEquipements() {
             '<div class="equipement-fields">' +
                 '<div class="field-group"><label>Nombre</label>' +
                 '<input type="number" min="1" step="1" inputmode="numeric" class="custom-equip-nombre" data-idx="' + idx + '" value="' + (equip.nombre || 1) + '"></div>' +
+                '<div class="field-group"><label>Puissance unitaire (kW)</label>' +
+                '<input type="number" min="0" step="0.1" inputmode="numeric" class="custom-equip-puissance" data-idx="' + idx + '" value="' + (equip.puissance !== undefined ? equip.puissance : "") + '" placeholder="Ex : 1.5"></div>' +
+                '<div class="field-group">' + PhotoManager.createPhotoWidget("cuisine_" + currentCuisine.numero + "_customeq_" + equip.nom) + '</div>' +
             '</div>';
 
         customEquipementsList.appendChild(item);
@@ -303,6 +309,16 @@ function renderCustomEquipements() {
         });
     });
 
+    customEquipementsList.querySelectorAll(".custom-equip-puissance").forEach(function (input) {
+        input.addEventListener("input", function () {
+            var idx = parseInt(input.dataset.idx);
+            var v = parseFloat(input.value);
+            customEquipements[idx].puissance = isNaN(v) || v < 0 ? 0 : v;
+        });
+    });
+
+    PhotoManager.bindAll(customEquipementsList);
+
 }
 
 renderCustomEquipements();
@@ -323,7 +339,7 @@ addEquipementButton.addEventListener("click", function () {
         return;
     }
 
-    customEquipements.push({ nom: nom, nombre: 1 });
+    customEquipements.push({ nom: nom, nombre: 1, puissance: "" });
     nouvelEquipementInput.value = "";
     renderCustomEquipements();
 

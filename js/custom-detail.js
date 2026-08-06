@@ -178,6 +178,9 @@ function renderEquipements() {
             '<div class="equipement-fields">' +
                 '<div class="field-group"><label>Nombre</label>' +
                 '<input type="number" min="1" step="1" inputmode="numeric" class="custom-equip-nombre" data-idx="' + idx + '" value="' + (equip.nombre || 1) + '"></div>' +
+                '<div class="field-group"><label>Puissance unitaire (kW)</label>' +
+                '<input type="number" min="0" step="0.1" inputmode="numeric" class="custom-equip-puissance" data-idx="' + idx + '" value="' + (equip.puissance !== undefined ? equip.puissance : "") + '" placeholder="Ex : 1.5"></div>' +
+                '<div class="field-group">' + PhotoManager.createPhotoWidget(currentCustom.secteurId + "_" + currentCustom.numero + "_customeq_" + equip.nom) + '</div>' +
             '</div>';
 
         customEquipementsList.appendChild(item);
@@ -199,6 +202,16 @@ function renderEquipements() {
         });
     });
 
+    customEquipementsList.querySelectorAll(".custom-equip-puissance").forEach(function (input) {
+        input.addEventListener("input", function () {
+            var idx = parseInt(input.dataset.idx);
+            var v = parseFloat(input.value);
+            equipements[idx].puissance = isNaN(v) || v < 0 ? 0 : v;
+        });
+    });
+
+    PhotoManager.bindAll(customEquipementsList);
+
 }
 
 renderEquipements();
@@ -219,7 +232,7 @@ addEquipementButton.addEventListener("click", function () {
         return;
     }
 
-    equipements.push({ nom: nom, nombre: 1 });
+    equipements.push({ nom: nom, nombre: 1, puissance: "" });
     nouvelEquipementInput.value = "";
     renderEquipements();
 

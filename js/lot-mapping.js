@@ -153,7 +153,7 @@ window.LotMapping = (function () {
         (equipementsPersonnalises || []).forEach(function (eq) {
             rows.push(makeRow({
                 localisation: ctx.localisation, secteur: ctx.secteur,
-                nombre: eq.nombre, description: eq.nom, lot: "9-1",
+                puissance: eq.puissance, nombre: eq.nombre, description: eq.nom, lot: "9-1",
                 formulaireOrigine: ctx.formulaireOrigine, nomFormulaire: ctx.nomFormulaire
             }));
         });
@@ -226,7 +226,7 @@ window.LotMapping = (function () {
         (fiche.equipements || []).forEach(function (eq) {
             rows.push(makeRow({
                 localisation: localisation, secteur: ctx.secteur,
-                nombre: eq.nombre,
+                puissance: eq.puissance, nombre: eq.nombre,
                 description: eq.nom,
                 lot: HEBERGEMENT_EQUIP_LOT[eq.nom] || "9-1",
                 formulaireOrigine: ctx.formulaireOrigine, nomFormulaire: ctx.nomFormulaire
@@ -634,7 +634,8 @@ window.LotMapping = (function () {
             var eq = equipements[id];
             if (!eq || !eq.nombre) return;
             rows.push(makeRow({
-                localisation: localisation, secteur: ctx.secteur, nombre: eq.nombre,
+                localisation: localisation, secteur: ctx.secteur,
+                puissance: eq.puissance, nombre: eq.nombre,
                 description: JEUX_EQUIP_LABELS[id], lot: "9-1",
                 formulaireOrigine: ctx.formulaireOrigine, nomFormulaire: ctx.nomFormulaire
             }));
@@ -733,7 +734,8 @@ window.LotMapping = (function () {
             if (!eq || !eq.nombre) return;
             var def = SPORT_EQUIP[id];
             rows.push(makeRow({
-                localisation: localisation, secteur: ctx.secteur, nombre: eq.nombre,
+                localisation: localisation, secteur: ctx.secteur,
+                puissance: eq.puissance, nombre: eq.nombre,
                 description: def.label, lot: def.lot,
                 formulaireOrigine: ctx.formulaireOrigine, nomFormulaire: ctx.nomFormulaire
             }));
@@ -812,7 +814,8 @@ window.LotMapping = (function () {
             if (!eq || !eq.nombre) return;
             var def = BUREAUX_EQUIP[id];
             rows.push(makeRow({
-                localisation: localisation, secteur: ctx.secteur, nombre: eq.nombre,
+                localisation: localisation, secteur: ctx.secteur,
+                puissance: eq.puissance, nombre: eq.nombre,
                 description: def.label, lot: def.lot,
                 formulaireOrigine: ctx.formulaireOrigine, nomFormulaire: ctx.nomFormulaire
             }));

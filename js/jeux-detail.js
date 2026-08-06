@@ -143,29 +143,37 @@ updateBrasseurToggle();
    ÉQUIPEMENTS (cases à cocher)
 ========================= */
 
+// puissanceDefaut (kW) : estimations typiques pour pré-remplir le champ, à
+// ajuster par l'utilisateur selon le matériel réellement présent.
 var equipementsDef = [
-    { id: "billard",      label: "Billard",                fields: ["nombre"] },
-    { id: "babyFoot",     label: "Baby-foot",              fields: ["nombre"] },
-    { id: "pingPong",     label: "Table de ping-pong",     fields: ["nombre"] },
-    { id: "flipper",      label: "Flipper",                fields: ["nombre"] },
-    { id: "arcades",      label: "Bornes d'arcade",        fields: ["nombre"] },
-    { id: "flechettes",   label: "Fléchettes",             fields: ["nombre"] },
-    { id: "consoleJeux",  label: "Console de jeux vidéo",  fields: ["nombre"] },
-    { id: "simulateur",   label: "Simulateur (VR, racing…)", fields: ["nombre"] },
-    { id: "airHockey",    label: "Air hockey",             fields: ["nombre"] },
+    { id: "billard",      label: "Billard",                fields: ["nombre", "puissance"], puissanceDefaut: 0 },
+    { id: "babyFoot",     label: "Baby-foot",              fields: ["nombre", "puissance"], puissanceDefaut: 0 },
+    { id: "pingPong",     label: "Table de ping-pong",     fields: ["nombre", "puissance"], puissanceDefaut: 0 },
+    { id: "flipper",      label: "Flipper",                fields: ["nombre", "puissance"], puissanceDefaut: 0.15 },
+    { id: "arcades",      label: "Bornes d'arcade",        fields: ["nombre", "puissance"], puissanceDefaut: 0.2 },
+    { id: "flechettes",   label: "Fléchettes",             fields: ["nombre", "puissance"], puissanceDefaut: 0.02 },
+    { id: "consoleJeux",  label: "Console de jeux vidéo",  fields: ["nombre", "puissance"], puissanceDefaut: 0.15 },
+    { id: "simulateur",   label: "Simulateur (VR, racing…)", fields: ["nombre", "puissance"], puissanceDefaut: 1.0 },
+    { id: "airHockey",    label: "Air hockey",             fields: ["nombre", "puissance"], puissanceDefaut: 0.1 },
     { id: "jeuxSociete",  label: "Espace jeux de société", fields: [] },
-    { id: "autre",        label: "Autre",                  fields: ["nombre"] }
+    { id: "autre",        label: "Autre",                  fields: ["nombre", "puissance"] }
 ];
 
 var savedEquipements = savedData && savedData.equipements ? savedData.equipements : {};
 var equipementsList = document.getElementById("equipementsList");
 
-function buildFieldHTML(eqId, fieldName, savedEq) {
+function buildFieldHTML(eqId, fieldName, savedEq, puissanceDefaut) {
     var val = savedEq ? savedEq[fieldName] || "" : "";
     if (fieldName === "nombre") {
         return '<div class="field-group"><label>Nombre</label>' +
             '<input type="number" min="1" step="1" inputmode="numeric" ' +
             'id="eq-' + eqId + '-nombre" placeholder="Ex : 2" value="' + val + '"></div>';
+    }
+    if (fieldName === "puissance") {
+        if (val === "" && puissanceDefaut !== undefined) { val = puissanceDefaut; }
+        return '<div class="field-group"><label>Puissance unitaire (kW)</label>' +
+            '<input type="number" min="0" step="0.05" inputmode="numeric" ' +
+            'id="eq-' + eqId + '-puissance" placeholder="Ex : 0.2" value="' + val + '"></div>';
     }
     return "";
 }
@@ -188,8 +196,9 @@ equipementsDef.forEach(function (eq) {
     if (eq.fields.length > 0) {
         fieldsHTML = '<div class="equipement-fields' + (isChecked ? '' : ' hidden') + '" id="eqFields-' + eq.id + '">';
         eq.fields.forEach(function (f) {
-            fieldsHTML += buildFieldHTML(eq.id, f, savedEq);
+            fieldsHTML += buildFieldHTML(eq.id, f, savedEq, eq.puissanceDefaut);
         });
+        fieldsHTML += '<div class="field-group">' + PhotoManager.createPhotoWidget("jeux_" + currentJeux.numero + "_eq_" + eq.id) + '</div>';
         fieldsHTML += '</div>';
     }
 
@@ -205,6 +214,8 @@ equipementsDef.forEach(function (eq) {
         });
     }
 });
+
+PhotoManager.bindAll(equipementsList);
 
 /* =========================
    ÉQUIPEMENTS AJOUTÉS LIBREMENT (hors liste fixe)
@@ -236,6 +247,9 @@ function renderCustomEquipements() {
             '<div class="equipement-fields">' +
                 '<div class="field-group"><label>Nombre</label>' +
                 '<input type="number" min="1" step="1" inputmode="numeric" class="custom-equip-nombre" data-idx="' + idx + '" value="' + (equip.nombre || 1) + '"></div>' +
+                '<div class="field-group"><label>Puissance unitaire (kW)</label>' +
+                '<input type="number" min="0" step="0.1" inputmode="numeric" class="custom-equip-puissance" data-idx="' + idx + '" value="' + (equip.puissance !== undefined ? equip.puissance : "") + '" placeholder="Ex : 0.2"></div>' +
+                '<div class="field-group">' + PhotoManager.createPhotoWidget("jeux_" + currentJeux.numero + "_customeq_" + equip.nom) + '</div>' +
             '</div>';
 
         customEquipementsList.appendChild(item);
@@ -257,6 +271,16 @@ function renderCustomEquipements() {
         });
     });
 
+    customEquipementsList.querySelectorAll(".custom-equip-puissance").forEach(function (input) {
+        input.addEventListener("input", function () {
+            var idx = parseInt(input.dataset.idx);
+            var v = parseFloat(input.value);
+            customEquipements[idx].puissance = isNaN(v) || v < 0 ? 0 : v;
+        });
+    });
+
+    PhotoManager.bindAll(customEquipementsList);
+
 }
 
 renderCustomEquipements();
@@ -277,7 +301,7 @@ addEquipementButton.addEventListener("click", function () {
         return;
     }
 
-    customEquipements.push({ nom: nom, nombre: 1 });
+    customEquipements.push({ nom: nom, nombre: 1, puissance: "" });
     nouvelEquipementInput.value = "";
     renderCustomEquipements();
 

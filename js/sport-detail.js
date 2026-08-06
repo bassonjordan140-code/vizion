@@ -143,28 +143,36 @@ updateBrasseurToggle();
    ÉQUIPEMENTS (cases à cocher)
 ========================= */
 
+// puissanceDefaut (kW) : estimations typiques pour pré-remplir le champ, à
+// ajuster par l'utilisateur selon le matériel réellement présent.
 var equipementsDef = [
-    { id: "tapisDesCourse",  label: "Tapis de course",        fields: ["nombre"] },
-    { id: "veloElliptique",  label: "Vélo elliptique",        fields: ["nombre"] },
-    { id: "veloStatique",    label: "Vélo stationnaire",      fields: ["nombre"] },
-    { id: "rameur",          label: "Rameur",                  fields: ["nombre"] },
-    { id: "stepper",         label: "Stepper / Escalier",     fields: ["nombre"] },
-    { id: "musculation",     label: "Machines de musculation", fields: ["nombre"] },
+    { id: "tapisDesCourse",  label: "Tapis de course",        fields: ["nombre", "puissance"], puissanceDefaut: 2.5 },
+    { id: "veloElliptique",  label: "Vélo elliptique",        fields: ["nombre", "puissance"], puissanceDefaut: 0.05 },
+    { id: "veloStatique",    label: "Vélo stationnaire",      fields: ["nombre", "puissance"], puissanceDefaut: 0.05 },
+    { id: "rameur",          label: "Rameur",                  fields: ["nombre", "puissance"], puissanceDefaut: 0.02 },
+    { id: "stepper",         label: "Stepper / Escalier",     fields: ["nombre", "puissance"], puissanceDefaut: 0.05 },
+    { id: "musculation",     label: "Machines de musculation", fields: ["nombre", "puissance"], puissanceDefaut: 0 },
     { id: "poidsLibres",     label: "Espace poids libres",    fields: [] },
-    { id: "sauna",           label: "Sauna",                   fields: ["nombre"] },
-    { id: "hammam",          label: "Hammam",                  fields: ["nombre"] },
-    { id: "jacuzzi",         label: "Jacuzzi",                 fields: ["nombre"] }
+    { id: "sauna",           label: "Sauna",                   fields: ["nombre", "puissance"], puissanceDefaut: 6 },
+    { id: "hammam",          label: "Hammam",                  fields: ["nombre", "puissance"], puissanceDefaut: 6 },
+    { id: "jacuzzi",         label: "Jacuzzi",                 fields: ["nombre", "puissance"], puissanceDefaut: 3 }
 ];
 
 var savedEquipements = savedData && savedData.equipements ? savedData.equipements : {};
 var equipementsList = document.getElementById("equipementsList");
 
-function buildFieldHTML(eqId, fieldName, savedEq) {
+function buildFieldHTML(eqId, fieldName, savedEq, puissanceDefaut) {
     var val = savedEq ? savedEq[fieldName] || "" : "";
     if (fieldName === "nombre") {
         return '<div class="field-group"><label>Nombre</label>' +
             '<input type="number" min="1" step="1" inputmode="numeric" ' +
             'id="eq-' + eqId + '-nombre" placeholder="Ex : 4" value="' + val + '"></div>';
+    }
+    if (fieldName === "puissance") {
+        if (val === "" && puissanceDefaut !== undefined) { val = puissanceDefaut; }
+        return '<div class="field-group"><label>Puissance unitaire (kW)</label>' +
+            '<input type="number" min="0" step="0.05" inputmode="numeric" ' +
+            'id="eq-' + eqId + '-puissance" placeholder="Ex : 2.5" value="' + val + '"></div>';
     }
     return "";
 }
@@ -187,8 +195,9 @@ equipementsDef.forEach(function (eq) {
     if (eq.fields.length > 0) {
         fieldsHTML = '<div class="equipement-fields' + (isChecked ? '' : ' hidden') + '" id="eqFields-' + eq.id + '">';
         eq.fields.forEach(function (f) {
-            fieldsHTML += buildFieldHTML(eq.id, f, savedEq);
+            fieldsHTML += buildFieldHTML(eq.id, f, savedEq, eq.puissanceDefaut);
         });
+        fieldsHTML += '<div class="field-group">' + PhotoManager.createPhotoWidget("sport_" + currentSport.numero + "_eq_" + eq.id) + '</div>';
         fieldsHTML += '</div>';
     }
 
@@ -205,6 +214,8 @@ equipementsDef.forEach(function (eq) {
         });
     }
 });
+
+PhotoManager.bindAll(equipementsList);
 
 /* =========================
    ÉQUIPEMENTS AJOUTÉS LIBREMENT (hors liste fixe)
@@ -236,6 +247,9 @@ function renderCustomEquipements() {
             '<div class="equipement-fields">' +
                 '<div class="field-group"><label>Nombre</label>' +
                 '<input type="number" min="1" step="1" inputmode="numeric" class="custom-equip-nombre" data-idx="' + idx + '" value="' + (equip.nombre || 1) + '"></div>' +
+                '<div class="field-group"><label>Puissance unitaire (kW)</label>' +
+                '<input type="number" min="0" step="0.1" inputmode="numeric" class="custom-equip-puissance" data-idx="' + idx + '" value="' + (equip.puissance !== undefined ? equip.puissance : "") + '" placeholder="Ex : 1.5"></div>' +
+                '<div class="field-group">' + PhotoManager.createPhotoWidget("sport_" + currentSport.numero + "_customeq_" + equip.nom) + '</div>' +
             '</div>';
 
         customEquipementsList.appendChild(item);
@@ -257,6 +271,16 @@ function renderCustomEquipements() {
         });
     });
 
+    customEquipementsList.querySelectorAll(".custom-equip-puissance").forEach(function (input) {
+        input.addEventListener("input", function () {
+            var idx = parseInt(input.dataset.idx);
+            var v = parseFloat(input.value);
+            customEquipements[idx].puissance = isNaN(v) || v < 0 ? 0 : v;
+        });
+    });
+
+    PhotoManager.bindAll(customEquipementsList);
+
 }
 
 renderCustomEquipements();
@@ -277,7 +301,7 @@ addEquipementButton.addEventListener("click", function () {
         return;
     }
 
-    customEquipements.push({ nom: nom, nombre: 1 });
+    customEquipements.push({ nom: nom, nombre: 1, puissance: "" });
     nouvelEquipementInput.value = "";
     renderCustomEquipements();
 

@@ -164,26 +164,34 @@ if (savedData) {
    ÉQUIPEMENTS PARTAGÉS (cases à cocher)
 ========================= */
 
+// puissanceDefaut (kW) : estimations typiques pour pré-remplir le champ, à
+// ajuster par l'utilisateur selon le matériel réellement présent.
 var equipPartagesDef = [
-    { id: "photocopieur",   label: "Photocopieur / multifonction", fields: ["nombre"] },
-    { id: "distributeur",   label: "Distributeur de boissons",     fields: ["nombre"] },
-    { id: "fontaineEau",    label: "Fontaine à eau",               fields: ["nombre"] },
-    { id: "machineCafe",    label: "Machine à café",               fields: ["nombre"] },
-    { id: "microOndes",     label: "Micro-ondes",                  fields: ["nombre"] },
-    { id: "refrigerateur",  label: "Réfrigérateur",                fields: ["nombre"] }
+    { id: "photocopieur",   label: "Photocopieur / multifonction", fields: ["nombre", "puissance"], puissanceDefaut: 1.5 },
+    { id: "distributeur",   label: "Distributeur de boissons",     fields: ["nombre", "puissance"], puissanceDefaut: 0.15 },
+    { id: "fontaineEau",    label: "Fontaine à eau",               fields: ["nombre", "puissance"], puissanceDefaut: 0.1 },
+    { id: "machineCafe",    label: "Machine à café",               fields: ["nombre", "puissance"], puissanceDefaut: 1.2 },
+    { id: "microOndes",     label: "Micro-ondes",                  fields: ["nombre", "puissance"], puissanceDefaut: 1.0 },
+    { id: "refrigerateur",  label: "Réfrigérateur",                fields: ["nombre", "puissance"], puissanceDefaut: 0.15 }
 ];
 
 var savedEquipPartages = savedData && savedData.equipPartages ? savedData.equipPartages : {};
 
 var equipPartagesList = document.getElementById("equipPartagesList");
 
-function buildFieldHTML(eqId, fieldName, savedEq) {
+function buildFieldHTML(eqId, fieldName, savedEq, puissanceDefaut) {
     var val = savedEq ? savedEq[fieldName] || "" : "";
 
     if (fieldName === "nombre") {
         return '<div class="field-group"><label>Nombre</label>' +
             '<input type="number" min="1" step="1" inputmode="numeric" ' +
             'id="eq-' + eqId + '-nombre" placeholder="Ex : 2" value="' + val + '"></div>';
+    }
+    if (fieldName === "puissance") {
+        if (val === "" && puissanceDefaut !== undefined) { val = puissanceDefaut; }
+        return '<div class="field-group"><label>Puissance unitaire (kW)</label>' +
+            '<input type="number" min="0" step="0.05" inputmode="numeric" ' +
+            'id="eq-' + eqId + '-puissance" placeholder="Ex : 1.5" value="' + val + '"></div>';
     }
     return "";
 }
@@ -204,7 +212,7 @@ equipPartagesDef.forEach(function (eq) {
 
     var fieldsHTML = '<div class="equipement-fields' + (isChecked ? '' : ' hidden') + '" id="eqFields-' + eq.id + '">';
     eq.fields.forEach(function (f) {
-        fieldsHTML += buildFieldHTML(eq.id, f, savedEq);
+        fieldsHTML += buildFieldHTML(eq.id, f, savedEq, eq.puissanceDefaut);
     });
     fieldsHTML += '<div class="field-group">' + PhotoManager.createPhotoWidget("bureaux_" + currentBureaux.numero + "_eq_" + eq.id) + '</div>';
     fieldsHTML += '</div>';
@@ -253,6 +261,9 @@ function renderCustomEquipements() {
             '<div class="equipement-fields">' +
                 '<div class="field-group"><label>Nombre</label>' +
                 '<input type="number" min="1" step="1" inputmode="numeric" class="custom-equip-nombre" data-idx="' + idx + '" value="' + (equip.nombre || 1) + '"></div>' +
+                '<div class="field-group"><label>Puissance unitaire (kW)</label>' +
+                '<input type="number" min="0" step="0.1" inputmode="numeric" class="custom-equip-puissance" data-idx="' + idx + '" value="' + (equip.puissance !== undefined ? equip.puissance : "") + '" placeholder="Ex : 1.5"></div>' +
+                '<div class="field-group">' + PhotoManager.createPhotoWidget("bureaux_" + currentBureaux.numero + "_customeq_" + equip.nom) + '</div>' +
             '</div>';
 
         customEquipementsList.appendChild(item);
@@ -274,6 +285,16 @@ function renderCustomEquipements() {
         });
     });
 
+    customEquipementsList.querySelectorAll(".custom-equip-puissance").forEach(function (input) {
+        input.addEventListener("input", function () {
+            var idx = parseInt(input.dataset.idx);
+            var v = parseFloat(input.value);
+            customEquipements[idx].puissance = isNaN(v) || v < 0 ? 0 : v;
+        });
+    });
+
+    PhotoManager.bindAll(customEquipementsList);
+
 }
 
 renderCustomEquipements();
@@ -294,7 +315,7 @@ addEquipementButton.addEventListener("click", function () {
         return;
     }
 
-    customEquipements.push({ nom: nom, nombre: 1 });
+    customEquipements.push({ nom: nom, nombre: 1, puissance: "" });
     nouvelEquipementInput.value = "";
     renderCustomEquipements();
 

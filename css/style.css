@@ -1804,3 +1804,17 @@ footer {
         grid-template-columns: 1fr;
     }
 }
+
+.equipement-puissance-input {
+    width: 70px;
+    padding: 8px 10px;
+
+    border-radius: 10px;
+    border: 1px solid rgba(157, 164, 178, 0.22);
+
+    background: #07163B;
+    color: #E6E8ED;
+
+    font-size: 14px;
+    font-family: inherit;
+}
