@@ -71,6 +71,7 @@ function renderList() {
             '<div class="progress-bar">' +
                 '<div class="progress-fill" style="width: ' + progress + '%"></div>' +
             '</div>' +
+            '<button type="button" class="card-rename-btn" aria-label="Renommer cette localisation">✎</button>' +
             '<button type="button" class="card-delete-btn" aria-label="Supprimer cette localisation">✕</button>';
 
         card.addEventListener("click", function () {
@@ -84,6 +85,11 @@ function renderList() {
 
         });
 
+        card.querySelector(".card-rename-btn").addEventListener("click", function (e) {
+            e.stopPropagation();
+            renameLocalisation(numero, nom);
+        });
+
         card.querySelector(".card-delete-btn").addEventListener("click", function (e) {
             e.stopPropagation();
             deleteLocalisation(numero, nom);
@@ -92,6 +98,23 @@ function renderList() {
         moduleContent.appendChild(card);
 
     });
+
+}
+
+function renameLocalisation(numero, nomActuel) {
+
+    var nouveauNom = prompt('Nouveau nom pour cette localisation :', nomActuel);
+    if (nouveauNom === null) return;
+
+    nouveauNom = nouveauNom.trim();
+    if (nouveauNom === "") return;
+
+    var data = loadSecteurData();
+    if (!data[numero]) return;
+
+    data[numero].nom = nouveauNom;
+    saveSecteurData(data);
+    renderList();
 
 }
 

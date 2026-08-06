@@ -60,19 +60,42 @@ function renderBuildings() {
 
         var configured = BuildingManager.hasSecteursConfigured(building.id);
 
-        var card = document.createElement("button");
+        var card = document.createElement("div");
         card.className = "dashboard-card";
+        card.setAttribute("tabindex", "0");
+        card.setAttribute("role", "button");
         card.innerHTML =
             '<div class="dashboard-header">' +
                 '<strong>' + building.nom + '</strong>' +
                 '<span>' + (configured ? "✅" : "à configurer") + '</span>' +
             '</div>' +
-            '<small>' + (configured ? "Modifier les secteurs / localisations" : "Ajouter des localisations") + '</small>';
+            '<small>' + (configured ? "Modifier les secteurs / localisations" : "Ajouter des localisations") + '</small>' +
+            '<button type="button" class="card-rename-btn" aria-label="Renommer ce bâtiment">✎</button>' +
+            '<button type="button" class="card-delete-btn" aria-label="Supprimer ce bâtiment">✕</button>';
 
         card.addEventListener("click", function () {
             BuildingManager.switchToBuilding(building.id).then(function () {
                 window.location.href = "audit.html";
             });
+        });
+
+        card.querySelector(".card-rename-btn").addEventListener("click", function (e) {
+            e.stopPropagation();
+            var nouveauNom = prompt('Nouveau nom pour ce bâtiment :', building.nom);
+            if (nouveauNom === null) return;
+            nouveauNom = nouveauNom.trim();
+            if (nouveauNom === "") return;
+            BuildingManager.renameBuilding(building.id, nouveauNom);
+            renderBuildings();
+        });
+
+        card.querySelector(".card-delete-btn").addEventListener("click", function (e) {
+            e.stopPropagation();
+            if (!confirm('Supprimer le bâtiment "' + building.nom + '" et toutes ses données (secteurs, localisations, photos) ? Cette action est irréversible.')) {
+                return;
+            }
+            renderBuildings();
+            BuildingManager.deleteBuilding(building.id);
         });
 
         buildingsDashboard.appendChild(card);

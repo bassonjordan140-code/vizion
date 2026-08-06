@@ -38,6 +38,39 @@ window.BuildingManager = (function () {
         return id;
     }
 
+    function renameBuilding(id, nom) {
+        var buildings = listBuildings();
+        var building = buildings.find(function (b) { return b.id === id; });
+        if (building) {
+            building.nom = nom;
+            saveBuildingsList(buildings);
+        }
+    }
+
+    // Supprime le bâtiment (liste, instantané, photos archivées). Si c'était le
+    // bâtiment actif, vide aussi les clés plates actives (secteurs, fiches, photos).
+    function deleteBuilding(id) {
+        saveBuildingsList(listBuildings().filter(function (b) { return b.id !== id; }));
+        localStorage.removeItem(snapshotKey(id));
+
+        var chain = PhotoManager.deleteArchivedPhotosForBuilding(id);
+
+        if (getCurrentBuildingId() === id) {
+            localStorage.removeItem(CURRENT_BUILDING_KEY);
+            localStorage.removeItem("activeSecteurs");
+            localStorage.removeItem("currentSecteur");
+            Object.keys(SECTEUR_DATA_KEYS).forEach(function (secteurId) {
+                localStorage.removeItem(SECTEUR_DATA_KEYS[secteurId]);
+            });
+            Object.keys(SECTEUR_CURRENT_KEYS).forEach(function (secteurId) {
+                localStorage.removeItem(SECTEUR_CURRENT_KEYS[secteurId]);
+            });
+            chain = chain.then(function () { return PhotoManager.clearPhotos(); });
+        }
+
+        return chain;
+    }
+
     /* =========================
        INSTANTANÉ (snapshot) D'UN BÂTIMENT
     ========================= */
@@ -187,6 +220,8 @@ window.BuildingManager = (function () {
         listBuildings: listBuildings,
         getCurrentBuildingId: getCurrentBuildingId,
         createBuilding: createBuilding,
+        renameBuilding: renameBuilding,
+        deleteBuilding: deleteBuilding,
         saveCurrentBuildingSnapshot: saveCurrentBuildingSnapshot,
         loadBuildingSnapshot: loadBuildingSnapshot,
         switchToBuilding: switchToBuilding,

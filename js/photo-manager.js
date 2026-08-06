@@ -167,6 +167,26 @@ window.PhotoManager = (function () {
         });
     }
 
+    // Supprime définitivement l'archive d'un bâtiment (utilisé quand le bâtiment lui-même est supprimé).
+    function deleteArchivedPhotosForBuilding(buildingId) {
+        return openDB().then(function (db) {
+            return new Promise(function (resolve, reject) {
+                var tx = db.transaction(ARCHIVE_STORE_NAME, "readwrite");
+                var index = tx.objectStore(ARCHIVE_STORE_NAME).index("by_buildingId");
+                var req = index.openCursor(IDBKeyRange.only(buildingId));
+                req.onsuccess = function (e) {
+                    var cursor = e.target.result;
+                    if (cursor) {
+                        cursor.delete();
+                        cursor.continue();
+                    }
+                };
+                tx.oncomplete = function () { resolve(); };
+                tx.onerror = function () { reject(tx.error); };
+            });
+        });
+    }
+
     // Vide entièrement le store actif ET l'archive (remise à zéro complète, tous bâtiments confondus).
     function clearAllPhotosAndArchive() {
         return openDB().then(function (db) {
@@ -356,6 +376,7 @@ window.PhotoManager = (function () {
         archivePhotosForBuilding: archivePhotosForBuilding,
         restorePhotosForBuilding: restorePhotosForBuilding,
         getArchivedPhotosForBuilding: getArchivedPhotosForBuilding,
+        deleteArchivedPhotosForBuilding: deleteArchivedPhotosForBuilding,
         clearPhotos: clearPhotos,
         clearAllPhotosAndArchive: clearAllPhotosAndArchive
     };

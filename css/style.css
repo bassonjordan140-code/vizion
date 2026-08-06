@@ -396,7 +396,7 @@ footer {
 
     width: 100%;
 
-    padding: 24px 56px 24px 24px;
+    padding: 24px 98px 24px 24px;
 
     border-radius: 20px;
 
@@ -438,7 +438,8 @@ footer {
         0 14px 28px rgba(0, 0, 0, 0.35);
 }
 
-.card-delete-btn {
+.card-delete-btn,
+.card-rename-btn {
     position: absolute;
     top: 20px;
     right: 16px;
@@ -465,6 +466,16 @@ footer {
         background 0.2s,
         border-color 0.2s,
         color 0.2s;
+}
+
+.card-rename-btn {
+    right: 54px;
+}
+
+.card-rename-btn:hover {
+    border-color: rgba(200, 204, 213, 0.45);
+    background: rgba(200, 204, 213, 0.12);
+    color: #E6E8ED;
 }
 
 .card-delete-btn:hover {
