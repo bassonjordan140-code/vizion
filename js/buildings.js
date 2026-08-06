@@ -243,8 +243,11 @@ function renderBuildings() {
             if (!confirm('Supprimer le bâtiment "' + building.nom + '" et toutes ses données (secteurs, localisations, photos) ? Cette action est irréversible.')) {
                 return;
             }
-            renderBuildings();
+            // La suppression de la liste des bâtiments est synchrone (le nettoyage des
+            // photos, lui, se termine en tâche de fond) : on l'appelle avant le rendu
+            // pour que la carte disparaisse immédiatement, sans attendre un rafraîchissement.
             BuildingManager.deleteBuilding(building.id);
+            renderBuildings();
         });
 
         buildingsDashboard.appendChild(card);
