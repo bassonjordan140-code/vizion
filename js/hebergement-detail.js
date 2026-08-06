@@ -25,9 +25,9 @@ PhotoManager.initPage("hebergement", currentHebergement.numero);
 
 const counters = [
     { id: "nbEtages", label: "Nombre d’étages", value: 0 },
-    { id: "nbHebergements", label: "Nombre d’hébergements", value: 1 },
-    { id: "nbChambres", label: "Nombre de pièces", value: 1 },
-    { id: "capacite", label: "Capacité d’accueil (nombre de personnes)", value: 2 }
+    { id: "nbHebergements", label: "Nombre d’hébergements", value: 0 },
+    { id: "nbChambres", label: "Nombre de pièces", value: 0 },
+    { id: "capacite", label: "Capacité d’accueil (nombre de personnes)", value: 0 }
 ];
 
 counters.forEach(function (counter) {
@@ -714,8 +714,8 @@ const brasseurNombre =
 
 let brasseurAir =
     savedData && savedData.brasseurAir
-        ? { present: savedData.brasseurAir.present === "oui", nombre: savedData.brasseurAir.nombre || 1 }
-        : { present: false, nombre: 1 };
+        ? { present: savedData.brasseurAir.present === "oui", nombre: savedData.brasseurAir.nombre || 0 }
+        : { present: false, nombre: 0 };
 
 if (brasseurAir.present) {
     brasseurNombre.value = brasseurAir.nombre;
@@ -752,7 +752,7 @@ brasseurToggle
 
 brasseurNombre.addEventListener("input", function () {
     var v = parseInt(brasseurNombre.value);
-    brasseurAir.nombre = isNaN(v) || v < 1 ? 1 : v;
+    brasseurAir.nombre = isNaN(v) || v < 0 ? 0 : v;
 });
 
 updateBrasseurToggle();
@@ -782,7 +782,7 @@ const climNombre =
 let climatisation =
     savedData && savedData.climatisation
         ? JSON.parse(JSON.stringify(savedData.climatisation))
-        : { present: false, nombre: 1, etat: "Bon", plaque: false };
+        : { present: false, nombre: 0, etat: "Bon", plaque: false };
 
 function updateClimToggle() {
 
@@ -872,12 +872,12 @@ climEtat.addEventListener("change", function () {
 
 climNombre.addEventListener("input", function () {
     var v = parseInt(climNombre.value);
-    climatisation.nombre = isNaN(v) || v < 1 ? 1 : v;
+    climatisation.nombre = isNaN(v) || v < 0 ? 0 : v;
 });
 
 if (savedData && savedData.climatisation) {
     climEtat.value = climatisation.etat;
-    climNombre.value = climatisation.nombre || 1;
+    climNombre.value = climatisation.nombre || 0;
 }
 
 updateClimToggle();
@@ -1176,7 +1176,7 @@ let piscinePrivee =
             chauffee: false,
             volume: 0,
             eclairage: false,
-            eclairageNombre: 1,
+            eclairageNombre: 0,
             eclairageType: "LED"
         };
 
@@ -1268,7 +1268,7 @@ piscineVolume.addEventListener("input", function () {
 
 piscineEclairageNombre.addEventListener("input", function () {
     var v = parseInt(piscineEclairageNombre.value);
-    piscinePrivee.eclairageNombre = isNaN(v) || v < 1 ? 1 : v;
+    piscinePrivee.eclairageNombre = isNaN(v) || v < 0 ? 0 : v;
 });
 
 piscineEclairageType.addEventListener("change", function () {

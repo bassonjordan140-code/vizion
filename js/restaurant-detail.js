@@ -86,7 +86,7 @@ var climNombre = document.getElementById("climNombre");
 var climatisation =
     savedData && savedData.climatisation
         ? JSON.parse(JSON.stringify(savedData.climatisation))
-        : { present: false, nombre: 1, etat: "Bon", plaque: false };
+        : { present: false, nombre: 0, etat: "Bon", plaque: false };
 
 function updateClimToggle() {
     updateToggleUI(climToggle, climatisation.present);
@@ -116,12 +116,12 @@ climEtat.addEventListener("change", function () {
 
 climNombre.addEventListener("input", function () {
     var v = parseInt(climNombre.value);
-    climatisation.nombre = isNaN(v) || v < 1 ? 1 : v;
+    climatisation.nombre = isNaN(v) || v < 0 ? 0 : v;
 });
 
 if (savedData && savedData.climatisation) {
     climEtat.value = climatisation.etat;
-    climNombre.value = climatisation.nombre || 1;
+    climNombre.value = climatisation.nombre || 0;
 }
 
 updateClimToggle();
@@ -137,8 +137,8 @@ var brasseurNombre = document.getElementById("brasseurNombre");
 
 var brasseurAir =
     savedData && savedData.brasseurAir
-        ? { present: savedData.brasseurAir.present === "oui", nombre: savedData.brasseurAir.nombre || 1 }
-        : { present: false, nombre: 1 };
+        ? { present: savedData.brasseurAir.present === "oui", nombre: savedData.brasseurAir.nombre || 0 }
+        : { present: false, nombre: 0 };
 
 if (brasseurAir.present) { brasseurNombre.value = brasseurAir.nombre; }
 
@@ -155,7 +155,7 @@ setupToggle(brasseurToggle, function (val) {
 
 brasseurNombre.addEventListener("input", function () {
     var v = parseInt(brasseurNombre.value);
-    brasseurAir.nombre = isNaN(v) || v < 1 ? 1 : v;
+    brasseurAir.nombre = isNaN(v) || v < 0 ? 0 : v;
 });
 
 updateBrasseurToggle();

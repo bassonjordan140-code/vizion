@@ -70,7 +70,7 @@ var climNombre = document.getElementById("climNombre");
 var climatisation =
     savedData && savedData.climatisation
         ? JSON.parse(JSON.stringify(savedData.climatisation))
-        : { present: false, nombre: 1, etat: "Bon", plaque: false };
+        : { present: false, nombre: 0, etat: "Bon", plaque: false };
 
 function updateClimToggle() {
     updateToggleUI(climToggle, climatisation.present);
@@ -100,12 +100,12 @@ climEtat.addEventListener("change", function () {
 
 climNombre.addEventListener("input", function () {
     var v = parseInt(climNombre.value);
-    climatisation.nombre = isNaN(v) || v < 1 ? 1 : v;
+    climatisation.nombre = isNaN(v) || v < 0 ? 0 : v;
 });
 
 if (savedData && savedData.climatisation) {
     climEtat.value = climatisation.etat;
-    climNombre.value = climatisation.nombre || 1;
+    climNombre.value = climatisation.nombre || 0;
 }
 
 updateClimToggle();
@@ -121,8 +121,8 @@ var brasseurNombre = document.getElementById("brasseurNombre");
 
 var brasseurAir =
     savedData && savedData.brasseurAir
-        ? { present: savedData.brasseurAir.present === "oui", nombre: savedData.brasseurAir.nombre || 1 }
-        : { present: false, nombre: 1 };
+        ? { present: savedData.brasseurAir.present === "oui", nombre: savedData.brasseurAir.nombre || 0 }
+        : { present: false, nombre: 0 };
 
 if (brasseurAir.present) { brasseurNombre.value = brasseurAir.nombre; }
 
@@ -139,7 +139,7 @@ setupToggle(brasseurToggle, function (val) {
 
 brasseurNombre.addEventListener("input", function () {
     var v = parseInt(brasseurNombre.value);
-    brasseurAir.nombre = isNaN(v) || v < 1 ? 1 : v;
+    brasseurAir.nombre = isNaN(v) || v < 0 ? 0 : v;
 });
 
 updateBrasseurToggle();
@@ -157,7 +157,7 @@ var vitrineNombre = document.getElementById("vitrineNombre");
 var vitrines =
     savedData && savedData.vitrinesRefrigerees
         ? JSON.parse(JSON.stringify(savedData.vitrinesRefrigerees))
-        : { presente: false, nombre: 1 };
+        : { presente: false, nombre: 0 };
 
 function updateVitrineToggle() {
     updateToggleUI(vitrineToggle, vitrines.presente);
@@ -171,12 +171,12 @@ setupToggle(vitrineToggle, function (val) {
 });
 
 if (savedData && savedData.vitrinesRefrigerees) {
-    vitrineNombre.value = vitrines.nombre || 1;
+    vitrineNombre.value = vitrines.nombre || 0;
 }
 
 vitrineNombre.addEventListener("input", function () {
     var v = parseInt(vitrineNombre.value);
-    vitrines.nombre = isNaN(v) || v < 1 ? 1 : v;
+    vitrines.nombre = isNaN(v) || v < 0 ? 0 : v;
 });
 
 updateVitrineToggle();
@@ -213,7 +213,7 @@ var glaconsNombre = document.getElementById("glaconsNombre");
 var machineGlacons =
     savedData && savedData.machineGlacons
         ? JSON.parse(JSON.stringify(savedData.machineGlacons))
-        : { presente: false, nombre: 1 };
+        : { presente: false, nombre: 0 };
 
 function updateGlaconsToggle() {
     updateToggleUI(glaconsToggle, machineGlacons.presente);
@@ -227,12 +227,12 @@ setupToggle(glaconsToggle, function (val) {
 });
 
 if (savedData && savedData.machineGlacons) {
-    glaconsNombre.value = savedData.machineGlacons.nombre || 1;
+    glaconsNombre.value = savedData.machineGlacons.nombre || 0;
 }
 
 glaconsNombre.addEventListener("input", function () {
     var v = parseInt(glaconsNombre.value);
-    machineGlacons.nombre = isNaN(v) || v < 1 ? 1 : v;
+    machineGlacons.nombre = isNaN(v) || v < 0 ? 0 : v;
 });
 
 updateGlaconsToggle();
@@ -246,7 +246,7 @@ var caveNombre = document.getElementById("caveNombre");
 var caveVin =
     savedData && savedData.caveVin
         ? JSON.parse(JSON.stringify(savedData.caveVin))
-        : { presente: false, nombre: 1 };
+        : { presente: false, nombre: 0 };
 
 function updateCaveToggle() {
     updateToggleUI(caveToggle, caveVin.presente);
@@ -260,12 +260,12 @@ setupToggle(caveToggle, function (val) {
 });
 
 if (savedData && savedData.caveVin) {
-    caveNombre.value = savedData.caveVin.nombre || 1;
+    caveNombre.value = savedData.caveVin.nombre || 0;
 }
 
 caveNombre.addEventListener("input", function () {
     var v = parseInt(caveNombre.value);
-    caveVin.nombre = isNaN(v) || v < 1 ? 1 : v;
+    caveVin.nombre = isNaN(v) || v < 0 ? 0 : v;
 });
 
 updateCaveToggle();
@@ -281,7 +281,7 @@ var cafeNombre = document.getElementById("cafeNombre");
 var machineCafe =
     savedData && savedData.machineCafe
         ? JSON.parse(JSON.stringify(savedData.machineCafe))
-        : { presente: false, nombre: 1 };
+        : { presente: false, nombre: 0 };
 
 function updateCafeToggle() {
     updateToggleUI(cafeToggle, machineCafe.presente);
@@ -295,12 +295,12 @@ setupToggle(cafeToggle, function (val) {
 });
 
 if (savedData && savedData.machineCafe) {
-    cafeNombre.value = machineCafe.nombre || 1;
+    cafeNombre.value = machineCafe.nombre || 0;
 }
 
 cafeNombre.addEventListener("input", function () {
     var v = parseInt(cafeNombre.value);
-    machineCafe.nombre = isNaN(v) || v < 1 ? 1 : v;
+    machineCafe.nombre = isNaN(v) || v < 0 ? 0 : v;
 });
 
 updateCafeToggle();
@@ -411,7 +411,7 @@ var ecransPermanentsToggle = document.getElementById("ecransPermanentsToggle");
 var ecrans =
     savedData && savedData.ecrans
         ? JSON.parse(JSON.stringify(savedData.ecrans))
-        : { present: false, nombre: 1, permanents: false };
+        : { present: false, nombre: 0, permanents: false };
 
 function updateEcransToggle() {
     updateToggleUI(ecransToggle, ecrans.present);
@@ -430,12 +430,12 @@ setupToggle(ecransPermanentsToggle, function (val) {
 });
 
 if (savedData && savedData.ecrans) {
-    ecransNombre.value = ecrans.nombre || 1;
+    ecransNombre.value = ecrans.nombre || 0;
 }
 
 ecransNombre.addEventListener("input", function () {
     var v = parseInt(ecransNombre.value);
-    ecrans.nombre = isNaN(v) || v < 1 ? 1 : v;
+    ecrans.nombre = isNaN(v) || v < 0 ? 0 : v;
 });
 
 updateEcransToggle();

@@ -273,10 +273,16 @@ window.PhotoManager = (function () {
                 '<img class="photo-widget-thumb" src="" alt="Photo">' +
                 '<button type="button" class="photo-widget-delete" aria-label="Supprimer la photo">✕</button>' +
             '</div>' +
-            '<label class="photo-widget-capture">' +
-                '<input type="file" accept="image/*" class="photo-widget-input">' +
-                '<span class="photo-widget-label">📷 Prendre / choisir une photo</span>' +
-            '</label>' +
+            '<div class="photo-widget-capture-group">' +
+                '<label class="photo-widget-capture">' +
+                    '<input type="file" accept="image/*" capture="environment" class="photo-widget-input">' +
+                    '<span class="photo-widget-label">📷 Prendre une photo</span>' +
+                '</label>' +
+                '<label class="photo-widget-capture">' +
+                    '<input type="file" accept="image/*" class="photo-widget-input">' +
+                    '<span class="photo-widget-label">🖼️ Galerie</span>' +
+                '</label>' +
+            '</div>' +
         '</div>';
     }
 
@@ -290,8 +296,8 @@ window.PhotoManager = (function () {
 
         var preview = widget.querySelector(".photo-widget-preview");
         var thumb = widget.querySelector(".photo-widget-thumb");
-        var capture = widget.querySelector(".photo-widget-capture");
-        var input = widget.querySelector(".photo-widget-input");
+        var captureGroup = widget.querySelector(".photo-widget-capture-group");
+        var inputs = widget.querySelectorAll(".photo-widget-input");
         var deleteBtn = widget.querySelector(".photo-widget-delete");
 
         // Charger miniature existante
@@ -299,26 +305,28 @@ window.PhotoManager = (function () {
             if (dataUrl) {
                 thumb.src = dataUrl;
                 preview.classList.remove("hidden");
-                capture.classList.add("hidden");
+                captureGroup.classList.add("hidden");
             }
         });
 
-        // Capture / upload
-        input.addEventListener("change", function () {
-            var file = input.files[0];
-            if (!file) return;
+        // Capture (appareil photo) / upload (galerie) — deux entrées, même traitement
+        inputs.forEach(function (input) {
+            input.addEventListener("change", function () {
+                var file = input.files[0];
+                if (!file) return;
 
-            Promise.all([
-                resizeImage(file, MAX_WIDTH, JPEG_QUALITY),
-                generateThumbnail(file)
-            ]).then(function (results) {
-                var compressedBlob = results[0];
-                var thumbnailUrl = results[1];
+                Promise.all([
+                    resizeImage(file, MAX_WIDTH, JPEG_QUALITY),
+                    generateThumbnail(file)
+                ]).then(function (results) {
+                    var compressedBlob = results[0];
+                    var thumbnailUrl = results[1];
 
-                return savePhoto(key, compressedBlob, thumbnailUrl).then(function () {
-                    thumb.src = thumbnailUrl;
-                    preview.classList.remove("hidden");
-                    capture.classList.add("hidden");
+                    return savePhoto(key, compressedBlob, thumbnailUrl).then(function () {
+                        thumb.src = thumbnailUrl;
+                        preview.classList.remove("hidden");
+                        captureGroup.classList.add("hidden");
+                    });
                 });
             });
         });
@@ -330,8 +338,8 @@ window.PhotoManager = (function () {
             deletePhoto(key).then(function () {
                 thumb.src = "";
                 preview.classList.add("hidden");
-                capture.classList.remove("hidden");
-                input.value = "";
+                captureGroup.classList.remove("hidden");
+                inputs.forEach(function (input) { input.value = ""; });
             });
         });
     }

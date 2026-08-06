@@ -1194,10 +1194,22 @@ footer {
     width: 100%;
 }
 
+.photo-widget-capture-group {
+    display: flex;
+    gap: 10px;
+}
+
+@media (max-width: 420px) {
+    .photo-widget-capture-group {
+        flex-direction: column;
+    }
+}
+
 .photo-widget-capture {
     display: flex;
     align-items: center;
     justify-content: center;
+    flex: 1;
     width: 100%;
     padding: 14px;
     border-radius: 12px;
