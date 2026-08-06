@@ -224,6 +224,83 @@ equipPartagesDef.forEach(function (eq) {
 PhotoManager.bindAll(equipPartagesList);
 
 /* =========================
+   ÉQUIPEMENTS AJOUTÉS LIBREMENT (hors liste fixe)
+========================= */
+
+var customEquipements =
+    savedData && Array.isArray(savedData.equipementsPersonnalises)
+        ? JSON.parse(JSON.stringify(savedData.equipementsPersonnalises))
+        : [];
+
+var customEquipementsList = document.getElementById("customEquipementsList");
+var nouvelEquipementInput = document.getElementById("nouvelEquipementInput");
+var addEquipementButton = document.getElementById("addEquipementButton");
+
+function renderCustomEquipements() {
+
+    customEquipementsList.innerHTML = "";
+
+    customEquipements.forEach(function (equip, idx) {
+
+        var item = document.createElement("div");
+        item.className = "equipement-item checked";
+
+        item.innerHTML =
+            '<div class="equipement-header-row">' +
+                '<span>' + equip.nom + '</span>' +
+                '<button type="button" class="parois-delete-btn" data-idx="' + idx + '" aria-label="Supprimer cet équipement">✕</button>' +
+            '</div>' +
+            '<div class="equipement-fields">' +
+                '<div class="field-group"><label>Nombre</label>' +
+                '<input type="number" min="1" step="1" inputmode="numeric" class="custom-equip-nombre" data-idx="' + idx + '" value="' + (equip.nombre || 1) + '"></div>' +
+            '</div>';
+
+        customEquipementsList.appendChild(item);
+
+    });
+
+    customEquipementsList.querySelectorAll(".parois-delete-btn").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+            customEquipements.splice(parseInt(btn.dataset.idx), 1);
+            renderCustomEquipements();
+        });
+    });
+
+    customEquipementsList.querySelectorAll(".custom-equip-nombre").forEach(function (input) {
+        input.addEventListener("input", function () {
+            var idx = parseInt(input.dataset.idx);
+            var v = parseInt(input.value);
+            customEquipements[idx].nombre = isNaN(v) || v < 1 ? 1 : v;
+        });
+    });
+
+}
+
+renderCustomEquipements();
+
+addEquipementButton.addEventListener("click", function () {
+
+    var nom = nouvelEquipementInput.value.trim();
+    if (nom === "") {
+        alert("Veuillez entrer un nom d'équipement.");
+        return;
+    }
+
+    var exists = customEquipements.some(function (e) {
+        return e.nom.toLowerCase() === nom.toLowerCase();
+    });
+    if (exists) {
+        alert("Cet équipement est déjà dans la liste.");
+        return;
+    }
+
+    customEquipements.push({ nom: nom, nombre: 1 });
+    nouvelEquipementInput.value = "";
+    renderCustomEquipements();
+
+});
+
+/* =========================
    SALLE SERVEUR
 ========================= */
 
@@ -426,6 +503,7 @@ saveButton.addEventListener("click", function () {
         nbEcrans: parseInt(nbEcrans.value) || 0,
         nbImprimantes: parseInt(nbImprimantes.value) || 0,
         equipPartages: equipPartages,
+        equipementsPersonnalises: customEquipements,
         salleServeur: {
             presente: salleServeur.presente,
             surface: parseFloat(serveurSurface.value) || 0,

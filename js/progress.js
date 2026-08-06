@@ -323,7 +323,7 @@ function calcCuisineProgress(d) {
     if (has(d.nom)) filled++;
     if (d.surface > 0) filled++;
     if (d.couvertsJour > 0) filled++;
-    if (d.equipements && Object.keys(d.equipements).length > 0) filled++;
+    if ((d.equipements && Object.keys(d.equipements).length > 0) || (d.equipementsPersonnalises && d.equipementsPersonnalises.length > 0)) filled++;
     if (d.nbHottes > 0) filled++;
     if (d.eclairages && d.eclairages.length > 0) filled++;
 
@@ -433,7 +433,7 @@ function calcSportProgress(d) {
 
     if (has(d.nom)) filled++;
     if (d.surface > 0) filled++;
-    if (d.equipements && Object.keys(d.equipements).length > 0) filled++;
+    if ((d.equipements && Object.keys(d.equipements).length > 0) || (d.equipementsPersonnalises && d.equipementsPersonnalises.length > 0)) filled++;
     if (d.eclairages && d.eclairages.length > 0) filled++;
 
     if (d.brasseurAir && d.brasseurAir.present === "oui") {
@@ -487,7 +487,7 @@ function calcJeuxProgress(d) {
 
     if (has(d.nom)) filled++;
     if (d.surface > 0) filled++;
-    if (d.equipements && Object.keys(d.equipements).length > 0) filled++;
+    if ((d.equipements && Object.keys(d.equipements).length > 0) || (d.equipementsPersonnalises && d.equipementsPersonnalises.length > 0)) filled++;
     if (d.eclairages && d.eclairages.length > 0) filled++;
 
     if (d.brasseurAir && d.brasseurAir.present === "oui") {

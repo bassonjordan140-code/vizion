@@ -147,6 +147,18 @@ window.LotMapping = (function () {
         }));
     }
 
+    // Équipements ajoutés librement par l'utilisateur hors liste fixe d'un secteur
+    // (cuisine, salle de jeux, salle de sport, bureaux) — pas de sous-type connu.
+    function addCustomEquipementsRows(rows, equipementsPersonnalises, ctx) {
+        (equipementsPersonnalises || []).forEach(function (eq) {
+            rows.push(makeRow({
+                localisation: ctx.localisation, secteur: ctx.secteur,
+                nombre: eq.nombre, description: eq.nom, lot: "9-1",
+                formulaireOrigine: ctx.formulaireOrigine, nomFormulaire: ctx.nomFormulaire
+            }));
+        });
+    }
+
     function addObservationRow(rows, texte, ctx) {
         if (!texte || !texte.trim()) return;
         rows.push(makeRow({
@@ -548,6 +560,7 @@ window.LotMapping = (function () {
 
         addClimatisationRow(rows, fiche.climatisation, ctx);
         addBrasseurRow(rows, fiche.brasseurAir, ctx);
+        addCustomEquipementsRows(rows, fiche.equipementsPersonnalises, ctx);
 
         var equipements = fiche.equipements || {};
 
@@ -614,6 +627,7 @@ window.LotMapping = (function () {
 
         addClimatisationRow(rows, fiche.climatisation, ctx);
         addBrasseurRow(rows, fiche.brasseurAir, ctx);
+        addCustomEquipementsRows(rows, fiche.equipementsPersonnalises, ctx);
 
         var equipements = fiche.equipements || {};
         Object.keys(JEUX_EQUIP_LABELS).forEach(function (id) {
@@ -711,6 +725,7 @@ window.LotMapping = (function () {
 
         addClimatisationRow(rows, fiche.climatisation, ctx);
         addBrasseurRow(rows, fiche.brasseurAir, ctx);
+        addCustomEquipementsRows(rows, fiche.equipementsPersonnalises, ctx);
 
         var equipements = fiche.equipements || {};
         Object.keys(SPORT_EQUIP).forEach(function (id) {
@@ -774,6 +789,7 @@ window.LotMapping = (function () {
 
         addClimatisationRow(rows, fiche.climatisation, ctx);
         addBrasseurRow(rows, fiche.brasseurAir, ctx);
+        addCustomEquipementsRows(rows, fiche.equipementsPersonnalises, ctx);
 
         if (fiche.nbEcrans) {
             rows.push(makeRow({
