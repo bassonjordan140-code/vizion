@@ -54,8 +54,7 @@ continueButton.addEventListener("click", function () {
         commune: hotel.commune,
         zonePerene: hotel.zonePerene,
         stationMeteo: hotel.stationMeteo,
-        activite: hotel.activite,
-        email: existingSiteInfo.email || ""
+        activite: hotel.activite
     }));
 
     window.location.href = "buildings.html";

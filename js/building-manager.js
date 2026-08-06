@@ -200,13 +200,34 @@ window.BuildingManager = (function () {
         });
     }
 
+    // Transforme la clé technique "secteurId_numero_champ" en un nom lisible
+    // "secteurId_nomLocalisation_champ" (ex: "bureaux_1_clim" → "bureaux_Bureau audit_clim"),
+    // en utilisant le nom donné par l'utilisateur à la localisation. Si le nom est
+    // introuvable (localisation supprimée entretemps), le numéro d'origine est conservé.
+    function buildPhotoDisplayKey(photoKey, snapshot) {
+        var parts = photoKey.split("_");
+        var secteurId = parts[0];
+        var numero = parts[1];
+        var champ = parts.slice(2).join("_");
+        var dataKey = SECTEUR_DATA_KEYS[secteurId];
+        var data = dataKey && snapshot[dataKey];
+        var entry = data && data[numero];
+        var nomPart = (entry && entry.nom) ? entry.nom.replace(/[\\/:*?"<>|]/g, "-") : numero;
+        return secteurId + "_" + nomPart + "_" + champ;
+    }
+
     // Photos de tous les bâtiments, groupées par bâtiment (utilisé pour le zip du rapport).
     function collectAllBuildingsPhotos() {
         return saveCurrentBuildingSnapshot().then(function () {
             var buildings = listBuildings();
             return Promise.all(buildings.map(function (building) {
+                var raw = localStorage.getItem(snapshotKey(building.id));
+                var snapshot = raw ? JSON.parse(raw) : {};
                 return PhotoManager.getArchivedPhotosForBuilding(building.id).then(function (photos) {
-                    return { id: building.id, nom: building.nom, photos: photos };
+                    var renamed = photos.map(function (photo) {
+                        return { key: buildPhotoDisplayKey(photo.key, snapshot), blob: photo.blob };
+                    });
+                    return { id: building.id, nom: building.nom, photos: renamed };
                 });
             }));
         });

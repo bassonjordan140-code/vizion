@@ -2,9 +2,9 @@
    ViZion — Génération et envoi du rapport
    Construit rapport.xlsx (SheetJS) au format "Rapport type"
    (Page de garde / Lots de travaux / Observations) + photos.zip
-   (JSZip), puis tente un envoi par email (EmailJS). En cas
-   d'échec (ou EmailJS non configuré), repli automatique vers
-   GitHub. Un lien de téléchargement local est toujours proposé.
+   (JSZip). Le rapport est toujours téléchargé directement sur
+   l'appareil ; un repli GitHub optionnel (token configuré par
+   l'utilisateur) en conserve aussi une copie en ligne.
 ============================================================ */
 
 window.ReportExport = (function () {
@@ -20,7 +20,7 @@ window.ReportExport = (function () {
 
     var LOTS_HEADERS = ["Index", "Nom", "Contact", "Tel", "ABR", "Email", "Entreprise", "Adresse"];
 
-    var PAGE_GARDE_HEADERS = ["Index", "Type construction", "Adresse", "Commune", "Zone PERENE", "Station Météo"];
+    var PAGE_GARDE_HEADERS = ["Index", "Type construction", "Adresse"];
 
     /* =========================
        INFOS SITE
@@ -32,29 +32,6 @@ window.ReportExport = (function () {
 
     function setSiteInfo(info) {
         localStorage.setItem("siteInfo", JSON.stringify(info));
-    }
-
-    /* =========================
-       EMAILJS — CONFIG
-    ========================= */
-
-    function getEmailConfig() {
-        return {
-            serviceId: localStorage.getItem("emailjs_service_id") || "",
-            templateId: localStorage.getItem("emailjs_template_id") || "",
-            publicKey: localStorage.getItem("emailjs_public_key") || ""
-        };
-    }
-
-    function setEmailConfig(cfg) {
-        localStorage.setItem("emailjs_service_id", (cfg.serviceId || "").trim());
-        localStorage.setItem("emailjs_template_id", (cfg.templateId || "").trim());
-        localStorage.setItem("emailjs_public_key", (cfg.publicKey || "").trim());
-    }
-
-    function hasEmailConfig() {
-        var cfg = getEmailConfig();
-        return !!(cfg.serviceId && cfg.templateId && cfg.publicKey);
     }
 
     function photoFileName(photo, idx) {
@@ -77,10 +54,7 @@ window.ReportExport = (function () {
             [
                 siteInfo.nom || "Audit ViZion",
                 siteInfo.typeConstruction || "",
-                siteInfo.adresse || "",
-                siteInfo.commune || "",
-                siteInfo.zonePerene || "",
-                siteInfo.stationMeteo || ""
+                siteInfo.adresse || ""
             ]
         ];
         var wsPageGarde = XLSX.utils.aoa_to_sheet(pageGardeData);
@@ -158,43 +132,7 @@ window.ReportExport = (function () {
     }
 
     /* =========================
-       ENVOI EMAIL (EmailJS)
-    ========================= */
-
-    function blobToBase64(blob) {
-        return new Promise(function (resolve) {
-            var reader = new FileReader();
-            reader.onloadend = function () { resolve(reader.result.split(",")[1]); };
-            reader.readAsDataURL(blob);
-        });
-    }
-
-    // Nécessite un template EmailJS configuré avec 2 variables "pièce jointe"
-    // (voir doc EmailJS > Attachments) nommées ici xlsx_attachment / zip_attachment,
-    // et une variable destinataire "to_email". À adapter selon le template réel.
-    function sendByEmail(email, xlsxBlob, zipBlob, siteInfo) {
-        var cfg = getEmailConfig();
-        if (!hasEmailConfig() || typeof emailjs === "undefined") {
-            return Promise.reject(new Error("EmailJS non configuré"));
-        }
-
-        emailjs.init(cfg.publicKey);
-
-        return Promise.all([
-            blobToBase64(xlsxBlob),
-            blobToBase64(zipBlob)
-        ]).then(function (results) {
-            return emailjs.send(cfg.serviceId, cfg.templateId, {
-                to_email: email,
-                site_nom: siteInfo.nom || "",
-                xlsx_attachment: results[0],
-                zip_attachment: results[1]
-            });
-        });
-    }
-
-    /* =========================
-       REPLI GITHUB
+       REPLI GITHUB (optionnel)
     ========================= */
 
     function sendToGithub(xlsxBlob, zipBlob, siteInfo, onProgress) {
@@ -225,7 +163,7 @@ window.ReportExport = (function () {
        ORCHESTRATION
     ========================= */
 
-    function sendReport(email, onProgress) {
+    function sendReport(onProgress) {
 
         var siteInfo = getSiteInfo();
 
@@ -242,38 +180,23 @@ window.ReportExport = (function () {
                 return buildPhotosZip(buildingsPhotos).then(function (zipBlob) {
 
                     var nbPhotos = buildingsPhotos.reduce(function (sum, b) { return sum + b.photos.length; }, 0);
-                    var result = { xlsxBlob: xlsxBlob, zipBlob: zipBlob, nbPhotos: nbPhotos };
+                    var result = { xlsxBlob: xlsxBlob, zipBlob: zipBlob, nbPhotos: nbPhotos, channel: "local", detail: "Rapport téléchargé sur cet appareil." };
 
-                    function tryGithub() {
-                        return sendToGithub(xlsxBlob, zipBlob, siteInfo, onProgress).then(function (gh) {
+                    // Le repli GitHub est optionnel (nécessite un token configuré) : s'il échoue
+                    // ou n'est pas configuré, le téléchargement local reste toujours disponible.
+                    var afterGithub = ExportGitHub.getToken()
+                        ? sendToGithub(xlsxBlob, zipBlob, siteInfo, onProgress).then(function (gh) {
                             result.channel = "github";
-                            result.detail = (email ? "Email indisponible — " : "") + "Rapport envoyé sur GitHub.";
+                            result.detail = "Rapport téléchargé sur cet appareil, et copié sur GitHub.";
                             result.url = gh.url;
                             return result;
                         }).catch(function (err) {
-                            // Aucun canal d'envoi disponible : on ne perd pas les fichiers pour autant.
-                            console.warn("Envoi GitHub impossible également :", err);
-                            result.channel = "local";
-                            result.detail = "Envoi impossible (email et GitHub indisponibles) — fichiers téléchargés localement uniquement.";
+                            console.warn("Envoi GitHub impossible :", err);
                             return result;
-                        });
-                    }
-
-                    var afterEmail = email
-                        ? sendByEmail(email, xlsxBlob, zipBlob, siteInfo).then(function () {
-                            result.channel = "email";
-                            result.detail = "Rapport envoyé par email à " + email;
-                            return result;
-                        }).catch(function (err) {
-                            console.warn("Envoi email impossible, repli GitHub :", err);
-                            if (onProgress) onProgress("Email indisponible, envoi vers GitHub...");
-                            return tryGithub();
                         })
-                        : tryGithub();
+                        : Promise.resolve(result);
 
-                    // Le téléchargement local sert toujours de filet de sécurité,
-                    // quel que soit le canal d'envoi effectivement utilisé.
-                    return afterEmail.then(function (r) {
+                    return afterGithub.then(function (r) {
                         downloadBlob(r.xlsxBlob, "rapport.xlsx");
                         downloadBlob(r.zipBlob, "photos.zip");
                         return r;
@@ -290,9 +213,6 @@ window.ReportExport = (function () {
     return {
         getSiteInfo: getSiteInfo,
         setSiteInfo: setSiteInfo,
-        getEmailConfig: getEmailConfig,
-        setEmailConfig: setEmailConfig,
-        hasEmailConfig: hasEmailConfig,
         buildWorkbook: buildWorkbook,
         buildPhotosZip: buildPhotosZip,
         sendReport: sendReport

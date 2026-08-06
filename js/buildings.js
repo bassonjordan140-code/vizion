@@ -12,13 +12,11 @@
 var siteNomInput = document.getElementById("siteNomInput");
 var siteTypeInput = document.getElementById("siteTypeInput");
 var siteAdresseInput = document.getElementById("siteAdresseInput");
-var destinataireEmailInput = document.getElementById("destinataireEmailInput");
 
 var siteInfo = ReportExport.getSiteInfo();
 siteNomInput.value = siteInfo.nom || "";
 siteTypeInput.value = siteInfo.typeConstruction || "";
 siteAdresseInput.value = siteInfo.adresse || "";
-destinataireEmailInput.value = siteInfo.email || "";
 
 var siteMetaHint = document.getElementById("siteMetaHint");
 if (siteInfo.commune) {
@@ -31,12 +29,11 @@ function saveSiteInfo() {
     ReportExport.setSiteInfo(Object.assign({}, current, {
         nom: siteNomInput.value.trim(),
         typeConstruction: siteTypeInput.value.trim(),
-        adresse: siteAdresseInput.value.trim(),
-        email: destinataireEmailInput.value.trim()
+        adresse: siteAdresseInput.value.trim()
     }));
 }
 
-[siteNomInput, siteTypeInput, siteAdresseInput, destinataireEmailInput].forEach(function (input) {
+[siteNomInput, siteTypeInput, siteAdresseInput].forEach(function (input) {
     input.addEventListener("change", saveSiteInfo);
 });
 
@@ -124,30 +121,7 @@ addBuildingBtn.addEventListener("click", function () {
 });
 
 /* =========================
-   CONFIGURATION EMAILJS
-========================= */
-
-var emailjsServiceInput = document.getElementById("emailjsServiceInput");
-var emailjsTemplateInput = document.getElementById("emailjsTemplateInput");
-var emailjsPublicKeyInput = document.getElementById("emailjsPublicKeyInput");
-var saveEmailConfigBtn = document.getElementById("saveEmailConfigBtn");
-
-var emailConfig = ReportExport.getEmailConfig();
-emailjsServiceInput.value = emailConfig.serviceId;
-emailjsTemplateInput.value = emailConfig.templateId;
-emailjsPublicKeyInput.value = emailConfig.publicKey;
-
-saveEmailConfigBtn.addEventListener("click", function () {
-    ReportExport.setEmailConfig({
-        serviceId: emailjsServiceInput.value,
-        templateId: emailjsTemplateInput.value,
-        publicKey: emailjsPublicKeyInput.value
-    });
-    alert("Configuration email enregistrée.");
-});
-
-/* =========================
-   CONFIGURATION GITHUB (repli)
+   CONFIGURATION GITHUB (repli optionnel)
 ========================= */
 
 var saveTokenBtn = document.getElementById("saveTokenBtn");
@@ -177,19 +151,17 @@ exportBtn.addEventListener("click", function () {
 
     saveSiteInfo();
 
-    var email = destinataireEmailInput.value.trim();
-
     exportBtn.disabled = true;
-    exportBtn.textContent = "⏳ Envoi en cours...";
+    exportBtn.textContent = "⏳ Génération en cours...";
     exportStatus.textContent = "";
     exportLink.classList.add("hidden");
 
-    ReportExport.sendReport(email, function (msg) {
+    ReportExport.sendReport(function (msg) {
         exportStatus.textContent = msg;
     }).then(function (result) {
         exportBtn.disabled = false;
-        exportBtn.textContent = "📤 Valider & Envoyer le rapport";
-        exportStatus.textContent = (result.channel === "local" ? "⚠️ " : "✅ ") + result.detail;
+        exportBtn.textContent = "📥 Valider & Télécharger le rapport";
+        exportStatus.textContent = "✅ " + result.detail;
         if (result.url) {
             exportLink.href = result.url;
             exportLink.classList.remove("hidden");
@@ -197,7 +169,7 @@ exportBtn.addEventListener("click", function () {
         renderBuildings();
     }).catch(function (err) {
         exportBtn.disabled = false;
-        exportBtn.textContent = "📤 Valider & Envoyer le rapport";
+        exportBtn.textContent = "📥 Valider & Télécharger le rapport";
         exportStatus.textContent = "❌ Erreur : " + err.message;
         console.error("Export error:", err);
     });

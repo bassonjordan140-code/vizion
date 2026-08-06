@@ -74,42 +74,15 @@
         <!-- Envoi du rapport -->
         <div id="exportSection" class="export-section hidden">
 
-            <h2 class="section-title">Envoyer le rapport</h2>
+            <h2 class="section-title">Générer le rapport</h2>
             <p class="section-hint">
-                Le rapport regroupe tous les bâtiments de cet audit.
+                Le rapport regroupe tous les bâtiments de cet audit et sera téléchargé
+                directement sur cet appareil (rapport.xlsx + photos.zip).
             </p>
-
-            <div class="field-group">
-                <label for="destinataireEmailInput">Email destinataire</label>
-                <input type="email" id="destinataireEmailInput" placeholder="destinataire@exemple.com">
-            </div>
-
-            <details id="emailConfigDetails">
-                <summary class="export-info">
-                    Configuration de l'envoi email (EmailJS) — à faire une seule fois
-                </summary>
-                <div class="export-token-setup">
-                    <div class="field-group">
-                        <label for="emailjsServiceInput">Service ID</label>
-                        <input type="text" id="emailjsServiceInput" placeholder="service_xxxxxxx">
-                    </div>
-                    <div class="field-group">
-                        <label for="emailjsTemplateInput">Template ID</label>
-                        <input type="text" id="emailjsTemplateInput" placeholder="template_xxxxxxx">
-                    </div>
-                    <div class="field-group">
-                        <label for="emailjsPublicKeyInput">Public Key</label>
-                        <input type="text" id="emailjsPublicKeyInput" placeholder="clé publique EmailJS">
-                    </div>
-                    <button type="button" id="saveEmailConfigBtn" class="secondary-button">
-                        Enregistrer la configuration email
-                    </button>
-                </div>
-            </details>
 
             <details id="githubConfigDetails">
                 <summary class="export-info">
-                    Repli GitHub (si l'email échoue) — token d'accès personnel
+                    Copie de secours sur GitHub (optionnel) — token d'accès personnel
                 </summary>
                 <div class="export-token-setup">
                     <div class="field-group">
@@ -123,7 +96,7 @@
             </details>
 
             <button type="button" id="exportBtn" class="primary-button export-button">
-                📤 Valider & Envoyer le rapport
+                📥 Valider & Télécharger le rapport
             </button>
             <p id="exportStatus" class="export-status"></p>
             <a id="exportLink" class="export-link hidden" href="#" target="_blank">
@@ -136,7 +109,6 @@
 
     <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 
     <script src="../js/secteur-config.js"></script>
     <script src="../js/photo-manager.js"></script>
