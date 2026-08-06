@@ -58,11 +58,27 @@ function saveContacts(contacts) {
     ReportExport.setSiteInfo(Object.assign({}, current, { contacts: contacts }));
 }
 
+// ABR = les trois premières lettres du nom de l'hôtel (espaces/ponctuation ignorés).
+function hotelAbr() {
+    var lettersOnly = siteNomInput.value.trim().replace(/[^\p{L}]/gu, "");
+    return lettersOnly.slice(0, 3).toUpperCase();
+}
+
+function hotelEntreprise() {
+    return siteNomInput.value.trim();
+}
+
+function combinePhones(telFixe, telPortable) {
+    return [telFixe, telPortable]
+        .filter(function (t) { return t && t.trim(); })
+        .join(" / ");
+}
+
 function ensureDefaultContacts() {
     if (!ReportExport.getSiteInfo().contacts) {
         saveContacts([
-            { role: "Responsable du site", nom: "", telephone: "", abr: "", email: "", adresse: "", entreprise: "" },
-            { role: "Responsable maintenance", nom: "", telephone: "", abr: "", email: "", adresse: "", entreprise: "" }
+            { role: "Responsable du site", nom: "", telephone: "", abr: hotelAbr(), email: "", adresse: "", entreprise: hotelEntreprise() },
+            { role: "Responsable maintenance", nom: "", telephone: "", abr: hotelAbr(), email: "", adresse: "", entreprise: hotelEntreprise() }
         ]);
     }
 }
@@ -97,11 +113,11 @@ function renderContactSuggestions() {
             updated.push({
                 role: c.fonction || "",
                 nom: nomComplet,
-                telephone: c.telPortable || c.telFixe || "",
-                abr: "",
+                telephone: combinePhones(c.telFixe, c.telPortable),
+                abr: hotelAbr(),
                 email: c.email || "",
                 adresse: "",
-                entreprise: "",
+                entreprise: hotelEntreprise(),
                 _sourceKey: c.email || (c.nom + "_" + c.prenom)
             });
             saveContacts(updated);
@@ -176,7 +192,7 @@ renderContactSuggestions();
 
 addContactBtn.addEventListener("click", function () {
     var updated = getContacts();
-    updated.push({ role: "", nom: "", telephone: "", abr: "", email: "", adresse: "", entreprise: "" });
+    updated.push({ role: "", nom: "", telephone: "", abr: hotelAbr(), email: "", adresse: "", entreprise: hotelEntreprise() });
     saveContacts(updated);
     renderContacts();
 });
