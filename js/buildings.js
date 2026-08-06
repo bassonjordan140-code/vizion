@@ -74,15 +74,6 @@ function combinePhones(telFixe, telPortable) {
         .join(" / ");
 }
 
-function ensureDefaultContacts() {
-    if (!ReportExport.getSiteInfo().contacts) {
-        saveContacts([
-            { role: "Responsable du site", nom: "", telephone: "", abr: hotelAbr(), email: "", adresse: "", entreprise: hotelEntreprise() },
-            { role: "Responsable maintenance", nom: "", telephone: "", abr: hotelAbr(), email: "", adresse: "", entreprise: hotelEntreprise() }
-        ]);
-    }
-}
-
 function renderContactSuggestions() {
 
     contactSuggestions.innerHTML = "";
@@ -186,7 +177,6 @@ function renderContacts() {
     });
 }
 
-ensureDefaultContacts();
 renderContacts();
 renderContactSuggestions();
 

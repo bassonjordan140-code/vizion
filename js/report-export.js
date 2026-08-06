@@ -61,9 +61,7 @@ window.ReportExport = (function () {
             [],
             CONTACTS_HEADERS
         ];
-        var contacts = (siteInfo.contacts && siteInfo.contacts.length)
-            ? siteInfo.contacts
-            : [{ role: "Responsable du site" }, { role: "Responsable maintenance" }];
+        var contacts = siteInfo.contacts || [];
         contacts.forEach(function (contact) {
             pageGardeData.push([
                 contact.role || "",
