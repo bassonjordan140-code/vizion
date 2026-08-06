@@ -873,14 +873,24 @@ window.LotMapping = (function () {
     function extractCustomRows(fiche, numero, secteurLabel) {
         var localisation = fiche.nom || (secteurLabel + " " + numero);
         var ctx = makeCtx(localisation, secteurLabel, "custom", numero);
-        return [makeRow({
-            localisation: localisation,
-            secteur: ctx.secteur,
-            description: fiche.observation ? "Observation : " + fiche.observation.trim() : "",
-            lot: "",
-            formulaireOrigine: ctx.formulaireOrigine,
-            nomFormulaire: ctx.nomFormulaire
-        })];
+        var rows = [];
+
+        addClimatisationRow(rows, fiche.climatisation, ctx);
+        addBrasseurRow(rows, fiche.brasseurAir, ctx);
+        addCustomEquipementsRows(rows, fiche.equipements, ctx);
+        addEclairageRows(rows, fiche.eclairages, ctx);
+        addObservationRow(rows, fiche.observation, ctx);
+
+        // Garantit qu'une localisation sans aucune donnée apparaisse quand même
+        // dans le rapport (au moins son nom), plutôt que de disparaître.
+        if (!rows.length) {
+            rows.push(makeRow({
+                localisation: localisation, secteur: ctx.secteur,
+                formulaireOrigine: ctx.formulaireOrigine, nomFormulaire: ctx.nomFormulaire
+            }));
+        }
+
+        return rows;
     }
 
     /* =========================

@@ -1,8 +1,10 @@
 /* ============================================================
    ViZion — Fiche générique "Secteur personnalisé"
-   Une seule fiche minimale (photo + observation) partagée par
-   tous les secteurs ajoutés librement par l'utilisateur (audit.html),
-   quel que soit leur nom. Les données de tous les secteurs
+   Une seule fiche partagée par tous les secteurs ajoutés librement
+   par l'utilisateur (audit.html), quel que soit leur nom : photo,
+   climatisation, brasseur d'air, équipements ajoutés librement
+   (pas de liste prédéfinie possible pour un secteur inconnu),
+   éclairage, observation. Les données de tous les secteurs
    personnalisés sont rangées dans customSecteurData, sous-clé
    égale à l'id du secteur.
 ============================================================ */
@@ -36,6 +38,291 @@ if (savedData && observationInput) {
 
 PhotoManager.initPage(currentCustom.secteurId, currentCustom.numero);
 
+/* ==============================
+   UTILITAIRE TOGGLE
+============================== */
+
+function updateToggleUI(container, isActive) {
+    container.querySelectorAll(".toggle-btn").forEach(function (btn) {
+        var match =
+            (btn.dataset.value === "oui" && isActive) ||
+            (btn.dataset.value === "non" && !isActive);
+        if (match) { btn.classList.add("active"); }
+        else { btn.classList.remove("active"); }
+    });
+}
+
+function setupToggle(container, callback) {
+    container.querySelectorAll(".toggle-btn").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+            callback(btn.dataset.value === "oui");
+        });
+    });
+}
+
+/* =========================
+   CLIMATISATION
+========================= */
+
+var climToggle = document.getElementById("climToggle");
+var climContent = document.getElementById("climContent");
+var climEtat = document.getElementById("climEtat");
+var plaqueToggle = document.getElementById("plaqueToggle");
+var plaquePhotoContainer = document.getElementById("plaquePhotoContainer");
+var climNombre = document.getElementById("climNombre");
+
+var climatisation =
+    savedData && savedData.climatisation
+        ? JSON.parse(JSON.stringify(savedData.climatisation))
+        : { present: false, nombre: 0, etat: "Bon", plaque: false };
+
+function updateClimToggle() {
+    updateToggleUI(climToggle, climatisation.present);
+    if (climatisation.present) { climContent.classList.remove("hidden"); }
+    else { climContent.classList.add("hidden"); }
+}
+
+function updatePlaqueToggle() {
+    updateToggleUI(plaqueToggle, climatisation.plaque);
+    if (climatisation.plaque) { plaquePhotoContainer.classList.remove("hidden"); }
+    else { plaquePhotoContainer.classList.add("hidden"); }
+}
+
+setupToggle(climToggle, function (val) {
+    climatisation.present = val;
+    updateClimToggle();
+});
+
+setupToggle(plaqueToggle, function (val) {
+    climatisation.plaque = val;
+    updatePlaqueToggle();
+});
+
+climEtat.addEventListener("change", function () {
+    climatisation.etat = climEtat.value;
+});
+
+climNombre.addEventListener("input", function () {
+    var v = parseInt(climNombre.value);
+    climatisation.nombre = isNaN(v) || v < 0 ? 0 : v;
+});
+
+if (savedData && savedData.climatisation) {
+    climEtat.value = climatisation.etat;
+    climNombre.value = climatisation.nombre || 0;
+}
+
+updateClimToggle();
+updatePlaqueToggle();
+
+/* =========================
+   BRASSEUR D'AIR
+========================= */
+
+var brasseurToggle = document.getElementById("brasseurToggle");
+var brasseurContent = document.getElementById("brasseurContent");
+var brasseurNombre = document.getElementById("brasseurNombre");
+
+var brasseurAir =
+    savedData && savedData.brasseurAir
+        ? { present: savedData.brasseurAir.present === "oui", nombre: savedData.brasseurAir.nombre || 0 }
+        : { present: false, nombre: 0 };
+
+if (brasseurAir.present) { brasseurNombre.value = brasseurAir.nombre; }
+
+function updateBrasseurToggle() {
+    updateToggleUI(brasseurToggle, brasseurAir.present);
+    if (brasseurAir.present) { brasseurContent.classList.remove("hidden"); }
+    else { brasseurContent.classList.add("hidden"); }
+}
+
+setupToggle(brasseurToggle, function (val) {
+    brasseurAir.present = val;
+    updateBrasseurToggle();
+});
+
+brasseurNombre.addEventListener("input", function () {
+    var v = parseInt(brasseurNombre.value);
+    brasseurAir.nombre = isNaN(v) || v < 0 ? 0 : v;
+});
+
+updateBrasseurToggle();
+
+/* =========================
+   ÉQUIPEMENTS (100% libres — pas de liste fixe pour un secteur inconnu)
+========================= */
+
+var equipements =
+    savedData && Array.isArray(savedData.equipements)
+        ? JSON.parse(JSON.stringify(savedData.equipements))
+        : [];
+
+var customEquipementsList = document.getElementById("customEquipementsList");
+var nouvelEquipementInput = document.getElementById("nouvelEquipementInput");
+var addEquipementButton = document.getElementById("addEquipementButton");
+
+function renderEquipements() {
+
+    customEquipementsList.innerHTML = "";
+
+    equipements.forEach(function (equip, idx) {
+
+        var item = document.createElement("div");
+        item.className = "equipement-item checked";
+
+        item.innerHTML =
+            '<div class="equipement-header-row">' +
+                '<span>' + equip.nom + '</span>' +
+                '<button type="button" class="parois-delete-btn" data-idx="' + idx + '" aria-label="Supprimer cet équipement">✕</button>' +
+            '</div>' +
+            '<div class="equipement-fields">' +
+                '<div class="field-group"><label>Nombre</label>' +
+                '<input type="number" min="1" step="1" inputmode="numeric" class="custom-equip-nombre" data-idx="' + idx + '" value="' + (equip.nombre || 1) + '"></div>' +
+            '</div>';
+
+        customEquipementsList.appendChild(item);
+
+    });
+
+    customEquipementsList.querySelectorAll(".parois-delete-btn").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+            equipements.splice(parseInt(btn.dataset.idx), 1);
+            renderEquipements();
+        });
+    });
+
+    customEquipementsList.querySelectorAll(".custom-equip-nombre").forEach(function (input) {
+        input.addEventListener("input", function () {
+            var idx = parseInt(input.dataset.idx);
+            var v = parseInt(input.value);
+            equipements[idx].nombre = isNaN(v) || v < 1 ? 1 : v;
+        });
+    });
+
+}
+
+renderEquipements();
+
+addEquipementButton.addEventListener("click", function () {
+
+    var nom = nouvelEquipementInput.value.trim();
+    if (nom === "") {
+        alert("Veuillez entrer un nom d'équipement.");
+        return;
+    }
+
+    var exists = equipements.some(function (e) {
+        return e.nom.toLowerCase() === nom.toLowerCase();
+    });
+    if (exists) {
+        alert("Cet équipement est déjà dans la liste.");
+        return;
+    }
+
+    equipements.push({ nom: nom, nombre: 1 });
+    nouvelEquipementInput.value = "";
+    renderEquipements();
+
+});
+
+/* =========================
+   ÉCLAIRAGE
+========================= */
+
+var ampouleTypes = [
+    { nom: "LED",              puissance: 9 },
+    { nom: "Fluocompacte",     puissance: 18 },
+    { nom: "Tube fluorescent", puissance: 36 },
+    { nom: "Halogène",         puissance: 50 },
+    { nom: "Incandescence",    puissance: 60 }
+];
+
+var eclairageList = document.getElementById("eclairageList");
+var addEclairageButton = document.getElementById("addEclairageButton");
+var eclairages = savedData && Array.isArray(savedData.eclairages) ? savedData.eclairages.slice() : [];
+
+function renderEclairages() {
+
+    eclairageList.innerHTML = "";
+
+    eclairages.forEach(function (item, index) {
+
+        var row = document.createElement("div");
+        row.className = "eclairage-row";
+
+        var typesHTML = ampouleTypes.map(function (t) {
+            return '<option value="' + t.nom + '"' + (t.nom === item.type ? ' selected' : '') + '>' + t.nom + '</option>';
+        }).join("");
+
+        var total = item.puissance * item.quantite;
+
+        row.innerHTML =
+            '<div class="parois-cell"><label>Type</label><select class="eclairage-type-select" data-index="' + index + '">' + typesHTML + '</select></div>' +
+            '<div class="parois-cell eclairage-puissance-cell"><label>W unitaire</label><input type="number" min="1" step="1" inputmode="numeric" pattern="[0-9]*" class="eclairage-puissance-input" data-index="' + index + '" value="' + item.puissance + '"></div>' +
+            '<div class="parois-cell"><label>Quantité</label><input type="number" min="1" step="1" inputmode="numeric" pattern="[0-9]*" class="eclairage-quantite-input" data-index="' + index + '" value="' + item.quantite + '"></div>' +
+            '<div class="parois-cell eclairage-total-cell"><label>Total</label><span class="eclairage-total-value">' + total + ' W</span></div>' +
+            '<button type="button" class="parois-delete-btn eclairage-delete-btn" data-index="' + index + '" aria-label="Supprimer">✕</button>' +
+            '<div class="row-photo-group row-photo-fullwidth">' + PhotoManager.createPhotoWidget(currentCustom.secteurId + "_" + currentCustom.numero + "_eclairage_" + index) + '</div>';
+
+        eclairageList.appendChild(row);
+    });
+
+    if (eclairages.length === 0) {
+        var empty = document.createElement("p");
+        empty.className = "parois-empty";
+        empty.textContent = "Aucun éclairage. Cliquez sur « + Ajouter type d'éclairage ».";
+        eclairageList.appendChild(empty);
+    }
+
+    document.querySelectorAll("#eclairageList .eclairage-type-select").forEach(function (select) {
+        select.addEventListener("change", function () {
+            var idx = parseInt(select.dataset.index);
+            var def = ampouleTypes.find(function (t) { return t.nom === select.value; });
+            eclairages[idx].type = select.value;
+            eclairages[idx].puissance = def.puissance;
+            renderEclairages();
+        });
+    });
+
+    document.querySelectorAll("#eclairageList .eclairage-puissance-input").forEach(function (input) {
+        input.addEventListener("input", function () {
+            var idx = parseInt(input.dataset.index);
+            eclairages[idx].puissance = parseInt(input.value) || 0;
+            var totalSpan = input.closest(".eclairage-row").querySelector(".eclairage-total-value");
+            totalSpan.textContent = eclairages[idx].puissance * eclairages[idx].quantite + " W";
+        });
+    });
+
+    document.querySelectorAll("#eclairageList .eclairage-quantite-input").forEach(function (input) {
+        input.addEventListener("input", function () {
+            var idx = parseInt(input.dataset.index);
+            eclairages[idx].quantite = parseInt(input.value) || 0;
+            var totalSpan = input.closest(".eclairage-row").querySelector(".eclairage-total-value");
+            totalSpan.textContent = eclairages[idx].puissance * eclairages[idx].quantite + " W";
+        });
+    });
+
+    document.querySelectorAll("#eclairageList .eclairage-delete-btn").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+            eclairages.splice(parseInt(btn.dataset.index), 1);
+            renderEclairages();
+        });
+    });
+
+    PhotoManager.bindAll(eclairageList);
+}
+
+addEclairageButton.addEventListener("click", function () {
+    var def = ampouleTypes[0];
+    eclairages.push({ type: def.nom, puissance: def.puissance, quantite: 1 });
+    renderEclairages();
+});
+renderEclairages();
+
+/* =========================
+   SAUVEGARDE
+========================= */
+
 saveButton.addEventListener("click", function () {
 
     var allData = JSON.parse(localStorage.getItem(CUSTOM_SECTEUR_DATA_KEY)) || {};
@@ -43,6 +330,13 @@ saveButton.addEventListener("click", function () {
 
     data[currentCustom.numero] = {
         nom: savedData ? savedData.nom : "",
+        climatisation: climatisation,
+        brasseurAir: {
+            present: brasseurAir.present ? "oui" : "non",
+            nombre: brasseurAir.nombre
+        },
+        equipements: equipements,
+        eclairages: eclairages,
         observation: observationInput.value.trim()
     };
 

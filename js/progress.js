@@ -535,15 +535,31 @@ function calcReunionProgress(d) {
    SECTEUR PERSONNALISÉ — Champs actifs :
    1. nom
    2. observation
+   3. au moins 1 équipement
+   4. au moins 1 éclairage
+   + si brasseur=oui : nombre (1)
+   + si clim=oui : nombre (1)
 ============================================================ */
 
 function calcCustomProgress(d) {
     if (!d) return 0;
     var filled = 0;
-    var total = 2;
+    var total = 4;
 
     if (has(d.nom)) filled++;
     if (has(d.observation)) filled++;
+    if (d.equipements && d.equipements.length > 0) filled++;
+    if (d.eclairages && d.eclairages.length > 0) filled++;
+
+    if (d.brasseurAir && d.brasseurAir.present === "oui") {
+        total += 1;
+        if (d.brasseurAir.nombre > 0) filled++;
+    }
+
+    if (d.climatisation && d.climatisation.present) {
+        total += 1;
+        if (d.climatisation.nombre > 0) filled++;
+    }
 
     return pct(filled, total);
 }
