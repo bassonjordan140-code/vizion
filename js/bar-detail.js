@@ -43,14 +43,12 @@ function setupToggle(container, callback) {
 ========================= */
 
 var nomBar = document.getElementById("nomBar");
-var surfaceBar = document.getElementById("surfaceBar");
 var placesAssises = document.getElementById("placesAssises");
 var ouvertureDebut = document.getElementById("ouvertureDebut");
 var ouvertureFin = document.getElementById("ouvertureFin");
 
 if (savedData) {
     nomBar.value = savedData.nom || "";
-    surfaceBar.value = savedData.surface || "";
     placesAssises.value = savedData.placesAssises || "";
     ouvertureDebut.value = savedData.ouvertureDebut || "17:00";
     ouvertureFin.value = savedData.ouvertureFin || "01:00";
@@ -462,7 +460,6 @@ saveButton.addEventListener("click", function () {
     barData[currentBar.numero] = {
         type: finalType,
         nom: nomBar.value,
-        surface: parseFloat(surfaceBar.value) || 0,
         placesAssises: parseInt(placesAssises.value) || 0,
         ouvertureDebut: ouvertureDebut.value,
         ouvertureFin: ouvertureFin.value,

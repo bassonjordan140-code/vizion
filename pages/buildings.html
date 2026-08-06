@@ -50,6 +50,21 @@
                 <input type="text" id="siteAdresseInput" placeholder="Ex : 42 boulevard Hubert Delisle">
             </div>
 
+            <div class="toggle-group">
+                <label>Centrale photovoltaïque présente ?</label>
+                <div class="toggle-buttons" id="centralePvToggle">
+                    <button type="button" class="toggle-btn" data-value="non">Non</button>
+                    <button type="button" class="toggle-btn" data-value="oui">Oui</button>
+                </div>
+            </div>
+
+            <div id="centralePvContent" class="hidden">
+                <div class="field-group">
+                    <label for="centralePvPuissanceInput">Puissance totale (W)</label>
+                    <input type="number" id="centralePvPuissanceInput" min="0" step="1" inputmode="numeric" placeholder="Ex : 50000">
+                </div>
+            </div>
+
             <p id="siteMetaHint" class="section-hint hidden"></p>
         </div>
 

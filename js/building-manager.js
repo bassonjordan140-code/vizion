@@ -35,6 +35,13 @@ window.BuildingManager = (function () {
         var id = "b_" + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
         buildings.push({ id: id, nom: nom });
         saveBuildingsList(buildings);
+
+        // Chaque nouveau bâtiment démarre avec un secteur "Partie Commune"
+        // pré-suggéré (renommable/supprimable comme tout secteur personnalisé).
+        localStorage.setItem(snapshotKey(id), JSON.stringify({
+            customSecteurs: [{ id: "customPartieCommune", label: "Partie Commune" }]
+        }));
+
         return id;
     }
 

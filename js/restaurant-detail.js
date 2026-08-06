@@ -46,8 +46,6 @@ var typeRestaurant = document.getElementById("typeRestaurant");
 var autreTypeContainer = document.getElementById("autreTypeContainer");
 var autreTypeInput = document.getElementById("autreTypeInput");
 var nomRestaurant = document.getElementById("nomRestaurant");
-var surfaceSalle = document.getElementById("surfaceSalle");
-var couverts = document.getElementById("couverts");
 var placesAssises = document.getElementById("placesAssises");
 
 if (savedData) {
@@ -57,8 +55,6 @@ if (savedData) {
         autreTypeInput.value = savedData.type || "";
     }
     nomRestaurant.value = savedData.nom || "";
-    surfaceSalle.value = savedData.surface || "";
-    couverts.value = savedData.couverts || "";
     placesAssises.value = savedData.placesAssises || "";
 }
 
@@ -159,6 +155,94 @@ brasseurNombre.addEventListener("input", function () {
 });
 
 updateBrasseurToggle();
+
+/* =========================
+   ÉQUIPEMENTS (100% libres)
+========================= */
+
+var equipements =
+    savedData && Array.isArray(savedData.equipements)
+        ? JSON.parse(JSON.stringify(savedData.equipements))
+        : [];
+
+var customEquipementsList = document.getElementById("customEquipementsList");
+var nouvelEquipementInput = document.getElementById("nouvelEquipementInput");
+var addEquipementButton = document.getElementById("addEquipementButton");
+
+function renderEquipements() {
+
+    customEquipementsList.innerHTML = "";
+
+    equipements.forEach(function (equip, idx) {
+
+        var item = document.createElement("div");
+        item.className = "custom-equip-card";
+
+        item.innerHTML =
+            '<button type="button" class="custom-equip-delete" data-idx="' + idx + '" aria-label="Supprimer cet équipement">✕</button>' +
+            '<div class="custom-equip-name">' + equip.nom + '</div>' +
+            '<div class="custom-equip-fields">' +
+                '<div class="field-group"><label>Nombre</label>' +
+                '<input type="number" min="1" step="1" inputmode="numeric" class="custom-equip-nombre" data-idx="' + idx + '" value="' + (equip.nombre || 1) + '"></div>' +
+                '<div class="field-group"><label>Puissance unitaire (W)</label>' +
+                '<input type="number" min="0" step="1" inputmode="numeric" class="custom-equip-puissance" data-idx="' + idx + '" value="' + (equip.puissance !== undefined ? equip.puissance : "") + '" placeholder="Ex : 500"></div>' +
+                '<div class="field-group">' + PhotoManager.createPhotoWidget("restaurant_" + currentRestaurant.numero + "_customeq_" + equip.nom) + '</div>' +
+            '</div>';
+
+        customEquipementsList.appendChild(item);
+
+    });
+
+    customEquipementsList.querySelectorAll(".custom-equip-delete").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+            equipements.splice(parseInt(btn.dataset.idx), 1);
+            renderEquipements();
+        });
+    });
+
+    customEquipementsList.querySelectorAll(".custom-equip-nombre").forEach(function (input) {
+        input.addEventListener("input", function () {
+            var idx = parseInt(input.dataset.idx);
+            var v = parseInt(input.value);
+            equipements[idx].nombre = isNaN(v) || v < 1 ? 1 : v;
+        });
+    });
+
+    customEquipementsList.querySelectorAll(".custom-equip-puissance").forEach(function (input) {
+        input.addEventListener("input", function () {
+            var idx = parseInt(input.dataset.idx);
+            var v = parseFloat(input.value);
+            equipements[idx].puissance = isNaN(v) || v < 0 ? 0 : v;
+        });
+    });
+
+    PhotoManager.bindAll(customEquipementsList);
+
+}
+
+renderEquipements();
+
+addEquipementButton.addEventListener("click", function () {
+
+    var nom = nouvelEquipementInput.value.trim();
+    if (nom === "") {
+        alert("Veuillez entrer un nom d'équipement.");
+        return;
+    }
+
+    var exists = equipements.some(function (e) {
+        return e.nom.toLowerCase() === nom.toLowerCase();
+    });
+    if (exists) {
+        alert("Cet équipement est déjà dans la liste.");
+        return;
+    }
+
+    equipements.unshift({ nom: nom, nombre: 1, puissance: "" });
+    nouvelEquipementInput.value = "";
+    renderEquipements();
+
+});
 
 /* =========================
    ÉCLAIRAGE (pattern hébergement)
@@ -328,14 +412,13 @@ saveButton.addEventListener("click", function () {
         typeSelect: typeRestaurant.value,
         type: finalType,
         nom: nomRestaurant.value,
-        surface: parseFloat(surfaceSalle.value) || 0,
-        couverts: parseInt(couverts.value) || 0,
         placesAssises: parseInt(placesAssises.value) || 0,
         climatisation: climatisation,
         brasseurAir: {
             present: brasseurAir.present ? "oui" : "non",
             nombre: brasseurAir.nombre
         },
+        equipements: equipements,
         eclairages: eclairages,
         repas: {
             petitDejeuner: { servi: pdejServi ? "oui" : "non", debut: pdejDebut.value, fin: pdejFin.value },

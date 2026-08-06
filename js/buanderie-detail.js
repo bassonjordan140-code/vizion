@@ -43,11 +43,9 @@ function setupToggle(container, callback) {
 ========================= */
 
 var nomBuanderie = document.getElementById("nomBuanderie");
-var surfaceBuanderie = document.getElementById("surfaceBuanderie");
 
 if (savedData) {
     nomBuanderie.value = savedData.nom || "";
-    surfaceBuanderie.value = savedData.surface || "";
 }
 
 /* =========================
@@ -145,6 +143,10 @@ updateBrasseurToggle();
 var nbLaveLinge = document.getElementById("nbLaveLinge");
 var capaciteLaveLinge = document.getElementById("capaciteLaveLinge");
 var ecsLaveLinge = document.getElementById("ecsLaveLinge");
+var ecsLaveLingePropreContent = document.getElementById("ecsLaveLingePropreContent");
+var ecsLaveLingeBallons = document.getElementById("ecsLaveLingeBallons");
+var ecsLaveLingeVolume = document.getElementById("ecsLaveLingeVolume");
+var ecsLaveLingePuissance = document.getElementById("ecsLaveLingePuissance");
 var plaqueLaveLingeToggle = document.getElementById("plaqueLaveLingeToggle");
 var plaqueLaveLingePhoto = document.getElementById("plaqueLaveLingePhoto");
 
@@ -154,7 +156,18 @@ if (savedData && savedData.laveLinge) {
     nbLaveLinge.value = savedData.laveLinge.nombre || "";
     capaciteLaveLinge.value = savedData.laveLinge.capaciteKg || "";
     ecsLaveLinge.value = savedData.laveLinge.ecsAssociee || "Raccordée à l'ECS hôtel";
+    ecsLaveLingeBallons.value = savedData.laveLinge.ecsBallons || 0;
+    ecsLaveLingeVolume.value = savedData.laveLinge.ecsVolume || "";
+    ecsLaveLingePuissance.value = savedData.laveLinge.ecsPuissance || "";
 }
+
+function updateEcsLaveLingePropre() {
+    if (ecsLaveLinge.value === "Propre") { ecsLaveLingePropreContent.classList.remove("hidden"); }
+    else { ecsLaveLingePropreContent.classList.add("hidden"); }
+}
+
+ecsLaveLinge.addEventListener("change", updateEcsLaveLingePropre);
+updateEcsLaveLingePropre();
 
 function updatePlaqueLaveLingeToggle() {
     updateToggleUI(plaqueLaveLingeToggle, plaqueLaveLinge);
@@ -176,6 +189,7 @@ updatePlaqueLaveLingeToggle();
 var nbSecheLinge = document.getElementById("nbSecheLinge");
 var capaciteSecheLinge = document.getElementById("capaciteSecheLinge");
 var energieSecheLinge = document.getElementById("energieSecheLinge");
+var puissanceSecheLinge = document.getElementById("puissanceSecheLinge");
 var plaqueSechLingeToggle = document.getElementById("plaqueSechLingeToggle");
 var plaqueSechLingePhoto = document.getElementById("plaqueSechLingePhoto");
 
@@ -185,6 +199,7 @@ if (savedData && savedData.secheLinge) {
     nbSecheLinge.value = savedData.secheLinge.nombre || "";
     capaciteSecheLinge.value = savedData.secheLinge.capaciteKg || "";
     energieSecheLinge.value = savedData.secheLinge.typeEnergie || "Résistance électrique";
+    puissanceSecheLinge.value = savedData.secheLinge.puissance || "";
 }
 
 function updatePlaqueSechLingeToggle() {
@@ -360,7 +375,6 @@ saveButton.addEventListener("click", function () {
 
     buanderieData[currentBuanderie.numero] = {
         nom: finalNom,
-        surface: parseFloat(surfaceBuanderie.value) || 0,
         climatisation: climatisation,
         brasseurAir: {
             present: brasseurAir.present ? "oui" : "non",
@@ -370,12 +384,16 @@ saveButton.addEventListener("click", function () {
             nombre: parseInt(nbLaveLinge.value) || 0,
             capaciteKg: parseFloat(capaciteLaveLinge.value) || 0,
             ecsAssociee: ecsLaveLinge.value,
+            ecsBallons: parseInt(ecsLaveLingeBallons.value) || 0,
+            ecsVolume: parseFloat(ecsLaveLingeVolume.value) || 0,
+            ecsPuissance: parseFloat(ecsLaveLingePuissance.value) || 0,
             plaque: plaqueLaveLinge ? "oui" : "non"
         },
         secheLinge: {
             nombre: parseInt(nbSecheLinge.value) || 0,
             capaciteKg: parseFloat(capaciteSecheLinge.value) || 0,
             typeEnergie: energieSecheLinge.value,
+            puissance: parseFloat(puissanceSecheLinge.value) || 0,
             plaque: plaqueSecheLinge ? "oui" : "non"
         },
         calandre: {

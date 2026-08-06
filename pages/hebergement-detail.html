@@ -259,6 +259,8 @@
                 + Ajouter cet équipement
             </button>
 
+            <div id="customEquipementsList" style="margin-top: 12px;"></div>
+
             <div class="field-group" style="margin-top: 24px;">
                 <label>Photo générale des équipements</label>
                 <div class="photo-slot" data-photo-field="equipements"></div>
@@ -291,6 +293,30 @@
                         <button type="button" class="toggle-btn" data-value="non">Non</button>
                         <button type="button" class="toggle-btn" data-value="oui">Oui</button>
                     </div>
+                </div>
+
+                <div id="piscineChauffeContent" class="hidden">
+
+                    <div class="field-group">
+                        <label>Type de chauffage</label>
+                        <select id="piscineChauffeType">
+                            <option value="Pompe à chaleur">Pompe à chaleur</option>
+                            <option value="Échangeur chaudière">Échangeur chaudière</option>
+                            <option value="Solaire thermique">Solaire thermique</option>
+                            <option value="Électrique direct">Électrique direct</option>
+                            <option value="Récupération de chaleur">Récupération de chaleur</option>
+                        </select>
+                    </div>
+
+                    <div class="field-group">
+                        <label>Puissance (W)</label>
+                        <input type="number"
+                               id="piscineChauffePuissance"
+                               min="0"
+                               step="1"
+                               placeholder="Ex : 3000">
+                    </div>
+
                 </div>
 
                 <div class="field-group">

@@ -43,13 +43,9 @@ function setupToggle(container, callback) {
 ========================= */
 
 var nomCuisine = document.getElementById("nomCuisine");
-var surfaceCuisine = document.getElementById("surfaceCuisine");
-var couvertsJour = document.getElementById("couvertsJour");
 
 if (savedData) {
     nomCuisine.value = savedData.nom || "";
-    surfaceCuisine.value = savedData.surface || "";
-    couvertsJour.value = savedData.couvertsJour || "";
 }
 
 /* =========================
@@ -163,7 +159,8 @@ var equipementsDef = [
     { id: "laveVaisselle",    label: "Lave-vaisselle",            fields: ["nombre", "typeLV", "ecs", "puissance"], puissanceDefaut: 6000 },
     { id: "cfPositive",       label: "Chambre froide positive",   fields: ["nombre", "volume", "puissance"], puissanceDefaut: 500 },
     { id: "cfNegative",       label: "Chambre froide négative",   fields: ["nombre", "volume", "puissance"], puissanceDefaut: 1000 },
-    { id: "armoireRefrig",    label: "Armoire réfrigérée",        fields: ["nombre", "puissance"], puissanceDefaut: 300 }
+    { id: "armoireRefrig",    label: "Armoire réfrigérée",        fields: ["nombre", "puissance"], puissanceDefaut: 300 },
+    { id: "hotte",            label: "Hotte d'extraction",        fields: ["nombre", "puissance"], puissanceDefaut: 1500 }
 ];
 
 var savedEquipements = savedData && savedData.equipements ? savedData.equipements : {};
@@ -255,6 +252,50 @@ equipementsDef.forEach(function (eq) {
 
 PhotoManager.bindAll(equipementsList);
 
+// ECS "Propre" pour le lave-vaisselle : ballon dédié -> nombre, volume, puissance.
+(function () {
+    var ecsSelect = document.getElementById("eq-laveVaisselle-ecs");
+    var fieldsDiv = document.getElementById("eqFields-laveVaisselle");
+    if (!ecsSelect || !fieldsDiv) return;
+
+    var savedLV = savedEquipements.laveVaisselle || {};
+
+    var propreDiv = document.createElement("div");
+    propreDiv.id = "laveVaisselle-ecsPropreDetail";
+    propreDiv.className = "field-group" + (ecsSelect.value === "Propre" ? "" : " hidden");
+    propreDiv.innerHTML =
+        '<label>Nombre de ballons ECS</label>' +
+        '<input type="number" min="0" step="1" inputmode="numeric" id="laveVaisselle-ecsBallons" value="' + (savedLV.ecsBallons || 0) + '">';
+
+    var volumeDiv = document.createElement("div");
+    volumeDiv.id = "laveVaisselle-ecsVolumeGroup";
+    volumeDiv.className = "field-group" + (ecsSelect.value === "Propre" ? "" : " hidden");
+    volumeDiv.innerHTML =
+        '<label>Volume ECS (L)</label>' +
+        '<input type="number" min="0" step="1" inputmode="numeric" id="laveVaisselle-ecsVolume" value="' + (savedLV.ecsVolume || "") + '">';
+
+    var puissanceDiv = document.createElement("div");
+    puissanceDiv.id = "laveVaisselle-ecsPuissanceGroup";
+    puissanceDiv.className = "field-group" + (ecsSelect.value === "Propre" ? "" : " hidden");
+    puissanceDiv.innerHTML =
+        '<label>Puissance ECS (W)</label>' +
+        '<input type="number" min="0" step="1" inputmode="numeric" id="laveVaisselle-ecsPuissance" value="' + (savedLV.ecsPuissance || "") + '">';
+
+    fieldsDiv.insertBefore(puissanceDiv, fieldsDiv.lastElementChild);
+    fieldsDiv.insertBefore(volumeDiv, puissanceDiv);
+    fieldsDiv.insertBefore(propreDiv, volumeDiv);
+
+    function toggleEcsPropre() {
+        var show = ecsSelect.value === "Propre";
+        [propreDiv, volumeDiv, puissanceDiv].forEach(function (el) {
+            if (show) { el.classList.remove("hidden"); }
+            else { el.classList.add("hidden"); }
+        });
+    }
+
+    ecsSelect.addEventListener("change", toggleEcsPropre);
+})();
+
 /* =========================
    ÉQUIPEMENTS AJOUTÉS LIBREMENT (hors liste fixe)
 ========================= */
@@ -337,23 +378,11 @@ addEquipementButton.addEventListener("click", function () {
         return;
     }
 
-    customEquipements.push({ nom: nom, nombre: 1, puissance: "" });
+    customEquipements.unshift({ nom: nom, nombre: 1, puissance: "" });
     nouvelEquipementInput.value = "";
     renderCustomEquipements();
 
 });
-
-/* =========================
-   VENTILATION
-========================= */
-
-var nbHottes = document.getElementById("nbHottes");
-var typeVentilation = document.getElementById("typeVentilation");
-
-if (savedData) {
-    nbHottes.value = savedData.nbHottes || "";
-    typeVentilation.value = savedData.typeVentilation || "Extraction mécanique";
-}
 
 /* =========================
    ÉCLAIRAGE (pattern hébergement)
@@ -484,13 +513,20 @@ saveButton.addEventListener("click", function () {
                 obj[f] = parseFloat(el.value) || 0;
             }
         });
+        if (eq.id === "laveVaisselle" && obj.ecs === "Propre") {
+            var ballonsEl = document.getElementById("laveVaisselle-ecsBallons");
+            var volumeEl = document.getElementById("laveVaisselle-ecsVolume");
+            var puissanceEl = document.getElementById("laveVaisselle-ecsPuissance");
+            obj.ecsBallons = parseInt(ballonsEl.value) || 0;
+            obj.ecsVolume = parseFloat(volumeEl.value) || 0;
+            obj.ecsPuissance = parseFloat(puissanceEl.value) || 0;
+        }
+
         equipements[eq.id] = obj;
     });
 
     cuisineData[currentCuisine.numero] = {
         nom: finalNom,
-        surface: parseFloat(surfaceCuisine.value) || 0,
-        couvertsJour: parseInt(couvertsJour.value) || 0,
         climatisation: climatisation,
         brasseurAir: {
             present: brasseurAir.present ? "oui" : "non",
@@ -498,8 +534,6 @@ saveButton.addEventListener("click", function () {
         },
         equipements: equipements,
         equipementsPersonnalises: customEquipements,
-        nbHottes: parseInt(nbHottes.value) || 0,
-        typeVentilation: typeVentilation.value,
         eclairages: eclairages,
         photos: {},
         observations: observations.value

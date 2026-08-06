@@ -19,7 +19,7 @@ window.SECTEURS = [
     { id: "reunion", label: "Salle de réunion/séminaire" },
     { id: "sport", label: "Salle de sport" },
     { id: "bureaux", label: "Bureaux" },
-    { id: "parking", label: "Parking" }
+    { id: "parking", label: "Parking / Extérieur" }
 ];
 
 window.SECTEUR_DETAIL_PAGES = {

@@ -43,13 +43,11 @@ function setupToggle(container, callback) {
 ========================= */
 
 var nomSpa = document.getElementById("nomSpa");
-var surfaceSpa = document.getElementById("surfaceSpa");
 var ouvertureDebut = document.getElementById("ouvertureDebut");
 var ouvertureFin = document.getElementById("ouvertureFin");
 
 if (savedData) {
     nomSpa.value = savedData.nom || "";
-    surfaceSpa.value = savedData.surface || "";
     ouvertureDebut.value = savedData.ouvertureDebut || "10:00";
     ouvertureFin.value = savedData.ouvertureFin || "20:00";
 }
@@ -148,7 +146,11 @@ updateBrasseurToggle();
 ========================= */
 
 var typeChauffeGlobal = document.getElementById("typeChauffeGlobal");
-if (savedData) { typeChauffeGlobal.value = savedData.typeChauffeGlobal || "Électrique"; }
+var chauffeGlobalPuissance = document.getElementById("chauffeGlobalPuissance");
+if (savedData) {
+    typeChauffeGlobal.value = savedData.typeChauffeGlobal || "Électrique";
+    chauffeGlobalPuissance.value = savedData.chauffeGlobalPuissance || "";
+}
 
 /* =========================
    ECS
@@ -311,6 +313,7 @@ function renderHammams() {
         row.innerHTML =
             '<div class="parois-cell"><label>Température (°C)</label><input type="number" min="0" step="1" inputmode="numeric" class="hammam-temp" data-index="' + index + '" value="' + hammam.temperatureConsigne + '"></div>' +
             '<div class="parois-cell"><label>Générateur vapeur</label><select class="hammam-type" data-index="' + index + '">' + opts + '</select></div>' +
+            '<div class="parois-cell"><label>Puissance (W)</label><input type="number" min="0" step="1" inputmode="numeric" class="hammam-puissance" data-index="' + index + '" value="' + (hammam.puissance || 0) + '"></div>' +
             '<button type="button" class="parois-delete-btn hammam-delete" data-index="' + index + '" aria-label="Supprimer">✕</button>' +
             '<div class="row-photo-group">' + PhotoManager.createPhotoWidget("spa_" + currentSpa.numero + "_hammam_" + index) + '</div>';
         hammamsList.appendChild(row);
@@ -327,6 +330,9 @@ function renderHammams() {
     document.querySelectorAll(".hammam-type").forEach(function (select) {
         select.addEventListener("change", function () { hammams[parseInt(select.dataset.index)].typeGenerateur = select.value; });
     });
+    document.querySelectorAll(".hammam-puissance").forEach(function (input) {
+        input.addEventListener("input", function () { hammams[parseInt(input.dataset.index)].puissance = parseFloat(input.value) || 0; });
+    });
     document.querySelectorAll(".hammam-delete").forEach(function (btn) {
         btn.addEventListener("click", function () { hammams.splice(parseInt(btn.dataset.index), 1); renderHammams(); });
     });
@@ -334,7 +340,7 @@ function renderHammams() {
     PhotoManager.bindAll(hammamsList);
 }
 addHammamButton.addEventListener("click", function () {
-    hammams.push({ temperatureConsigne: 45, typeGenerateur: "Électrique" });
+    hammams.push({ temperatureConsigne: 45, typeGenerateur: "Électrique", puissance: 6000 });
     renderHammams();
 });
 renderHammams();
@@ -358,6 +364,7 @@ function renderSaunas() {
         row.innerHTML =
             '<div class="parois-cell"><label>Température (°C)</label><input type="number" min="0" step="1" inputmode="numeric" class="sauna-temp" data-index="' + index + '" value="' + sauna.temperatureConsigne + '"></div>' +
             '<div class="parois-cell"><label>Type</label><select class="sauna-type" data-index="' + index + '">' + opts + '</select></div>' +
+            '<div class="parois-cell"><label>Puissance (W)</label><input type="number" min="0" step="1" inputmode="numeric" class="sauna-puissance" data-index="' + index + '" value="' + (sauna.puissance || 0) + '"></div>' +
             '<button type="button" class="parois-delete-btn sauna-delete" data-index="' + index + '" aria-label="Supprimer">✕</button>' +
             '<div class="row-photo-group">' + PhotoManager.createPhotoWidget("spa_" + currentSpa.numero + "_sauna_" + index) + '</div>';
         saunasList.appendChild(row);
@@ -374,6 +381,9 @@ function renderSaunas() {
     document.querySelectorAll(".sauna-type").forEach(function (select) {
         select.addEventListener("change", function () { saunas[parseInt(select.dataset.index)].type = select.value; });
     });
+    document.querySelectorAll(".sauna-puissance").forEach(function (input) {
+        input.addEventListener("input", function () { saunas[parseInt(input.dataset.index)].puissance = parseFloat(input.value) || 0; });
+    });
     document.querySelectorAll(".sauna-delete").forEach(function (btn) {
         btn.addEventListener("click", function () { saunas.splice(parseInt(btn.dataset.index), 1); renderSaunas(); });
     });
@@ -381,7 +391,7 @@ function renderSaunas() {
     PhotoManager.bindAll(saunasList);
 }
 addSaunaButton.addEventListener("click", function () {
-    saunas.push({ temperatureConsigne: 90, type: "Électrique" });
+    saunas.push({ temperatureConsigne: 90, type: "Électrique", puissance: 6000 });
     renderSaunas();
 });
 renderSaunas();
@@ -525,7 +535,6 @@ saveButton.addEventListener("click", function () {
 
     spaData[currentSpa.numero] = {
         nom: nomSpa.value,
-        surface: parseFloat(surfaceSpa.value) || 0,
         ouvertureDebut: ouvertureDebut.value,
         ouvertureFin: ouvertureFin.value,
         climatisation: climatisation,
@@ -534,6 +543,7 @@ saveButton.addEventListener("click", function () {
             nombre: brasseurAir.nombre
         },
         typeChauffeGlobal: typeChauffeGlobal.value,
+        chauffeGlobalPuissance: parseFloat(chauffeGlobalPuissance.value) || 0,
         ecsDistribution: ecsDistribution.value,
         nbDouches: parseInt(nbDouches.value) || 0,
         bainsRemous: bainsRemous,

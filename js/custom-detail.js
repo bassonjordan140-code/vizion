@@ -230,7 +230,7 @@ addEquipementButton.addEventListener("click", function () {
         return;
     }
 
-    equipements.push({ nom: nom, nombre: 1, puissance: "" });
+    equipements.unshift({ nom: nom, nombre: 1, puissance: "" });
     nouvelEquipementInput.value = "";
     renderEquipements();
 

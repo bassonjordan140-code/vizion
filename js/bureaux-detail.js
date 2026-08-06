@@ -44,7 +44,6 @@ function setupToggle(container, callback) {
 
 var nomBureaux = document.getElementById("nomBureaux");
 var amenagement = document.getElementById("amenagement");
-var surfaceBureaux = document.getElementById("surfaceBureaux");
 var nbPostes = document.getElementById("nbPostes");
 var horDebut = document.getElementById("horDebut");
 var horFin = document.getElementById("horFin");
@@ -52,7 +51,6 @@ var horFin = document.getElementById("horFin");
 if (savedData) {
     nomBureaux.value = savedData.nom || "";
     amenagement.value = savedData.amenagement || "Open space";
-    surfaceBureaux.value = savedData.surface || "";
     nbPostes.value = savedData.nbPostes || "";
     horDebut.value = savedData.horDebut || "";
     horFin.value = savedData.horFin || "";
@@ -161,94 +159,23 @@ if (savedData) {
 }
 
 /* =========================
-   ÉQUIPEMENTS PARTAGÉS (cases à cocher)
+   ÉQUIPEMENTS PARTAGÉS (100% libres)
 ========================= */
 
-// puissanceDefaut (W) : estimations typiques pour pré-remplir le champ, à
-// ajuster par l'utilisateur selon le matériel réellement présent.
-var equipPartagesDef = [
-    { id: "photocopieur",   label: "Photocopieur / multifonction", fields: ["nombre", "puissance"], puissanceDefaut: 1500 },
-    { id: "distributeur",   label: "Distributeur de boissons",     fields: ["nombre", "puissance"], puissanceDefaut: 150 },
-    { id: "fontaineEau",    label: "Fontaine à eau",               fields: ["nombre", "puissance"], puissanceDefaut: 100 },
-    { id: "machineCafe",    label: "Machine à café",               fields: ["nombre", "puissance"], puissanceDefaut: 1200 },
-    { id: "microOndes",     label: "Micro-ondes",                  fields: ["nombre", "puissance"], puissanceDefaut: 1000 },
-    { id: "refrigerateur",  label: "Réfrigérateur",                fields: ["nombre", "puissance"], puissanceDefaut: 150 }
-];
-
-var savedEquipPartages = savedData && savedData.equipPartages ? savedData.equipPartages : {};
-
-var equipPartagesList = document.getElementById("equipPartagesList");
-
-function buildFieldHTML(eqId, fieldName, savedEq, puissanceDefaut) {
-    var val = savedEq ? savedEq[fieldName] || "" : "";
-
-    if (fieldName === "nombre") {
-        return '<div class="field-group"><label>Nombre</label>' +
-            '<input type="number" min="1" step="1" inputmode="numeric" ' +
-            'id="eq-' + eqId + '-nombre" placeholder="Ex : 2" value="' + val + '"></div>';
-    }
-    if (fieldName === "puissance") {
-        if (val === "" && puissanceDefaut !== undefined) { val = puissanceDefaut; }
-        return '<div class="field-group"><label>Puissance unitaire (W)</label>' +
-            '<input type="number" min="0" step="1" inputmode="numeric" ' +
-            'id="eq-' + eqId + '-puissance" placeholder="Ex : 1500" value="' + val + '"></div>';
-    }
-    return "";
-}
-
-equipPartagesDef.forEach(function (eq) {
-
-    var savedEq = savedEquipPartages[eq.id];
-    var isChecked = !!savedEq;
-
-    var wrapper = document.createElement("div");
-    wrapper.className = "equipement-item";
-
-    var headerHTML =
-        '<label class="equipement-check-label">' +
-            '<input type="checkbox" id="eqCheck-' + eq.id + '"' + (isChecked ? ' checked' : '') + '> ' +
-            '<span>' + eq.label + '</span>' +
-        '</label>';
-
-    var fieldsHTML = '<div class="equipement-fields' + (isChecked ? '' : ' hidden') + '" id="eqFields-' + eq.id + '">';
-    eq.fields.forEach(function (f) {
-        fieldsHTML += buildFieldHTML(eq.id, f, savedEq, eq.puissanceDefaut);
-    });
-    fieldsHTML += '<div class="field-group">' + PhotoManager.createPhotoWidget("bureaux_" + currentBureaux.numero + "_eq_" + eq.id) + '</div>';
-    fieldsHTML += '</div>';
-
-    wrapper.innerHTML = headerHTML + fieldsHTML;
-    equipPartagesList.appendChild(wrapper);
-
-    var checkbox = document.getElementById("eqCheck-" + eq.id);
-    var fieldsDiv = document.getElementById("eqFields-" + eq.id);
-
-    checkbox.addEventListener("change", function () {
-        if (checkbox.checked) { fieldsDiv.classList.remove("hidden"); }
-        else { fieldsDiv.classList.add("hidden"); }
-    });
-});
-
-PhotoManager.bindAll(equipPartagesList);
-
-/* =========================
-   ÉQUIPEMENTS AJOUTÉS LIBREMENT (hors liste fixe)
-========================= */
-
-var customEquipements =
-    savedData && Array.isArray(savedData.equipementsPersonnalises)
-        ? JSON.parse(JSON.stringify(savedData.equipementsPersonnalises))
+var equipements =
+    savedData && Array.isArray(savedData.equipements)
+        ? JSON.parse(JSON.stringify(savedData.equipements))
         : [];
 
 var customEquipementsList = document.getElementById("customEquipementsList");
 var nouvelEquipementInput = document.getElementById("nouvelEquipementInput");
 var addEquipementButton = document.getElementById("addEquipementButton");
 
-function renderCustomEquipements() {
+function renderEquipements() {
 
     customEquipementsList.innerHTML = "";
 
-    customEquipements.forEach(function (equip, idx) {
+    equipements.forEach(function (equip, idx) {
 
         var item = document.createElement("div");
         item.className = "custom-equip-card";
@@ -270,8 +197,8 @@ function renderCustomEquipements() {
 
     customEquipementsList.querySelectorAll(".custom-equip-delete").forEach(function (btn) {
         btn.addEventListener("click", function () {
-            customEquipements.splice(parseInt(btn.dataset.idx), 1);
-            renderCustomEquipements();
+            equipements.splice(parseInt(btn.dataset.idx), 1);
+            renderEquipements();
         });
     });
 
@@ -279,7 +206,7 @@ function renderCustomEquipements() {
         input.addEventListener("input", function () {
             var idx = parseInt(input.dataset.idx);
             var v = parseInt(input.value);
-            customEquipements[idx].nombre = isNaN(v) || v < 1 ? 1 : v;
+            equipements[idx].nombre = isNaN(v) || v < 1 ? 1 : v;
         });
     });
 
@@ -287,7 +214,7 @@ function renderCustomEquipements() {
         input.addEventListener("input", function () {
             var idx = parseInt(input.dataset.idx);
             var v = parseFloat(input.value);
-            customEquipements[idx].puissance = isNaN(v) || v < 0 ? 0 : v;
+            equipements[idx].puissance = isNaN(v) || v < 0 ? 0 : v;
         });
     });
 
@@ -295,7 +222,7 @@ function renderCustomEquipements() {
 
 }
 
-renderCustomEquipements();
+renderEquipements();
 
 addEquipementButton.addEventListener("click", function () {
 
@@ -305,7 +232,7 @@ addEquipementButton.addEventListener("click", function () {
         return;
     }
 
-    var exists = customEquipements.some(function (e) {
+    var exists = equipements.some(function (e) {
         return e.nom.toLowerCase() === nom.toLowerCase();
     });
     if (exists) {
@@ -313,9 +240,9 @@ addEquipementButton.addEventListener("click", function () {
         return;
     }
 
-    customEquipements.push({ nom: nom, nombre: 1, puissance: "" });
+    equipements.unshift({ nom: nom, nombre: 1, puissance: "" });
     nouvelEquipementInput.value = "";
-    renderCustomEquipements();
+    renderEquipements();
 
 });
 
@@ -492,24 +419,9 @@ saveButton.addEventListener("click", function () {
     var finalNom = nomBureaux.value.trim();
     if (finalNom === "") { finalNom = "Bureaux " + currentBureaux.numero; }
 
-    /* Collecter équipements partagés cochés */
-    var equipPartages = {};
-    equipPartagesDef.forEach(function (eq) {
-        var cb = document.getElementById("eqCheck-" + eq.id);
-        if (!cb.checked) return;
-        var obj = {};
-        eq.fields.forEach(function (f) {
-            var el = document.getElementById("eq-" + eq.id + "-" + f);
-            if (!el) return;
-            obj[f] = parseFloat(el.value) || 0;
-        });
-        equipPartages[eq.id] = obj;
-    });
-
     bureauxData[currentBureaux.numero] = {
         nom: finalNom,
         amenagement: amenagement.value,
-        surface: parseFloat(surfaceBureaux.value) || 0,
         nbPostes: parseInt(nbPostes.value) || 0,
         horDebut: horDebut.value,
         horFin: horFin.value,
@@ -521,8 +433,7 @@ saveButton.addEventListener("click", function () {
         typeOrdinateurs: typeOrdinateurs.value,
         nbEcrans: parseInt(nbEcrans.value) || 0,
         nbImprimantes: parseInt(nbImprimantes.value) || 0,
-        equipPartages: equipPartages,
-        equipementsPersonnalises: customEquipements,
+        equipements: equipements,
         salleServeur: {
             presente: salleServeur.presente,
             surface: parseFloat(serveurSurface.value) || 0,

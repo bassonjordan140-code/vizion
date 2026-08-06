@@ -41,15 +41,6 @@
             </div>
 
             <div class="field-group">
-                <label>Surface totale (m²)</label>
-                <input type="number"
-                       id="surfaceSport"
-                       min="0" step="0.1"
-                       inputmode="numeric"
-                       placeholder="Ex : 150">
-            </div>
-
-            <div class="field-group">
                 <label>Horaires d'ouverture</label>
                 <div class="horaires-row">
                     <div>
@@ -150,14 +141,14 @@
             <p class="section-title">Équipements</p>
 
             <p class="section-hint">
-                Cochez les équipements présents et indiquez les quantités.
+                Ajoutez librement les équipements présents (pas de liste prédéfinie).
             </p>
 
-            <div id="equipementsList"></div>
+            <div id="customEquipementsList"></div>
 
             <div class="field-group" style="margin-top: 16px;">
-                <label>Ajouter un équipement (hors liste ci-dessus)</label>
-                <input type="text" id="nouvelEquipementInput" placeholder="Ex : Presse à cuisses, Kettlebells…">
+                <label>Ajouter un équipement</label>
+                <input type="text" id="nouvelEquipementInput" placeholder="Ex : Tapis de course, Vélo elliptique, Rameur…">
             </div>
 
             <button type="button"
@@ -165,46 +156,6 @@
                     id="addEquipementButton">
                 + Ajouter cet équipement
             </button>
-
-            <div id="customEquipementsList" style="margin-top: 12px;"></div>
-
-        </div>
-
-        <!-- AUDIOVISUEL -->
-
-        <div class="module-detail-card">
-
-            <p class="section-title">Audiovisuel</p>
-
-            <div class="toggle-group">
-                <label>Écrans / TV présents ?</label>
-                <div class="toggle-buttons" id="ecransToggle">
-                    <button type="button" class="toggle-btn" data-value="non">Non</button>
-                    <button type="button" class="toggle-btn" data-value="oui">Oui</button>
-                </div>
-            </div>
-
-            <div id="ecransContent" class="hidden">
-                <div class="field-group">
-                    <label>Nombre d'écrans</label>
-                    <input type="number" id="ecransNombre" min="1" step="1" inputmode="numeric" placeholder="Ex : 4">
-                </div>
-                <div class="toggle-group">
-                    <label>Allumés en permanence ?</label>
-                    <div class="toggle-buttons" id="ecransPermanentsToggle">
-                        <button type="button" class="toggle-btn" data-value="non">Non</button>
-                        <button type="button" class="toggle-btn" data-value="oui">Oui</button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="toggle-group">
-                <label>Sonorisation présente ?</label>
-                <div class="toggle-buttons" id="sonoToggle">
-                    <button type="button" class="toggle-btn" data-value="non">Non</button>
-                    <button type="button" class="toggle-btn" data-value="oui">Oui</button>
-                </div>
-            </div>
 
         </div>
 

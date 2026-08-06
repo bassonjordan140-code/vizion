@@ -43,13 +43,11 @@ function setupToggle(container, callback) {
 ========================= */
 
 var nomReunion = document.getElementById("nomReunion");
-var surfaceReunion = document.getElementById("surfaceReunion");
 var placesAssises = document.getElementById("placesAssises");
 var frequence = document.getElementById("frequence");
 
 if (savedData) {
     nomReunion.value = savedData.nom || "";
-    surfaceReunion.value = savedData.surface || "";
     placesAssises.value = savedData.placesAssises || "";
     frequence.value = savedData.frequence || "Quotidienne";
 }
@@ -140,64 +138,91 @@ brasseurNombre.addEventListener("input", function () {
 updateBrasseurToggle();
 
 /* =========================
-   AUDIOVISUEL (cases à cocher)
+   ÉQUIPEMENTS (100% libres)
 ========================= */
 
-var audiovisuelDef = [
-    { id: "videoprojecteur",  label: "Vidéoprojecteur",          fields: ["nombre"] },
-    { id: "ecranPlat",        label: "Écran plat / TV",          fields: ["nombre"] },
-    { id: "visioconference",  label: "Système de visioconférence", fields: [] },
-    { id: "sonorisation",     label: "Sonorisation / micro",     fields: [] },
-    { id: "tableauInteractif", label: "Tableau interactif / écran tactile", fields: [] }
-];
+var equipements =
+    savedData && Array.isArray(savedData.equipements)
+        ? JSON.parse(JSON.stringify(savedData.equipements))
+        : [];
 
-var savedAudiovisuel = savedData && savedData.audiovisuel ? savedData.audiovisuel : {};
-var audiovisuelList = document.getElementById("audiovisuelList");
+var customEquipementsList = document.getElementById("customEquipementsList");
+var nouvelEquipementInput = document.getElementById("nouvelEquipementInput");
+var addEquipementButton = document.getElementById("addEquipementButton");
 
-function buildFieldHTML(eqId, fieldName, savedEq) {
-    var val = savedEq ? savedEq[fieldName] || "" : "";
-    if (fieldName === "nombre") {
-        return '<div class="field-group"><label>Nombre</label>' +
-            '<input type="number" min="1" step="1" inputmode="numeric" ' +
-            'id="eq-' + eqId + '-nombre" placeholder="Ex : 1" value="' + val + '"></div>';
-    }
-    return "";
+function renderEquipements() {
+
+    customEquipementsList.innerHTML = "";
+
+    equipements.forEach(function (equip, idx) {
+
+        var item = document.createElement("div");
+        item.className = "custom-equip-card";
+
+        item.innerHTML =
+            '<button type="button" class="custom-equip-delete" data-idx="' + idx + '" aria-label="Supprimer cet équipement">✕</button>' +
+            '<div class="custom-equip-name">' + equip.nom + '</div>' +
+            '<div class="custom-equip-fields">' +
+                '<div class="field-group"><label>Nombre</label>' +
+                '<input type="number" min="1" step="1" inputmode="numeric" class="custom-equip-nombre" data-idx="' + idx + '" value="' + (equip.nombre || 1) + '"></div>' +
+                '<div class="field-group"><label>Puissance unitaire (W)</label>' +
+                '<input type="number" min="0" step="1" inputmode="numeric" class="custom-equip-puissance" data-idx="' + idx + '" value="' + (equip.puissance !== undefined ? equip.puissance : "") + '" placeholder="Ex : 200"></div>' +
+                '<div class="field-group">' + PhotoManager.createPhotoWidget("reunion_" + currentReunion.numero + "_customeq_" + equip.nom) + '</div>' +
+            '</div>';
+
+        customEquipementsList.appendChild(item);
+
+    });
+
+    customEquipementsList.querySelectorAll(".custom-equip-delete").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+            equipements.splice(parseInt(btn.dataset.idx), 1);
+            renderEquipements();
+        });
+    });
+
+    customEquipementsList.querySelectorAll(".custom-equip-nombre").forEach(function (input) {
+        input.addEventListener("input", function () {
+            var idx = parseInt(input.dataset.idx);
+            var v = parseInt(input.value);
+            equipements[idx].nombre = isNaN(v) || v < 1 ? 1 : v;
+        });
+    });
+
+    customEquipementsList.querySelectorAll(".custom-equip-puissance").forEach(function (input) {
+        input.addEventListener("input", function () {
+            var idx = parseInt(input.dataset.idx);
+            var v = parseFloat(input.value);
+            equipements[idx].puissance = isNaN(v) || v < 0 ? 0 : v;
+        });
+    });
+
+    PhotoManager.bindAll(customEquipementsList);
+
 }
 
-audiovisuelDef.forEach(function (eq) {
+renderEquipements();
 
-    var savedEq = savedAudiovisuel[eq.id];
-    var isChecked = !!savedEq;
+addEquipementButton.addEventListener("click", function () {
 
-    var wrapper = document.createElement("div");
-    wrapper.className = "equipement-item";
-
-    var headerHTML =
-        '<label class="equipement-check-label">' +
-            '<input type="checkbox" id="eqCheck-' + eq.id + '"' + (isChecked ? ' checked' : '') + '> ' +
-            '<span>' + eq.label + '</span>' +
-        '</label>';
-
-    var fieldsHTML = '';
-    if (eq.fields.length > 0) {
-        fieldsHTML = '<div class="equipement-fields' + (isChecked ? '' : ' hidden') + '" id="eqFields-' + eq.id + '">';
-        eq.fields.forEach(function (f) {
-            fieldsHTML += buildFieldHTML(eq.id, f, savedEq);
-        });
-        fieldsHTML += '</div>';
+    var nom = nouvelEquipementInput.value.trim();
+    if (nom === "") {
+        alert("Veuillez entrer un nom d'équipement.");
+        return;
     }
 
-    wrapper.innerHTML = headerHTML + fieldsHTML;
-    audiovisuelList.appendChild(wrapper);
-
-    if (eq.fields.length > 0) {
-        var checkbox = document.getElementById("eqCheck-" + eq.id);
-        var fieldsDiv = document.getElementById("eqFields-" + eq.id);
-        checkbox.addEventListener("change", function () {
-            if (checkbox.checked) { fieldsDiv.classList.remove("hidden"); }
-            else { fieldsDiv.classList.add("hidden"); }
-        });
+    var exists = equipements.some(function (e) {
+        return e.nom.toLowerCase() === nom.toLowerCase();
+    });
+    if (exists) {
+        alert("Cet équipement est déjà dans la liste.");
+        return;
     }
+
+    equipements.unshift({ nom: nom, nombre: 1, puissance: "" });
+    nouvelEquipementInput.value = "";
+    renderEquipements();
+
 });
 
 /* =========================
@@ -312,23 +337,8 @@ saveButton.addEventListener("click", function () {
     var finalNom = nomReunion.value.trim();
     if (finalNom === "") { finalNom = "Salle de réunion " + currentReunion.numero; }
 
-    /* Collecter audiovisuel coché */
-    var audiovisuel = {};
-    audiovisuelDef.forEach(function (eq) {
-        var cb = document.getElementById("eqCheck-" + eq.id);
-        if (!cb.checked) return;
-        var obj = {};
-        eq.fields.forEach(function (f) {
-            var el = document.getElementById("eq-" + eq.id + "-" + f);
-            if (!el) return;
-            obj[f] = parseFloat(el.value) || 0;
-        });
-        audiovisuel[eq.id] = obj;
-    });
-
     reunionData[currentReunion.numero] = {
         nom: finalNom,
-        surface: parseFloat(surfaceReunion.value) || 0,
         placesAssises: parseInt(placesAssises.value) || 0,
         frequence: frequence.value,
         climatisation: climatisation,
@@ -336,7 +346,7 @@ saveButton.addEventListener("click", function () {
             present: brasseurAir.present ? "oui" : "non",
             nombre: brasseurAir.nombre
         },
-        audiovisuel: audiovisuel,
+        equipements: equipements,
         eclairages: eclairages,
         photos: {},
         observations: observations.value

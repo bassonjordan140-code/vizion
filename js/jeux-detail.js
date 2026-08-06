@@ -43,13 +43,11 @@ function setupToggle(container, callback) {
 ========================= */
 
 var nomJeux = document.getElementById("nomJeux");
-var surfaceJeux = document.getElementById("surfaceJeux");
 var horDebut = document.getElementById("horDebut");
 var horFin = document.getElementById("horFin");
 
 if (savedData) {
     nomJeux.value = savedData.nom || "";
-    surfaceJeux.value = savedData.surface || "";
     horDebut.value = savedData.horDebut || "";
     horFin.value = savedData.horFin || "";
 }
@@ -140,101 +138,23 @@ brasseurNombre.addEventListener("input", function () {
 updateBrasseurToggle();
 
 /* =========================
-   ÉQUIPEMENTS (cases à cocher)
+   ÉQUIPEMENTS (100% libres)
 ========================= */
 
-// puissanceDefaut (W) : estimations typiques pour pré-remplir le champ, à
-// ajuster par l'utilisateur selon le matériel réellement présent.
-var equipementsDef = [
-    { id: "billard",      label: "Billard",                fields: ["nombre", "puissance"], puissanceDefaut: 0 },
-    { id: "babyFoot",     label: "Baby-foot",              fields: ["nombre", "puissance"], puissanceDefaut: 0 },
-    { id: "pingPong",     label: "Table de ping-pong",     fields: ["nombre", "puissance"], puissanceDefaut: 0 },
-    { id: "flipper",      label: "Flipper",                fields: ["nombre", "puissance"], puissanceDefaut: 150 },
-    { id: "arcades",      label: "Bornes d'arcade",        fields: ["nombre", "puissance"], puissanceDefaut: 200 },
-    { id: "flechettes",   label: "Fléchettes",             fields: ["nombre", "puissance"], puissanceDefaut: 20 },
-    { id: "consoleJeux",  label: "Console de jeux vidéo",  fields: ["nombre", "puissance"], puissanceDefaut: 150 },
-    { id: "simulateur",   label: "Simulateur (VR, racing…)", fields: ["nombre", "puissance"], puissanceDefaut: 1000 },
-    { id: "airHockey",    label: "Air hockey",             fields: ["nombre", "puissance"], puissanceDefaut: 100 },
-    { id: "jeuxSociete",  label: "Espace jeux de société", fields: [] },
-    { id: "autre",        label: "Autre",                  fields: ["nombre", "puissance"] }
-];
-
-var savedEquipements = savedData && savedData.equipements ? savedData.equipements : {};
-var equipementsList = document.getElementById("equipementsList");
-
-function buildFieldHTML(eqId, fieldName, savedEq, puissanceDefaut) {
-    var val = savedEq ? savedEq[fieldName] || "" : "";
-    if (fieldName === "nombre") {
-        return '<div class="field-group"><label>Nombre</label>' +
-            '<input type="number" min="1" step="1" inputmode="numeric" ' +
-            'id="eq-' + eqId + '-nombre" placeholder="Ex : 2" value="' + val + '"></div>';
-    }
-    if (fieldName === "puissance") {
-        if (val === "" && puissanceDefaut !== undefined) { val = puissanceDefaut; }
-        return '<div class="field-group"><label>Puissance unitaire (W)</label>' +
-            '<input type="number" min="0" step="1" inputmode="numeric" ' +
-            'id="eq-' + eqId + '-puissance" placeholder="Ex : 200" value="' + val + '"></div>';
-    }
-    return "";
-}
-
-equipementsDef.forEach(function (eq) {
-
-    var savedEq = savedEquipements[eq.id];
-    var isChecked = !!savedEq;
-
-    var wrapper = document.createElement("div");
-    wrapper.className = "equipement-item";
-
-    var headerHTML =
-        '<label class="equipement-check-label">' +
-            '<input type="checkbox" id="eqCheck-' + eq.id + '"' + (isChecked ? ' checked' : '') + '> ' +
-            '<span>' + eq.label + '</span>' +
-        '</label>';
-
-    var fieldsHTML = '';
-    if (eq.fields.length > 0) {
-        fieldsHTML = '<div class="equipement-fields' + (isChecked ? '' : ' hidden') + '" id="eqFields-' + eq.id + '">';
-        eq.fields.forEach(function (f) {
-            fieldsHTML += buildFieldHTML(eq.id, f, savedEq, eq.puissanceDefaut);
-        });
-        fieldsHTML += '<div class="field-group">' + PhotoManager.createPhotoWidget("jeux_" + currentJeux.numero + "_eq_" + eq.id) + '</div>';
-        fieldsHTML += '</div>';
-    }
-
-    wrapper.innerHTML = headerHTML + fieldsHTML;
-    equipementsList.appendChild(wrapper);
-
-    if (eq.fields.length > 0) {
-        var checkbox = document.getElementById("eqCheck-" + eq.id);
-        var fieldsDiv = document.getElementById("eqFields-" + eq.id);
-        checkbox.addEventListener("change", function () {
-            if (checkbox.checked) { fieldsDiv.classList.remove("hidden"); }
-            else { fieldsDiv.classList.add("hidden"); }
-        });
-    }
-});
-
-PhotoManager.bindAll(equipementsList);
-
-/* =========================
-   ÉQUIPEMENTS AJOUTÉS LIBREMENT (hors liste fixe)
-========================= */
-
-var customEquipements =
-    savedData && Array.isArray(savedData.equipementsPersonnalises)
-        ? JSON.parse(JSON.stringify(savedData.equipementsPersonnalises))
+var equipements =
+    savedData && Array.isArray(savedData.equipements)
+        ? JSON.parse(JSON.stringify(savedData.equipements))
         : [];
 
 var customEquipementsList = document.getElementById("customEquipementsList");
 var nouvelEquipementInput = document.getElementById("nouvelEquipementInput");
 var addEquipementButton = document.getElementById("addEquipementButton");
 
-function renderCustomEquipements() {
+function renderEquipements() {
 
     customEquipementsList.innerHTML = "";
 
-    customEquipements.forEach(function (equip, idx) {
+    equipements.forEach(function (equip, idx) {
 
         var item = document.createElement("div");
         item.className = "custom-equip-card";
@@ -256,8 +176,8 @@ function renderCustomEquipements() {
 
     customEquipementsList.querySelectorAll(".custom-equip-delete").forEach(function (btn) {
         btn.addEventListener("click", function () {
-            customEquipements.splice(parseInt(btn.dataset.idx), 1);
-            renderCustomEquipements();
+            equipements.splice(parseInt(btn.dataset.idx), 1);
+            renderEquipements();
         });
     });
 
@@ -265,7 +185,7 @@ function renderCustomEquipements() {
         input.addEventListener("input", function () {
             var idx = parseInt(input.dataset.idx);
             var v = parseInt(input.value);
-            customEquipements[idx].nombre = isNaN(v) || v < 1 ? 1 : v;
+            equipements[idx].nombre = isNaN(v) || v < 1 ? 1 : v;
         });
     });
 
@@ -273,7 +193,7 @@ function renderCustomEquipements() {
         input.addEventListener("input", function () {
             var idx = parseInt(input.dataset.idx);
             var v = parseFloat(input.value);
-            customEquipements[idx].puissance = isNaN(v) || v < 0 ? 0 : v;
+            equipements[idx].puissance = isNaN(v) || v < 0 ? 0 : v;
         });
     });
 
@@ -281,7 +201,7 @@ function renderCustomEquipements() {
 
 }
 
-renderCustomEquipements();
+renderEquipements();
 
 addEquipementButton.addEventListener("click", function () {
 
@@ -291,7 +211,7 @@ addEquipementButton.addEventListener("click", function () {
         return;
     }
 
-    var exists = customEquipements.some(function (e) {
+    var exists = equipements.some(function (e) {
         return e.nom.toLowerCase() === nom.toLowerCase();
     });
     if (exists) {
@@ -299,56 +219,11 @@ addEquipementButton.addEventListener("click", function () {
         return;
     }
 
-    customEquipements.push({ nom: nom, nombre: 1, puissance: "" });
+    equipements.unshift({ nom: nom, nombre: 1, puissance: "" });
     nouvelEquipementInput.value = "";
-    renderCustomEquipements();
+    renderEquipements();
 
 });
-
-/* =========================
-   ÉCRANS
-========================= */
-
-var ecransToggle = document.getElementById("ecransToggle");
-var ecransContent = document.getElementById("ecransContent");
-var ecransNombre = document.getElementById("ecransNombre");
-var ecransPermanentsToggle = document.getElementById("ecransPermanentsToggle");
-
-var ecrans =
-    savedData && savedData.ecrans
-        ? JSON.parse(JSON.stringify(savedData.ecrans))
-        : { present: false, nombre: 0, permanents: false };
-
-function updateEcransToggle() {
-    updateToggleUI(ecransToggle, ecrans.present);
-    if (ecrans.present) { ecransContent.classList.remove("hidden"); }
-    else { ecransContent.classList.add("hidden"); }
-}
-
-function updateEcransPermanentsToggle() {
-    updateToggleUI(ecransPermanentsToggle, ecrans.permanents);
-}
-
-setupToggle(ecransToggle, function (val) {
-    ecrans.present = val;
-    updateEcransToggle();
-});
-
-setupToggle(ecransPermanentsToggle, function (val) {
-    ecrans.permanents = val;
-    updateEcransPermanentsToggle();
-});
-
-ecransNombre.addEventListener("input", function () {
-    ecrans.nombre = parseInt(ecransNombre.value) || 0;
-});
-
-if (savedData && savedData.ecrans && savedData.ecrans.present) {
-    ecransNombre.value = savedData.ecrans.nombre || "";
-}
-
-updateEcransToggle();
-updateEcransPermanentsToggle();
 
 /* =========================
    ÉCLAIRAGE
@@ -462,23 +337,8 @@ saveButton.addEventListener("click", function () {
     var finalNom = nomJeux.value.trim();
     if (finalNom === "") { finalNom = "Salle de jeux " + currentJeux.numero; }
 
-    /* Collecter équipements cochés */
-    var equipements = {};
-    equipementsDef.forEach(function (eq) {
-        var cb = document.getElementById("eqCheck-" + eq.id);
-        if (!cb.checked) return;
-        var obj = {};
-        eq.fields.forEach(function (f) {
-            var el = document.getElementById("eq-" + eq.id + "-" + f);
-            if (!el) return;
-            obj[f] = parseFloat(el.value) || 0;
-        });
-        equipements[eq.id] = obj;
-    });
-
     jeuxData[currentJeux.numero] = {
         nom: finalNom,
-        surface: parseFloat(surfaceJeux.value) || 0,
         horDebut: horDebut.value,
         horFin: horFin.value,
         climatisation: climatisation,
@@ -487,12 +347,6 @@ saveButton.addEventListener("click", function () {
             nombre: brasseurAir.nombre
         },
         equipements: equipements,
-        equipementsPersonnalises: customEquipements,
-        ecrans: {
-            present: ecrans.present,
-            nombre: parseInt(ecransNombre.value) || 0,
-            permanents: ecrans.permanents
-        },
         eclairages: eclairages,
         photos: {},
         observations: observations.value

@@ -20,7 +20,7 @@ window.ReportExport = (function () {
 
     var LOTS_HEADERS = ["Index", "Nom", "Contact", "Tel", "ABR", "Email", "Entreprise", "Adresse"];
 
-    var PAGE_GARDE_HEADERS = ["Index", "Type construction", "Adresse"];
+    var PAGE_GARDE_HEADERS = ["Index", "Type construction", "Adresse", "Centrale PV", "Puissance PV (W)"];
 
     var CONTACTS_HEADERS = ["Rôle", "Nom", "Téléphone", "ABR", "Email", "Adresse", "Entreprise"];
 
@@ -56,7 +56,9 @@ window.ReportExport = (function () {
             [
                 siteInfo.nom || "Audit ViZion",
                 siteInfo.typeConstruction || "",
-                siteInfo.adresse || ""
+                siteInfo.adresse || "",
+                siteInfo.centralePvPresente ? "Oui" : "Non",
+                siteInfo.centralePvPresente ? (siteInfo.centralePvPuissance || 0) : ""
             ],
             [],
             CONTACTS_HEADERS

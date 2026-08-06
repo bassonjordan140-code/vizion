@@ -12,11 +12,15 @@
 var siteNomInput = document.getElementById("siteNomInput");
 var siteTypeInput = document.getElementById("siteTypeInput");
 var siteAdresseInput = document.getElementById("siteAdresseInput");
+var centralePvToggle = document.getElementById("centralePvToggle");
+var centralePvContent = document.getElementById("centralePvContent");
+var centralePvPuissanceInput = document.getElementById("centralePvPuissanceInput");
 
 var siteInfo = ReportExport.getSiteInfo();
 siteNomInput.value = siteInfo.nom || "";
 siteTypeInput.value = siteInfo.typeConstruction || "";
 siteAdresseInput.value = siteInfo.adresse || "";
+centralePvPuissanceInput.value = siteInfo.centralePvPuissance || "";
 
 var siteMetaHint = document.getElementById("siteMetaHint");
 if (siteInfo.commune) {
@@ -24,16 +28,52 @@ if (siteInfo.commune) {
     siteMetaHint.classList.remove("hidden");
 }
 
+function updateToggleUI(container, isActive) {
+    container.querySelectorAll(".toggle-btn").forEach(function (btn) {
+        var match =
+            (btn.dataset.value === "oui" && isActive) ||
+            (btn.dataset.value === "non" && !isActive);
+        if (match) { btn.classList.add("active"); }
+        else { btn.classList.remove("active"); }
+    });
+}
+
+function setupToggle(container, callback) {
+    container.querySelectorAll(".toggle-btn").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+            callback(btn.dataset.value === "oui");
+        });
+    });
+}
+
+var centralePvPresente = !!siteInfo.centralePvPresente;
+
+function updateCentralePvToggle() {
+    updateToggleUI(centralePvToggle, centralePvPresente);
+    if (centralePvPresente) { centralePvContent.classList.remove("hidden"); }
+    else { centralePvContent.classList.add("hidden"); }
+}
+
+setupToggle(centralePvToggle, function (val) {
+    centralePvPresente = val;
+    updateCentralePvToggle();
+    saveSiteInfo();
+});
+
+updateCentralePvToggle();
+
 function saveSiteInfo() {
     var current = ReportExport.getSiteInfo();
     ReportExport.setSiteInfo(Object.assign({}, current, {
         nom: siteNomInput.value.trim(),
         typeConstruction: siteTypeInput.value.trim(),
-        adresse: siteAdresseInput.value.trim()
+        adresse: siteAdresseInput.value.trim(),
+        centralePvPresente: centralePvPresente,
+        centralePvPuissance: parseFloat(centralePvPuissanceInput.value) || 0
     }));
 }
 
-[siteNomInput, siteTypeInput, siteAdresseInput].forEach(function (input) {
+[siteNomInput, siteTypeInput, siteAdresseInput, centralePvPuissanceInput].forEach(function (input) {
     input.addEventListener("change", saveSiteInfo);
 });
 

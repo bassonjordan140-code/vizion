@@ -1001,6 +1001,9 @@ const equipementsPuissanceDefaut = {
 const equipementsGrid =
     document.getElementById("equipementsGrid");
 
+const customEquipementsList =
+    document.getElementById("customEquipementsList");
+
 let equipements =
     savedData && Array.isArray(savedData.equipements)
         ? JSON.parse(JSON.stringify(savedData.equipements))
@@ -1050,47 +1053,6 @@ function renderEquipements() {
         equipementsGrid.appendChild(item);
 
     });
-
-    // Équipements ajoutés librement par l'utilisateur (hors liste fixe ci-dessus).
-    equipements
-        .filter(function (e) { return equipementsList.indexOf(e.nom) === -1; })
-        .forEach(function (equip) {
-
-            var item = document.createElement("div");
-            item.className = "custom-equip-card";
-
-            item.innerHTML =
-                '<button type="button" class="custom-equip-delete" data-custom-equip="' + equip.nom + '" aria-label="Supprimer cet équipement">✕</button>' +
-                '<div class="custom-equip-name">' + equip.nom + '</div>' +
-                '<div class="custom-equip-fields">' +
-                '<div class="equipement-nombre-group">' +
-                '<label class="equipement-nombre-label">Nombre</label>' +
-                '<input type="number" min="1" step="1" inputmode="numeric" class="equipement-nombre-input" data-equip="' + equip.nom + '" value="' + (equip.nombre || 1) + '">' +
-                '</div>' +
-                '<div class="equipement-nombre-group">' +
-                '<label class="equipement-nombre-label">Puissance unitaire (W)</label>' +
-                '<input type="number" min="0" step="1" inputmode="numeric" class="equipement-puissance-input" data-equip="' + equip.nom + '" value="' + (equip.puissance !== undefined ? equip.puissance : "") + '" placeholder="Ex : 500">' +
-                '</div>' +
-                PhotoManager.createPhotoWidget("hebergement_" + currentHebergement.numero + "_equip_" + equip.nom) +
-                '</div>';
-
-            equipementsGrid.appendChild(item);
-
-        });
-
-    equipementsGrid
-        .querySelectorAll("[data-custom-equip]")
-        .forEach(function (btn) {
-
-            btn.addEventListener("click", function (e) {
-                e.stopPropagation();
-                var nom = btn.dataset.customEquip;
-                var idx = equipements.findIndex(function (eq) { return eq.nom === nom; });
-                if (idx !== -1) { equipements.splice(idx, 1); }
-                renderEquipements();
-            });
-
-        });
 
     equipementsGrid
         .querySelectorAll("input[type='checkbox']")
@@ -1161,7 +1123,84 @@ function renderEquipements() {
 
 }
 
+// Équipements ajoutés librement par l'utilisateur (hors liste fixe ci-dessus) —
+// affichés séparément, juste sous le bouton "Ajouter cet équipement", le plus
+// récent en premier.
+function renderCustomEquipements() {
+
+    customEquipementsList.innerHTML = "";
+
+    var customs = equipements.filter(function (e) { return equipementsList.indexOf(e.nom) === -1; });
+
+    customs.forEach(function (equip) {
+
+        var item = document.createElement("div");
+        item.className = "custom-equip-card";
+
+        item.innerHTML =
+            '<button type="button" class="custom-equip-delete" data-custom-equip="' + equip.nom + '" aria-label="Supprimer cet équipement">✕</button>' +
+            '<div class="custom-equip-name">' + equip.nom + '</div>' +
+            '<div class="custom-equip-fields">' +
+            '<div class="equipement-nombre-group">' +
+            '<label class="equipement-nombre-label">Nombre</label>' +
+            '<input type="number" min="1" step="1" inputmode="numeric" class="equipement-nombre-input" data-equip="' + equip.nom + '" value="' + (equip.nombre || 1) + '">' +
+            '</div>' +
+            '<div class="equipement-nombre-group">' +
+            '<label class="equipement-nombre-label">Puissance unitaire (W)</label>' +
+            '<input type="number" min="0" step="1" inputmode="numeric" class="equipement-puissance-input" data-equip="' + equip.nom + '" value="' + (equip.puissance !== undefined ? equip.puissance : "") + '" placeholder="Ex : 500">' +
+            '</div>' +
+            PhotoManager.createPhotoWidget("hebergement_" + currentHebergement.numero + "_equip_" + equip.nom) +
+            '</div>';
+
+        customEquipementsList.appendChild(item);
+
+    });
+
+    customEquipementsList
+        .querySelectorAll("[data-custom-equip]")
+        .forEach(function (btn) {
+
+            btn.addEventListener("click", function () {
+                var nom = btn.dataset.customEquip;
+                var idx = equipements.findIndex(function (eq) { return eq.nom === nom; });
+                if (idx !== -1) { equipements.splice(idx, 1); }
+                renderCustomEquipements();
+            });
+
+        });
+
+    customEquipementsList
+        .querySelectorAll(".equipement-nombre-input")
+        .forEach(function (input) {
+            input.addEventListener("input", function () {
+                var nom = input.dataset.equip;
+                var equip = findEquip(nom);
+                if (equip) {
+                    var v = parseInt(input.value);
+                    equip.nombre = isNaN(v) || v < 1 ? 1 : v;
+                }
+            });
+        });
+
+    customEquipementsList
+        .querySelectorAll(".equipement-puissance-input")
+        .forEach(function (input) {
+            input.addEventListener("input", function () {
+                var nom = input.dataset.equip;
+                var equip = findEquip(nom);
+                if (equip) {
+                    var v = parseFloat(input.value);
+                    equip.puissance = isNaN(v) || v < 0 ? 0 : v;
+                }
+            });
+        });
+
+    PhotoManager.bindAll(customEquipementsList);
+
+}
+
 renderEquipements();
+renderCustomEquipements();
 
 const nouvelEquipementInput =
     document.getElementById("nouvelEquipementInput");
@@ -1185,9 +1224,9 @@ addEquipementButton.addEventListener("click", function () {
         return;
     }
 
-    equipements.push({ nom: nom, nombre: 1, puissance: "" });
+    equipements.unshift({ nom: nom, nombre: 1, puissance: "" });
     nouvelEquipementInput.value = "";
-    renderEquipements();
+    renderCustomEquipements();
 
 });
 
@@ -1203,6 +1242,15 @@ const piscineContent =
 
 const piscineChauffeToggle =
     document.getElementById("piscineChauffeToggle");
+
+const piscineChauffeContent =
+    document.getElementById("piscineChauffeContent");
+
+const piscineChauffeType =
+    document.getElementById("piscineChauffeType");
+
+const piscineChauffePuissance =
+    document.getElementById("piscineChauffePuissance");
 
 const piscineVolume =
     document.getElementById("piscineVolume");
@@ -1225,11 +1273,27 @@ let piscinePrivee =
         : {
             present: false,
             chauffee: false,
+            chauffeType: "Pompe à chaleur",
+            chauffePuissance: 0,
             volume: 0,
             eclairage: false,
             eclairageNombre: 0,
             eclairageType: "LED"
         };
+
+if (savedData && savedData.piscinePrivee) {
+    piscineChauffeType.value = piscinePrivee.chauffeType || "Pompe à chaleur";
+    piscineChauffePuissance.value = piscinePrivee.chauffePuissance || "";
+}
+
+piscineChauffeType.addEventListener("change", function () {
+    piscinePrivee.chauffeType = piscineChauffeType.value;
+});
+
+piscineChauffePuissance.addEventListener("input", function () {
+    var v = parseFloat(piscineChauffePuissance.value);
+    piscinePrivee.chauffePuissance = isNaN(v) || v < 0 ? 0 : v;
+});
 
 function updatePiscineToggle() {
 
@@ -1262,6 +1326,12 @@ function updatePiscineChauffeToggle() {
             if (isActive) { btn.classList.add("active"); }
             else { btn.classList.remove("active"); }
         });
+
+    if (piscinePrivee.chauffee) {
+        piscineChauffeContent.classList.remove("hidden");
+    } else {
+        piscineChauffeContent.classList.add("hidden");
+    }
 
 }
 

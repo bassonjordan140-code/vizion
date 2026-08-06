@@ -66,6 +66,12 @@ function calcHebergementProgress(d) {
         if (d.climatisation.nombre > 0) filled++;
     }
 
+    // Conditionnel chauffage piscine privée
+    if (d.piscinePrivee && d.piscinePrivee.present && d.piscinePrivee.chauffee) {
+        total += 1;
+        if (d.piscinePrivee.chauffePuissance > 0) filled++;
+    }
+
     return pct(filled, total);
 }
 
@@ -98,12 +104,11 @@ function calcPiscineProgress(d) {
 /* ============================================================
    SPA — Champs actifs :
    1. nom
-   2. surface > 0
-   3. nbDouches > 0
-   4. au moins 1 bain à remous
-   5. au moins 1 hammam
-   6. au moins 1 sauna
-   7. au moins 1 éclairage
+   2. nbDouches > 0
+   3. au moins 1 bain à remous
+   4. au moins 1 hammam
+   5. au moins 1 sauna
+   6. au moins 1 éclairage
    + si brasseur=oui : nombre (1)
    + si clim=oui : nombre (1)
 ============================================================ */
@@ -111,10 +116,9 @@ function calcPiscineProgress(d) {
 function calcSpaProgress(d) {
     if (!d) return 0;
     var filled = 0;
-    var total = 7;
+    var total = 6;
 
     if (has(d.nom)) filled++;
-    if (d.surface > 0) filled++;
     if (d.nbDouches > 0) filled++;
     if (d.bainsRemous && d.bainsRemous.length > 0) filled++;
     if (d.hammams && d.hammams.length > 0) filled++;
@@ -137,10 +141,9 @@ function calcSpaProgress(d) {
 /* ============================================================
    RESTAURANT — Champs actifs :
    1. nom
-   2. surface > 0
-   3. couverts > 0
-   4. placesAssises > 0
-   5. au moins 1 éclairage
+   2. placesAssises > 0
+   3. au moins 1 équipement
+   4. au moins 1 éclairage
    + si brasseur=oui : nombre (1)
    + si clim=oui : nombre (1)
    + si petit-déj=oui : début renseigné (1), fin renseignée (1)
@@ -151,12 +154,11 @@ function calcSpaProgress(d) {
 function calcRestaurantProgress(d) {
     if (!d) return 0;
     var filled = 0;
-    var total = 5;
+    var total = 4;
 
     if (has(d.nom)) filled++;
-    if (d.surface > 0) filled++;
-    if (d.couverts > 0) filled++;
     if (d.placesAssises > 0) filled++;
+    if (d.equipements && d.equipements.length > 0) filled++;
     if (d.eclairages && d.eclairages.length > 0) filled++;
 
     if (d.brasseurAir && d.brasseurAir.present === "oui") {
@@ -194,9 +196,8 @@ function calcRestaurantProgress(d) {
 /* ============================================================
    BAR — Champs actifs :
    1. nom
-   2. surface > 0
-   3. placesAssises > 0
-   4. au moins 1 éclairage
+   2. placesAssises > 0
+   3. au moins 1 éclairage
    + si brasseur=oui : nombre (1)
    + si clim=oui : nombre (1)
    + si vitrines=oui : nombre (1)
@@ -209,10 +210,9 @@ function calcRestaurantProgress(d) {
 function calcBarProgress(d) {
     if (!d) return 0;
     var filled = 0;
-    var total = 4;
+    var total = 3;
 
     if (has(d.nom)) filled++;
-    if (d.surface > 0) filled++;
     if (d.placesAssises > 0) filled++;
     if (d.eclairages && d.eclairages.length > 0) filled++;
 
@@ -257,14 +257,13 @@ function calcBarProgress(d) {
 /* ============================================================
    BUANDERIE — Champs actifs :
    1. nom
-   2. surface > 0
-   3. laveLinge.nombre > 0
-   4. laveLinge.capaciteKg > 0
-   5. secheLinge.nombre > 0
-   6. secheLinge.capaciteKg > 0
-   7. cyclesLaveLinge > 0
-   8. cyclesSecheLinge > 0
-   9. au moins 1 éclairage
+   2. laveLinge.nombre > 0
+   3. laveLinge.capaciteKg > 0
+   4. secheLinge.nombre > 0
+   5. secheLinge.capaciteKg > 0
+   6. cyclesLaveLinge > 0
+   7. cyclesSecheLinge > 0
+   8. au moins 1 éclairage
    + si brasseur=oui : nombre (1)
    + si clim=oui : nombre (1)
    + si calandre=oui : puissance > 0 (1)
@@ -273,10 +272,9 @@ function calcBarProgress(d) {
 function calcBuanderieProgress(d) {
     if (!d) return 0;
     var filled = 0;
-    var total = 9;
+    var total = 8;
 
     if (has(d.nom)) filled++;
-    if (d.surface > 0) filled++;
     if (d.laveLinge && d.laveLinge.nombre > 0) filled++;
     if (d.laveLinge && d.laveLinge.capaciteKg > 0) filled++;
     if (d.secheLinge && d.secheLinge.nombre > 0) filled++;
@@ -306,11 +304,8 @@ function calcBuanderieProgress(d) {
 /* ============================================================
    CUISINE — Champs actifs :
    1. nom
-   2. surface > 0
-   3. couvertsJour > 0
-   4. au moins 1 équipement coché
-   5. nbHottes > 0
-   6. au moins 1 éclairage
+   2. au moins 1 équipement coché
+   3. au moins 1 éclairage
    + si brasseur=oui : nombre (1)
    + si clim=oui : nombre (1)
 ============================================================ */
@@ -318,13 +313,10 @@ function calcBuanderieProgress(d) {
 function calcCuisineProgress(d) {
     if (!d) return 0;
     var filled = 0;
-    var total = 6;
+    var total = 3;
 
     if (has(d.nom)) filled++;
-    if (d.surface > 0) filled++;
-    if (d.couvertsJour > 0) filled++;
     if ((d.equipements && Object.keys(d.equipements).length > 0) || (d.equipementsPersonnalises && d.equipementsPersonnalises.length > 0)) filled++;
-    if (d.nbHottes > 0) filled++;
     if (d.eclairages && d.eclairages.length > 0) filled++;
 
     if (d.brasseurAir && d.brasseurAir.present === "oui") {
@@ -358,9 +350,9 @@ function calcBureauxProgress(d) {
     var total = 5;
 
     if (has(d.nom)) filled++;
-    if (d.surface > 0) filled++;
     if (d.nbPostes > 0) filled++;
     if (d.nbEcrans > 0) filled++;
+    if (d.equipements && d.equipements.length > 0) filled++;
     if (d.eclairages && d.eclairages.length > 0) filled++;
 
     if (d.brasseurAir && d.brasseurAir.present === "oui") {
@@ -397,8 +389,8 @@ function calcParkingProgress(d) {
     var total = 4;
 
     if (has(d.nom)) filled++;
-    if (d.surface > 0) filled++;
     if (d.nbPlaces > 0) filled++;
+    if (d.equipements && d.equipements.length > 0) filled++;
     if (d.eclairages && d.eclairages.length > 0) filled++;
 
     if (d.ventilation && d.ventilation.presente) {
@@ -429,11 +421,10 @@ function calcParkingProgress(d) {
 function calcSportProgress(d) {
     if (!d) return 0;
     var filled = 0;
-    var total = 4;
+    var total = 3;
 
     if (has(d.nom)) filled++;
-    if (d.surface > 0) filled++;
-    if ((d.equipements && Object.keys(d.equipements).length > 0) || (d.equipementsPersonnalises && d.equipementsPersonnalises.length > 0)) filled++;
+    if (d.equipements && d.equipements.length > 0) filled++;
     if (d.eclairages && d.eclairages.length > 0) filled++;
 
     if (d.brasseurAir && d.brasseurAir.present === "oui") {
@@ -444,11 +435,6 @@ function calcSportProgress(d) {
     if (d.climatisation && d.climatisation.present) {
         total += 1;
         if (d.climatisation.nombre > 0) filled++;
-    }
-
-    if (d.ecrans && d.ecrans.present) {
-        total += 1;
-        if (d.ecrans.nombre > 0) filled++;
     }
 
     if (d.vestiaires && d.vestiaires.present) {
@@ -483,11 +469,10 @@ function calcSportProgress(d) {
 function calcJeuxProgress(d) {
     if (!d) return 0;
     var filled = 0;
-    var total = 4;
+    var total = 3;
 
     if (has(d.nom)) filled++;
-    if (d.surface > 0) filled++;
-    if ((d.equipements && Object.keys(d.equipements).length > 0) || (d.equipementsPersonnalises && d.equipementsPersonnalises.length > 0)) filled++;
+    if (d.equipements && d.equipements.length > 0) filled++;
     if (d.eclairages && d.eclairages.length > 0) filled++;
 
     if (d.brasseurAir && d.brasseurAir.present === "oui") {
@@ -500,11 +485,6 @@ function calcJeuxProgress(d) {
         if (d.climatisation.nombre > 0) filled++;
     }
 
-    if (d.ecrans && d.ecrans.present) {
-        total += 1;
-        if (d.ecrans.nombre > 0) filled++;
-    }
-
     return pct(filled, total);
 }
 
@@ -514,8 +494,8 @@ function calcReunionProgress(d) {
     var total = 4;
 
     if (has(d.nom)) filled++;
-    if (d.surface > 0) filled++;
     if (d.placesAssises > 0) filled++;
+    if (d.equipements && d.equipements.length > 0) filled++;
     if (d.eclairages && d.eclairages.length > 0) filled++;
 
     if (d.brasseurAir && d.brasseurAir.present === "oui") {

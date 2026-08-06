@@ -233,6 +233,16 @@ window.LotMapping = (function () {
             }));
         });
 
+        if (fiche.piscinePrivee && fiche.piscinePrivee.present && fiche.piscinePrivee.chauffee) {
+            rows.push(makeRow({
+                localisation: localisation, secteur: ctx.secteur,
+                puissance: fiche.piscinePrivee.chauffePuissance, nombre: 1,
+                description: "Chauffage piscine privée (" + (fiche.piscinePrivee.chauffeType || "") + ")",
+                lot: PISCINE_CHAUFFE_LOT[fiche.piscinePrivee.chauffeType] || "9-1",
+                formulaireOrigine: ctx.formulaireOrigine, nomFormulaire: ctx.nomFormulaire
+            }));
+        }
+
         if (fiche.piscinePrivee && fiche.piscinePrivee.present && fiche.piscinePrivee.eclairage) {
             var pLot = { "LED": "6-1", "Halogène": "6-4" }[fiche.piscinePrivee.eclairageType] || "9-1";
             rows.push(makeRow({
@@ -331,6 +341,7 @@ window.LotMapping = (function () {
 
         addClimatisationRow(rows, fiche.climatisation, ctx);
         addBrasseurRow(rows, fiche.brasseurAir, ctx);
+        addCustomEquipementsRows(rows, fiche.equipements, ctx);
         addEclairageRows(rows, fiche.eclairages, ctx);
         addObservationRow(rows, fiche.observations, ctx);
         return rows;
@@ -431,7 +442,8 @@ window.LotMapping = (function () {
 
         if (fiche.typeChauffeGlobal) {
             rows.push(makeRow({
-                localisation: localisation, secteur: ctx.secteur, nombre: 1,
+                localisation: localisation, secteur: ctx.secteur,
+                puissance: fiche.chauffeGlobalPuissance, nombre: 1,
                 description: "Chauffage global spa (" + fiche.typeChauffeGlobal + ")",
                 lot: SPA_CHAUFFE_GLOBAL_LOT[fiche.typeChauffeGlobal] || "9-1",
                 formulaireOrigine: ctx.formulaireOrigine, nomFormulaire: ctx.nomFormulaire
@@ -456,7 +468,8 @@ window.LotMapping = (function () {
 
         (fiche.hammams || []).forEach(function (h) {
             rows.push(makeRow({
-                localisation: localisation, secteur: ctx.secteur, nombre: 1,
+                localisation: localisation, secteur: ctx.secteur,
+                puissance: h.puissance, nombre: 1,
                 description: "Hammam (consigne " + (h.temperatureConsigne || "?") + "°C, " + (h.typeGenerateur || "?") + ")",
                 lot: SPA_HAMMAM_LOT[h.typeGenerateur] || "9-1",
                 formulaireOrigine: ctx.formulaireOrigine, nomFormulaire: ctx.nomFormulaire
@@ -465,7 +478,8 @@ window.LotMapping = (function () {
 
         (fiche.saunas || []).forEach(function (s) {
             rows.push(makeRow({
-                localisation: localisation, secteur: ctx.secteur, nombre: 1,
+                localisation: localisation, secteur: ctx.secteur,
+                puissance: s.puissance, nombre: 1,
                 description: "Sauna (consigne " + (s.temperatureConsigne || "?") + "°C, " + (s.type || "?") + ")",
                 lot: SPA_SAUNA_LOT[s.type] || "9-1",
                 formulaireOrigine: ctx.formulaireOrigine, nomFormulaire: ctx.nomFormulaire
@@ -507,10 +521,19 @@ window.LotMapping = (function () {
                 description: "Lave-linge (" + (fiche.laveLinge.capaciteKg || "?") + " kg)",
                 lot: "3-3", formulaireOrigine: ctx.formulaireOrigine, nomFormulaire: ctx.nomFormulaire
             }));
+            if (fiche.laveLinge.ecsAssociee === "Propre" && fiche.laveLinge.ecsBallons) {
+                rows.push(makeRow({
+                    localisation: localisation, secteur: ctx.secteur,
+                    puissance: fiche.laveLinge.ecsPuissance, nombre: fiche.laveLinge.ecsBallons,
+                    description: "Ballon ECS lave-linge (" + (fiche.laveLinge.ecsVolume || "?") + " L)",
+                    lot: "2-1", formulaireOrigine: ctx.formulaireOrigine, nomFormulaire: ctx.nomFormulaire
+                }));
+            }
         }
         if (fiche.secheLinge && fiche.secheLinge.nombre) {
             rows.push(makeRow({
-                localisation: localisation, secteur: ctx.secteur, nombre: fiche.secheLinge.nombre,
+                localisation: localisation, secteur: ctx.secteur,
+                puissance: fiche.secheLinge.puissance, nombre: fiche.secheLinge.nombre,
                 description: "Sèche-linge (" + (fiche.secheLinge.capaciteKg || "?") + " kg, " + (fiche.secheLinge.typeEnergie || "?") + ")",
                 lot: SECHE_LINGE_LOT[fiche.secheLinge.typeEnergie] || "9-1",
                 formulaireOrigine: ctx.formulaireOrigine, nomFormulaire: ctx.nomFormulaire
@@ -550,7 +573,8 @@ window.LotMapping = (function () {
         microOndes:      { label: "Micro-ondes professionnel", lot: "3-7" },
         cfPositive:      { label: "Chambre froide positive", lot: "3-4" },
         cfNegative:      { label: "Chambre froide négative", lot: "3-4" },
-        armoireRefrig:   { label: "Armoire réfrigérée", lot: "3-5" }
+        armoireRefrig:   { label: "Armoire réfrigérée", lot: "3-5" },
+        hotte:           { label: "Hotte d'extraction", lot: "3-6" }
     };
 
     function extractCuisineRows(fiche, numero) {
@@ -590,18 +614,19 @@ window.LotMapping = (function () {
 
         if (equipements.laveVaisselle && equipements.laveVaisselle.nombre) {
             rows.push(makeRow({
-                localisation: localisation, secteur: ctx.secteur, nombre: equipements.laveVaisselle.nombre,
+                localisation: localisation, secteur: ctx.secteur,
+                puissance: equipements.laveVaisselle.puissance, nombre: equipements.laveVaisselle.nombre,
                 description: "Lave-vaisselle (" + (equipements.laveVaisselle.typeLV || "?") + ")",
                 lot: "3-3", formulaireOrigine: ctx.formulaireOrigine, nomFormulaire: ctx.nomFormulaire
             }));
-        }
-
-        if (fiche.nbHottes) {
-            rows.push(makeRow({
-                localisation: localisation, secteur: ctx.secteur, nombre: fiche.nbHottes,
-                description: "Hottes d'extraction (" + (fiche.typeVentilation || "?") + ")",
-                lot: "3-6", formulaireOrigine: ctx.formulaireOrigine, nomFormulaire: ctx.nomFormulaire
-            }));
+            if (equipements.laveVaisselle.ecs === "Propre" && equipements.laveVaisselle.ecsBallons) {
+                rows.push(makeRow({
+                    localisation: localisation, secteur: ctx.secteur,
+                    puissance: equipements.laveVaisselle.ecsPuissance, nombre: equipements.laveVaisselle.ecsBallons,
+                    description: "Ballon ECS lave-vaisselle (" + (equipements.laveVaisselle.ecsVolume || "?") + " L)",
+                    lot: "2-1", formulaireOrigine: ctx.formulaireOrigine, nomFormulaire: ctx.nomFormulaire
+                }));
+            }
         }
 
         addEclairageRows(rows, fiche.eclairages, ctx);
@@ -613,13 +638,6 @@ window.LotMapping = (function () {
        8. SALLE DE JEUX
     ========================= */
 
-    var JEUX_EQUIP_LABELS = {
-        billard: "Billard", babyFoot: "Baby-foot", pingPong: "Table de ping-pong",
-        flipper: "Flipper", arcades: "Bornes d'arcade", flechettes: "Fléchettes",
-        consoleJeux: "Console de jeux vidéo", simulateur: "Simulateur (VR, racing…)",
-        airHockey: "Air hockey", autre: "Autre équipement"
-    };
-
     function extractJeuxRows(fiche, numero) {
         var rows = [];
         var localisation = fiche.nom || "Salle de jeux " + numero;
@@ -627,30 +645,7 @@ window.LotMapping = (function () {
 
         addClimatisationRow(rows, fiche.climatisation, ctx);
         addBrasseurRow(rows, fiche.brasseurAir, ctx);
-        addCustomEquipementsRows(rows, fiche.equipementsPersonnalises, ctx);
-
-        var equipements = fiche.equipements || {};
-        Object.keys(JEUX_EQUIP_LABELS).forEach(function (id) {
-            var eq = equipements[id];
-            if (!eq || !eq.nombre) return;
-            rows.push(makeRow({
-                localisation: localisation, secteur: ctx.secteur,
-                puissance: eq.puissance, nombre: eq.nombre,
-                description: JEUX_EQUIP_LABELS[id], lot: "9-1",
-                formulaireOrigine: ctx.formulaireOrigine, nomFormulaire: ctx.nomFormulaire
-            }));
-        });
-
-        var ecrans = fiche.ecrans;
-        if (ecrans && (ecrans.present === true || ecrans.present === "oui")) {
-            var permanents = ecrans.permanents === true || ecrans.permanents === "oui";
-            rows.push(makeRow({
-                localisation: localisation, secteur: ctx.secteur, nombre: ecrans.nombre,
-                description: "Écrans" + (permanents ? " (allumés en permanence)" : ""),
-                lot: permanents ? "8-2" : "8-1",
-                formulaireOrigine: ctx.formulaireOrigine, nomFormulaire: ctx.nomFormulaire
-            }));
-        }
+        addCustomEquipementsRows(rows, fiche.equipements, ctx);
 
         addEclairageRows(rows, fiche.eclairages, ctx);
         addObservationRow(rows, fiche.observations, ctx);
@@ -668,35 +663,7 @@ window.LotMapping = (function () {
 
         addClimatisationRow(rows, fiche.climatisation, ctx);
         addBrasseurRow(rows, fiche.brasseurAir, ctx);
-
-        var av = fiche.audiovisuel || {};
-        [
-            { id: "videoprojecteur", label: "Vidéoprojecteur", lot: "8-1" },
-            { id: "ecranPlat", label: "Écran plat / TV", lot: "8-1" }
-        ].forEach(function (def) {
-            var eq = av[def.id];
-            if (!eq || !eq.nombre) return;
-            rows.push(makeRow({
-                localisation: localisation, secteur: ctx.secteur, nombre: eq.nombre,
-                description: def.label, lot: def.lot,
-                formulaireOrigine: ctx.formulaireOrigine, nomFormulaire: ctx.nomFormulaire
-            }));
-        });
-        [
-            { id: "visioconference", label: "Système de visioconférence" },
-            { id: "sonorisation", label: "Sonorisation / micro" },
-            { id: "tableauInteractif", label: "Tableau interactif / écran tactile" }
-        ].forEach(function (def) {
-            var eq = av[def.id];
-            if (!eq) return;
-            var present = eq === true || eq.present === true || eq.present === "oui";
-            if (!present) return;
-            rows.push(makeRow({
-                localisation: localisation, secteur: ctx.secteur, nombre: 1,
-                description: def.label, lot: "9-1",
-                formulaireOrigine: ctx.formulaireOrigine, nomFormulaire: ctx.nomFormulaire
-            }));
-        });
+        addCustomEquipementsRows(rows, fiche.equipements, ctx);
 
         addEclairageRows(rows, fiche.eclairages, ctx);
         addObservationRow(rows, fiche.observations, ctx);
@@ -707,18 +674,6 @@ window.LotMapping = (function () {
        10. SALLE DE SPORT
     ========================= */
 
-    var SPORT_EQUIP = {
-        tapisDesCourse: { label: "Tapis de course", lot: "7-1" },
-        veloElliptique: { label: "Vélo elliptique", lot: "9-1" },
-        veloStatique:   { label: "Vélo stationnaire", lot: "9-1" },
-        rameur:         { label: "Rameur", lot: "9-1" },
-        stepper:        { label: "Stepper / Escalier", lot: "9-1" },
-        musculation:    { label: "Machines de musculation", lot: "9-1" },
-        sauna:          { label: "Sauna", lot: "10-3" },
-        hammam:         { label: "Hammam", lot: "2-1" },
-        jacuzzi:        { label: "Jacuzzi", lot: "4-1" }
-    };
-
     function extractSportRows(fiche, numero) {
         var rows = [];
         var localisation = fiche.nom || "Salle de sport " + numero;
@@ -726,38 +681,8 @@ window.LotMapping = (function () {
 
         addClimatisationRow(rows, fiche.climatisation, ctx);
         addBrasseurRow(rows, fiche.brasseurAir, ctx);
-        addCustomEquipementsRows(rows, fiche.equipementsPersonnalises, ctx);
+        addCustomEquipementsRows(rows, fiche.equipements, ctx);
 
-        var equipements = fiche.equipements || {};
-        Object.keys(SPORT_EQUIP).forEach(function (id) {
-            var eq = equipements[id];
-            if (!eq || !eq.nombre) return;
-            var def = SPORT_EQUIP[id];
-            rows.push(makeRow({
-                localisation: localisation, secteur: ctx.secteur,
-                puissance: eq.puissance, nombre: eq.nombre,
-                description: def.label, lot: def.lot,
-                formulaireOrigine: ctx.formulaireOrigine, nomFormulaire: ctx.nomFormulaire
-            }));
-        });
-
-        var ecrans = fiche.ecrans;
-        if (ecrans && (ecrans.present === true || ecrans.present === "oui")) {
-            var permanents = ecrans.permanents === true || ecrans.permanents === "oui";
-            rows.push(makeRow({
-                localisation: localisation, secteur: ctx.secteur, nombre: ecrans.nombre,
-                description: "Écrans" + (permanents ? " (allumés en permanence)" : ""),
-                lot: permanents ? "8-2" : "8-1",
-                formulaireOrigine: ctx.formulaireOrigine, nomFormulaire: ctx.nomFormulaire
-            }));
-        }
-        if (fiche.sono === true || fiche.sono === "oui") {
-            rows.push(makeRow({
-                localisation: localisation, secteur: ctx.secteur, nombre: 1,
-                description: "Sonorisation", lot: "9-1",
-                formulaireOrigine: ctx.formulaireOrigine, nomFormulaire: ctx.nomFormulaire
-            }));
-        }
         if (fiche.vestiaires && fiche.vestiaires.present && fiche.vestiaires.nbDouches) {
             rows.push(makeRow({
                 localisation: localisation, secteur: ctx.secteur, nombre: fiche.vestiaires.nbDouches,
@@ -775,15 +700,6 @@ window.LotMapping = (function () {
        11. BUREAUX
     ========================= */
 
-    var BUREAUX_EQUIP = {
-        photocopieur:  { label: "Photocopieur / multifonction", lot: "8-1" },
-        distributeur:  { label: "Distributeur de boissons", lot: "9-1" },
-        fontaineEau:   { label: "Fontaine à eau", lot: "9-1" },
-        machineCafe:   { label: "Machine à café", lot: "9-1" },
-        microOndes:    { label: "Micro-ondes", lot: "3-7" },
-        refrigerateur: { label: "Réfrigérateur", lot: "3-5" }
-    };
-
     function extractBureauxRows(fiche, numero) {
         var rows = [];
         var localisation = fiche.nom || "Bureaux " + numero;
@@ -791,7 +707,7 @@ window.LotMapping = (function () {
 
         addClimatisationRow(rows, fiche.climatisation, ctx);
         addBrasseurRow(rows, fiche.brasseurAir, ctx);
-        addCustomEquipementsRows(rows, fiche.equipementsPersonnalises, ctx);
+        addCustomEquipementsRows(rows, fiche.equipements, ctx);
 
         if (fiche.nbEcrans) {
             rows.push(makeRow({
@@ -807,19 +723,6 @@ window.LotMapping = (function () {
                 formulaireOrigine: ctx.formulaireOrigine, nomFormulaire: ctx.nomFormulaire
             }));
         }
-
-        var equipPartages = fiche.equipPartages || {};
-        Object.keys(BUREAUX_EQUIP).forEach(function (id) {
-            var eq = equipPartages[id];
-            if (!eq || !eq.nombre) return;
-            var def = BUREAUX_EQUIP[id];
-            rows.push(makeRow({
-                localisation: localisation, secteur: ctx.secteur,
-                puissance: eq.puissance, nombre: eq.nombre,
-                description: def.label, lot: def.lot,
-                formulaireOrigine: ctx.formulaireOrigine, nomFormulaire: ctx.nomFormulaire
-            }));
-        });
 
         if (fiche.salleServeur && fiche.salleServeur.presente) {
             rows.push(makeRow({
@@ -844,6 +747,7 @@ window.LotMapping = (function () {
         var localisation = fiche.nom || "Parking " + numero;
         var ctx = makeCtx(localisation, "Parking", "parking", numero);
 
+        addCustomEquipementsRows(rows, fiche.equipements, ctx);
         addEclairageRows(rows, fiche.eclairages, ctx);
 
         if (fiche.ventilation && fiche.ventilation.presente) {
