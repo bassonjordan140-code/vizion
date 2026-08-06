@@ -4,28 +4,11 @@ const currentHebergement =
 const hebergementTitle =
     document.getElementById("hebergementTitle");
 
-const typeHebergement =
-    document.getElementById("typeHebergement");
-
-const autreTypeContainer =
-    document.getElementById("autreTypeContainer");
-
-const autreTypeInput =
-    document.getElementById("autreTypeInput");
-
-const nomHebergement =
-    document.getElementById("nomHebergement");
-
 const counterContainer =
     document.getElementById("counterContainer");
 
 const saveButton =
     document.getElementById("saveHebergement");
-
-if (currentHebergement) {
-    hebergementTitle.textContent =
-        "Hébergement " + currentHebergement.numero;
-}
 
 const hebergementsData =
     JSON.parse(localStorage.getItem("hebergementsData")) || {};
@@ -33,30 +16,12 @@ const hebergementsData =
 const savedData =
     hebergementsData[currentHebergement.numero];
 
-PhotoManager.initPage("hebergement", currentHebergement.numero);
-
-if (savedData) {
-
-    typeHebergement.value = savedData.typeSelect || "Chambre";
-
-    if (savedData.typeSelect === "Autre") {
-        autreTypeContainer.classList.remove("hidden");
-        autreTypeInput.value = savedData.type || "";
-    }
-
-    nomHebergement.value = savedData.nom || "";
+if (currentHebergement && hebergementTitle) {
+    hebergementTitle.textContent =
+        (savedData && savedData.nom) || ("Hébergement " + currentHebergement.numero);
 }
 
-typeHebergement.addEventListener("change", function () {
-
-    if (typeHebergement.value === "Autre") {
-        autreTypeContainer.classList.remove("hidden");
-    } else {
-        autreTypeContainer.classList.add("hidden");
-        autreTypeInput.value = "";
-    }
-
-});
+PhotoManager.initPage("hebergement", currentHebergement.numero);
 
 const counters = [
     { id: "nbEtages", label: "Nombre d’étages", value: 0 },
@@ -1490,21 +1455,8 @@ saveButton.addEventListener("click", function () {
     const hebergementsData =
         JSON.parse(localStorage.getItem("hebergementsData")) || {};
 
-    let finalType =
-        typeHebergement.value;
-
-    if (typeHebergement.value === "Autre") {
-        finalType = autreTypeInput.value.trim();
-    }
-
-    if (finalType === "") {
-        finalType = "Hébergement " + currentHebergement.numero;
-    }
-
     hebergementsData[currentHebergement.numero] = {
-        typeSelect: typeHebergement.value,
-        type: finalType,
-        nom: nomHebergement.value,
+        nom: savedData ? savedData.nom : "",
         nbEtages: parseInt(document.getElementById("nbEtages").textContent),
         nbHebergements: parseInt(document.getElementById("nbHebergements").textContent),
         nbChambres: parseInt(document.getElementById("nbChambres").textContent),
