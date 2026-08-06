@@ -125,6 +125,7 @@ window.LotMapping = (function () {
             localisation: ctx.localisation,
             secteur: ctx.secteur,
             nombre: clim.nombre,
+            puissance: clim.puissance,
             description: "Climatisation" + (clim.etat ? " (état : " + clim.etat + ")" : ""),
             lot: "1-2", // TODO lot à confirmer — sous-type de climatisation non collecté par ViZion
             formulaireOrigine: ctx.formulaireOrigine,

@@ -126,14 +126,6 @@ addEquipementButton.addEventListener("click", function () {
         return;
     }
 
-    var exists = equipements.some(function (e) {
-        return e.nom.toLowerCase() === nom.toLowerCase();
-    });
-    if (exists) {
-        alert("Cet équipement est déjà dans la liste.");
-        return;
-    }
-
     equipements.unshift({ nom: nom, nombre: 1, puissance: "" });
     nouvelEquipementInput.value = "";
     renderEquipements();

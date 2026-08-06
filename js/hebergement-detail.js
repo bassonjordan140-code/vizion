@@ -779,10 +779,13 @@ const plaquePhotoContainer =
 const climNombre =
     document.getElementById("climNombre");
 
+const climPuissance =
+    document.getElementById("climPuissance");
+
 let climatisation =
     savedData && savedData.climatisation
         ? JSON.parse(JSON.stringify(savedData.climatisation))
-        : { present: false, nombre: 0, etat: "Bon", plaque: false };
+        : { present: false, nombre: 0, puissance: 0, etat: "Bon", plaque: false };
 
 function updateClimToggle() {
 
@@ -875,9 +878,15 @@ climNombre.addEventListener("input", function () {
     climatisation.nombre = isNaN(v) || v < 0 ? 0 : v;
 });
 
+climPuissance.addEventListener("input", function () {
+    var v = parseFloat(climPuissance.value);
+    climatisation.puissance = isNaN(v) || v < 0 ? 0 : v;
+});
+
 if (savedData && savedData.climatisation) {
     climEtat.value = climatisation.etat;
     climNombre.value = climatisation.nombre || 0;
+    climPuissance.value = climatisation.puissance || "";
 }
 
 updateClimToggle();
@@ -1213,14 +1222,6 @@ addEquipementButton.addEventListener("click", function () {
     var nom = nouvelEquipementInput.value.trim();
     if (nom === "") {
         alert("Veuillez entrer un nom d'équipement.");
-        return;
-    }
-
-    var exists = equipements.some(function (e) {
-        return e.nom.toLowerCase() === nom.toLowerCase();
-    });
-    if (exists) {
-        alert("Cet équipement est déjà dans la liste.");
         return;
     }
 
