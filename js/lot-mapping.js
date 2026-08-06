@@ -849,6 +849,25 @@ window.LotMapping = (function () {
     }
 
     /* =========================
+       13. SECTEUR PERSONNALISÉ
+       Fiche générique (nom + observation + photo) — pas de sous-type
+       collecté, une seule ligne d'observation par localisation.
+    ========================= */
+
+    function extractCustomRows(fiche, numero, secteurLabel) {
+        var localisation = fiche.nom || (secteurLabel + " " + numero);
+        var ctx = makeCtx(localisation, secteurLabel, "custom", numero);
+        return [makeRow({
+            localisation: localisation,
+            secteur: ctx.secteur,
+            description: fiche.observation ? "Observation : " + fiche.observation.trim() : "",
+            lot: "",
+            formulaireOrigine: ctx.formulaireOrigine,
+            nomFormulaire: ctx.nomFormulaire
+        })];
+    }
+
+    /* =========================
        DISPATCH PAR MODULE
     ========================= */
 
@@ -868,16 +887,23 @@ window.LotMapping = (function () {
     };
 
     // donnees = { moduleId: { "1": fiche, "2": fiche, ... }, ... } (auditData.donnees)
-    function buildAllRows(donnees) {
+    // customLabels = { customSecteurId: "Nom donné par l'utilisateur", ... }
+    function buildAllRows(donnees, customLabels) {
         var rows = [];
         Object.keys(donnees || {}).forEach(function (moduleId) {
             var extractor = EXTRACTORS[moduleId];
-            if (!extractor) return;
+            var isCustom = !extractor && typeof isCustomSecteurId === "function" && isCustomSecteurId(moduleId);
+            if (!extractor && !isCustom) return;
             var moduleData = donnees[moduleId] || {};
             Object.keys(moduleData).forEach(function (numero) {
                 var fiche = moduleData[numero];
                 if (!fiche) return;
-                rows = rows.concat(extractor(fiche, numero));
+                if (extractor) {
+                    rows = rows.concat(extractor(fiche, numero));
+                } else {
+                    var label = (customLabels && customLabels[moduleId]) || "Secteur personnalisé";
+                    rows = rows.concat(extractCustomRows(fiche, numero, label));
+                }
             });
         });
         return rows;

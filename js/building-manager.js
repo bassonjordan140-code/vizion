@@ -59,6 +59,9 @@ window.BuildingManager = (function () {
             localStorage.removeItem(CURRENT_BUILDING_KEY);
             localStorage.removeItem("activeSecteurs");
             localStorage.removeItem("currentSecteur");
+            localStorage.removeItem(CUSTOM_SECTEURS_KEY);
+            localStorage.removeItem(CUSTOM_SECTEUR_DATA_KEY);
+            localStorage.removeItem(CUSTOM_SECTEUR_CURRENT_KEY);
             Object.keys(SECTEUR_DATA_KEYS).forEach(function (secteurId) {
                 localStorage.removeItem(SECTEUR_DATA_KEYS[secteurId]);
             });
@@ -85,7 +88,9 @@ window.BuildingManager = (function () {
         if (!currentId) return Promise.resolve();
 
         var snapshot = {
-            activeSecteurs: JSON.parse(localStorage.getItem("activeSecteurs")) || []
+            activeSecteurs: JSON.parse(localStorage.getItem("activeSecteurs")) || [],
+            customSecteurs: JSON.parse(localStorage.getItem(CUSTOM_SECTEURS_KEY)) || [],
+            customSecteurData: JSON.parse(localStorage.getItem(CUSTOM_SECTEUR_DATA_KEY)) || {}
         };
         Object.keys(SECTEUR_DATA_KEYS).forEach(function (secteurId) {
             var key = SECTEUR_DATA_KEYS[secteurId];
@@ -112,6 +117,9 @@ window.BuildingManager = (function () {
             }
         });
 
+        localStorage.setItem(CUSTOM_SECTEURS_KEY, JSON.stringify(snapshot.customSecteurs || []));
+        localStorage.setItem(CUSTOM_SECTEUR_DATA_KEY, JSON.stringify(snapshot.customSecteurData || {}));
+
         var activeSecteurs = snapshot.activeSecteurs;
         if (!activeSecteurs) {
             // Migration : bâtiment créé avant l'ajout/retrait de secteurs — on rend
@@ -125,6 +133,7 @@ window.BuildingManager = (function () {
 
         // Navigation transitoire : jamais pertinente d'un bâtiment à l'autre.
         localStorage.removeItem("currentSecteur");
+        localStorage.removeItem(CUSTOM_SECTEUR_CURRENT_KEY);
         Object.keys(SECTEUR_CURRENT_KEYS).forEach(function (secteurId) {
             localStorage.removeItem(SECTEUR_CURRENT_KEYS[secteurId]);
         });
@@ -150,9 +159,14 @@ window.BuildingManager = (function () {
         var raw = localStorage.getItem(snapshotKey(buildingId));
         if (!raw) return false;
         var snapshot = JSON.parse(raw);
-        return Object.keys(SECTEUR_DATA_KEYS).some(function (secteurId) {
+        var fixedConfigured = Object.keys(SECTEUR_DATA_KEYS).some(function (secteurId) {
             var data = snapshot[SECTEUR_DATA_KEYS[secteurId]];
             return data && Object.keys(data).length > 0;
+        });
+        if (fixedConfigured) return true;
+        var customData = snapshot.customSecteurData || {};
+        return Object.keys(customData).some(function (secteurId) {
+            return Object.keys(customData[secteurId] || {}).length > 0;
         });
     }
 
@@ -169,6 +183,9 @@ window.BuildingManager = (function () {
         localStorage.removeItem("siteInfo");
         localStorage.removeItem("currentSecteur");
         localStorage.removeItem("activeSecteurs");
+        localStorage.removeItem(CUSTOM_SECTEURS_KEY);
+        localStorage.removeItem(CUSTOM_SECTEUR_DATA_KEY);
+        localStorage.removeItem(CUSTOM_SECTEUR_CURRENT_KEY);
         Object.keys(SECTEUR_DATA_KEYS).forEach(function (secteurId) {
             localStorage.removeItem(SECTEUR_DATA_KEYS[secteurId]);
         });
@@ -183,8 +200,10 @@ window.BuildingManager = (function () {
     ========================= */
 
     // Force la fraîcheur du bâtiment actif puis renvoie, pour chaque bâtiment,
-    // { id, nom, donnees } où donnees = { secteurId: {...fiches} } comme
-    // l'attend LotMapping.buildAllRows.
+    // { id, nom, donnees, customLabels } où donnees = { secteurId: {...fiches} }
+    // (secteurs fixes ET personnalisés confondus) comme l'attend
+    // LotMapping.buildAllRows ; customLabels donne le nom affiché de chaque
+    // secteur personnalisé (non déductible de son id).
     function collectAllBuildingsAuditData() {
         return saveCurrentBuildingSnapshot().then(function () {
             return listBuildings().map(function (building) {
@@ -195,7 +214,19 @@ window.BuildingManager = (function () {
                     var key = SECTEUR_DATA_KEYS[secteurId];
                     if (snapshot[key]) donnees[secteurId] = snapshot[key];
                 });
-                return { id: building.id, nom: building.nom, donnees: donnees };
+
+                var customLabels = {};
+                (snapshot.customSecteurs || []).forEach(function (secteur) {
+                    customLabels[secteur.id] = secteur.label;
+                });
+                var customData = snapshot.customSecteurData || {};
+                Object.keys(customData).forEach(function (secteurId) {
+                    if (Object.keys(customData[secteurId] || {}).length) {
+                        donnees[secteurId] = customData[secteurId];
+                    }
+                });
+
+                return { id: building.id, nom: building.nom, donnees: donnees, customLabels: customLabels };
             });
         });
     }
@@ -209,8 +240,13 @@ window.BuildingManager = (function () {
         var secteurId = parts[0];
         var numero = parts[1];
         var champ = parts.slice(2).join("_");
-        var dataKey = SECTEUR_DATA_KEYS[secteurId];
-        var data = dataKey && snapshot[dataKey];
+        var data;
+        if (isCustomSecteurId(secteurId)) {
+            data = (snapshot.customSecteurData || {})[secteurId];
+        } else {
+            var dataKey = SECTEUR_DATA_KEYS[secteurId];
+            data = dataKey && snapshot[dataKey];
+        }
         var entry = data && data[numero];
         var nomPart = (entry && entry.nom) ? entry.nom.replace(/[\\/:*?"<>|]/g, "-") : numero;
         return secteurId + "_" + nomPart + "_" + champ;

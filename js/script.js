@@ -13,6 +13,8 @@ var noSecteursHint = document.getElementById("noSecteursHint");
 var addSecteurSelect = document.getElementById("addSecteurSelect");
 var addSecteurBtn = document.getElementById("addSecteurBtn");
 var addSecteurCard = document.getElementById("addSecteurCard");
+var newCustomSecteurInput = document.getElementById("newCustomSecteurInput");
+var addCustomSecteurBtn = document.getElementById("addCustomSecteurBtn");
 
 function getActiveSecteurs() {
     return JSON.parse(localStorage.getItem("activeSecteurs")) || [];
@@ -20,6 +22,14 @@ function getActiveSecteurs() {
 
 function setActiveSecteurs(ids) {
     localStorage.setItem("activeSecteurs", JSON.stringify(ids));
+}
+
+function getCustomSecteurs() {
+    return JSON.parse(localStorage.getItem(CUSTOM_SECTEURS_KEY)) || [];
+}
+
+function setCustomSecteurs(list) {
+    localStorage.setItem(CUSTOM_SECTEURS_KEY, JSON.stringify(list));
 }
 
 function deleteSecteurData(secteur) {
@@ -32,6 +42,24 @@ function deleteSecteurData(secteur) {
     localStorage.removeItem(SECTEUR_CURRENT_KEYS[secteur.id]);
 
     setActiveSecteurs(getActiveSecteurs().filter(function (id) { return id !== secteur.id; }));
+
+    // Rafraîchit tout de suite ; le nettoyage des photos se fait en tâche de fond.
+    renderSecteurs();
+    PhotoManager.deletePhotosByPrefix(secteur.id);
+
+}
+
+function deleteCustomSecteur(secteur) {
+
+    if (!confirm('Supprimer le secteur "' + secteur.label + '" et toutes ses localisations ? Cette action est irréversible.')) {
+        return;
+    }
+
+    setCustomSecteurs(getCustomSecteurs().filter(function (s) { return s.id !== secteur.id; }));
+
+    var allCustomData = JSON.parse(localStorage.getItem(CUSTOM_SECTEUR_DATA_KEY)) || {};
+    delete allCustomData[secteur.id];
+    localStorage.setItem(CUSTOM_SECTEUR_DATA_KEY, JSON.stringify(allCustomData));
 
     // Rafraîchit tout de suite ; le nettoyage des photos se fait en tâche de fond.
     renderSecteurs();
@@ -56,58 +84,74 @@ function renderAddPicker(activeIds) {
 
 }
 
+// secteur = { id, label, isCustom }, deleteHandler = deleteSecteurData ou deleteCustomSecteur
+function renderSecteurCard(secteur, count, deleteHandler, deleteLabel) {
+
+    var progress = calcModuleProgress(secteur.id);
+
+    var card = document.createElement("div");
+    card.className = "dashboard-card";
+    card.setAttribute("tabindex", "0");
+    card.setAttribute("role", "button");
+
+    card.innerHTML =
+        '<div class="dashboard-header">' +
+            '<strong>' + secteur.label + '</strong>' +
+            '<span>' + progress + '% ' + (progress === 100 && count ? "✅" : "") + '</span>' +
+        '</div>' +
+        '<div class="progress-bar">' +
+            '<div class="progress-fill" style="width: ' + progress + '%"></div>' +
+        '</div>' +
+        '<small>' +
+            (count ? count + " localisation(s)" : "Aucune localisation — cliquez pour en ajouter") +
+        '</small>' +
+        '<button type="button" class="card-delete-btn" aria-label="' + deleteLabel + '">✕</button>';
+
+    card.addEventListener("click", function () {
+
+        localStorage.setItem(
+            "currentSecteur",
+            JSON.stringify({ id: secteur.id, label: secteur.label, isCustom: !!secteur.isCustom })
+        );
+
+        window.location.href = "module-detail.html";
+
+    });
+
+    card.querySelector(".card-delete-btn").addEventListener("click", function (e) {
+        e.stopPropagation();
+        deleteHandler(secteur);
+    });
+
+    secteurDashboard.appendChild(card);
+
+}
+
 function renderSecteurs() {
 
     var activeIds = getActiveSecteurs();
+    var customSecteurs = getCustomSecteurs();
+    var customData = JSON.parse(localStorage.getItem(CUSTOM_SECTEUR_DATA_KEY)) || {};
 
     secteurDashboard.innerHTML = "";
-    noSecteursHint.classList.toggle("hidden", activeIds.length > 0);
+    noSecteursHint.classList.toggle("hidden", activeIds.length > 0 || customSecteurs.length > 0);
 
     SECTEURS
         .filter(function (secteur) { return activeIds.indexOf(secteur.id) !== -1; })
         .forEach(function (secteur) {
-
             var data = JSON.parse(localStorage.getItem(SECTEUR_DATA_KEYS[secteur.id])) || {};
-            var count = Object.keys(data).length;
-            var progress = calcModuleProgress(secteur.id);
-
-            var card = document.createElement("div");
-            card.className = "dashboard-card";
-            card.setAttribute("tabindex", "0");
-            card.setAttribute("role", "button");
-
-            card.innerHTML =
-                '<div class="dashboard-header">' +
-                    '<strong>' + secteur.label + '</strong>' +
-                    '<span>' + progress + '% ' + (progress === 100 && count ? "✅" : "") + '</span>' +
-                '</div>' +
-                '<div class="progress-bar">' +
-                    '<div class="progress-fill" style="width: ' + progress + '%"></div>' +
-                '</div>' +
-                '<small>' +
-                    (count ? count + " localisation(s)" : "Aucune localisation — cliquez pour en ajouter") +
-                '</small>' +
-                '<button type="button" class="card-delete-btn" aria-label="Retirer ce secteur">✕</button>';
-
-            card.addEventListener("click", function () {
-
-                localStorage.setItem(
-                    "currentSecteur",
-                    JSON.stringify({ id: secteur.id, label: secteur.label })
-                );
-
-                window.location.href = "module-detail.html";
-
-            });
-
-            card.querySelector(".card-delete-btn").addEventListener("click", function (e) {
-                e.stopPropagation();
-                deleteSecteurData(secteur);
-            });
-
-            secteurDashboard.appendChild(card);
-
+            renderSecteurCard(secteur, Object.keys(data).length, deleteSecteurData, "Retirer ce secteur");
         });
+
+    customSecteurs.forEach(function (secteur) {
+        var data = customData[secteur.id] || {};
+        renderSecteurCard(
+            { id: secteur.id, label: secteur.label, isCustom: true },
+            Object.keys(data).length,
+            deleteCustomSecteur,
+            "Supprimer ce secteur personnalisé"
+        );
+    });
 
     renderAddPicker(activeIds);
 
@@ -125,6 +169,26 @@ addSecteurBtn.addEventListener("click", function () {
         setActiveSecteurs(activeIds);
     }
 
+    renderSecteurs();
+});
+
+addCustomSecteurBtn.addEventListener("click", function () {
+
+    var label = newCustomSecteurInput.value.trim();
+    if (label === "") {
+        alert("Veuillez entrer un nom de secteur.");
+        return;
+    }
+
+    // Pas de "_" dans l'id : les clés photo ("secteurId_numero_champ") sont
+    // découpées sur "_", un id qui en contiendrait casserait ce découpage.
+    var id = "custom" + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+
+    var customSecteurs = getCustomSecteurs();
+    customSecteurs.push({ id: id, label: label });
+    setCustomSecteurs(customSecteurs);
+
+    newCustomSecteurInput.value = "";
     renderSecteurs();
 });
 

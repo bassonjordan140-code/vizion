@@ -532,6 +532,23 @@ function calcReunionProgress(d) {
 }
 
 /* ============================================================
+   SECTEUR PERSONNALISÉ — Champs actifs :
+   1. nom
+   2. observation
+============================================================ */
+
+function calcCustomProgress(d) {
+    if (!d) return 0;
+    var filled = 0;
+    var total = 2;
+
+    if (has(d.nom)) filled++;
+    if (has(d.observation)) filled++;
+
+    return pct(filled, total);
+}
+
+/* ============================================================
    CALCUL PAR MODULE (moyenne de toutes les fiches)
 ============================================================ */
 
@@ -553,6 +570,19 @@ var progressCalculators = {
 // Moyenne de progression sur toutes les localisations existantes d'un secteur
 // (plus de quantité fixe : chaque localisation est ajoutée librement par l'utilisateur).
 function calcModuleProgress(moduleId) {
+
+    if (isCustomSecteurId(moduleId)) {
+        var allCustom = JSON.parse(localStorage.getItem(CUSTOM_SECTEUR_DATA_KEY)) || {};
+        var customData = allCustom[moduleId] || {};
+        var customNumeros = Object.keys(customData);
+        if (!customNumeros.length) return 0;
+        var customTotalPct = 0;
+        customNumeros.forEach(function (numero) {
+            customTotalPct += calcCustomProgress(customData[numero]);
+        });
+        return Math.round(customTotalPct / customNumeros.length);
+    }
+
     var config = progressCalculators[moduleId];
     if (!config) return 0;
 
@@ -569,6 +599,7 @@ function calcModuleProgress(moduleId) {
 }
 
 function calcItemProgress(moduleId, itemData) {
+    if (isCustomSecteurId(moduleId)) return calcCustomProgress(itemData);
     var config = progressCalculators[moduleId];
     if (!config) return 0;
     return config.calc(itemData);

@@ -87,7 +87,7 @@ window.ReportExport = (function () {
         // --- Observations --- (toutes les lignes de tous les bâtiments, une seule numérotation)
         var rows = [];
         buildingsAuditData.forEach(function (building) {
-            var buildingRows = LotMapping.buildAllRows(building.donnees);
+            var buildingRows = LotMapping.buildAllRows(building.donnees, building.customLabels);
             buildingRows.forEach(function (row) { row.batiment = building.nom; });
             rows = rows.concat(buildingRows);
         });

@@ -82,3 +82,19 @@ window.SECTEUR_CURRENT_KEYS = {
     bureaux: "currentBureaux",
     parking: "currentParking"
 };
+
+// Secteurs personnalisés : ajoutés librement par l'utilisateur quand aucun des
+// 12 secteurs fixes ci-dessus ne correspond. Contrairement aux secteurs fixes,
+// tous les secteurs personnalisés partagent la même fiche générique (nom +
+// observation + photo) et les mêmes clés — seul leur id et leur label
+// diffèrent d'un secteur à l'autre. Important : l'id ne doit JAMAIS contenir
+// "_" — les clés photo sont construites en "secteurId_numero_champ" et
+// séparées par "_" (voir PhotoManager.initPage / buildPhotoDisplayKey).
+window.CUSTOM_SECTEURS_KEY = "customSecteurs";
+window.CUSTOM_SECTEUR_DATA_KEY = "customSecteurData";
+window.CUSTOM_SECTEUR_CURRENT_KEY = "currentCustomSecteur";
+window.CUSTOM_SECTEUR_DETAIL_PAGE = "custom-detail.html";
+
+function isCustomSecteurId(id) {
+    return typeof id === "string" && id.indexOf("custom") === 0;
+}

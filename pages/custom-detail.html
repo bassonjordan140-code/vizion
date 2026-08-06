@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Fiche secteur personnalisé</title>
+
+    <link rel="stylesheet"
+          href="../css/style.css">
+</head>
+
+<body>
+
+    <div class="container">
+
+        <button class="back-icon-button"
+                onclick="window.location.href='module-detail.html'">
+            ←
+        </button>
+
+        <h1 id="customTitle">Localisation</h1>
+
+        <p class="subtitle" id="customSubtitle">
+            Secteur personnalisé.
+        </p>
+
+        <div class="module-detail-card">
+
+            <p class="section-title">Photo générale</p>
+
+            <div class="photo-slot" data-photo-field="general"></div>
+
+        </div>
+
+        <div class="module-detail-card">
+
+            <p class="section-title">Observation terrain</p>
+
+            <p class="section-hint">
+                Décrivez ce qui a été audité ici (équipements, anomalies, remarques…).
+            </p>
+
+            <textarea id="observation"
+                      class="commentaire-textarea"
+                      rows="6"
+                      placeholder="Ex : Local technique, 2 ballons ECS électriques 200L, état correct…"></textarea>
+
+        </div>
+
+        <div class="module-detail-card">
+            <button class="primary-button" id="saveCustom">
+                Sauvegarder
+            </button>
+        </div>
+
+    </div>
+
+    <script src="../js/secteur-config.js"></script>
+    <script src="../js/photo-manager.js"></script>
+    <script src="../js/custom-detail.js"></script>
+
+</body>
+
+</html>

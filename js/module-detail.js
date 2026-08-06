@@ -30,11 +30,32 @@ if (currentSecteur && moduleTitle) {
 }
 
 function loadSecteurData() {
+    if (currentSecteur.isCustom) {
+        var allCustom = JSON.parse(localStorage.getItem(CUSTOM_SECTEUR_DATA_KEY)) || {};
+        return allCustom[currentSecteur.id] || {};
+    }
     return JSON.parse(localStorage.getItem(SECTEUR_DATA_KEYS[currentSecteur.id])) || {};
 }
 
 function saveSecteurData(data) {
+    if (currentSecteur.isCustom) {
+        var allCustom = JSON.parse(localStorage.getItem(CUSTOM_SECTEUR_DATA_KEY)) || {};
+        allCustom[currentSecteur.id] = data;
+        localStorage.setItem(CUSTOM_SECTEUR_DATA_KEY, JSON.stringify(allCustom));
+        return;
+    }
     localStorage.setItem(SECTEUR_DATA_KEYS[currentSecteur.id], JSON.stringify(data));
+}
+
+// Secteurs fixes : une clé de navigation dédiée par secteur (SECTEUR_CURRENT_KEYS)
+// et une page de fiche dédiée (SECTEUR_DETAIL_PAGES). Secteurs personnalisés :
+// une seule clé et une seule page génériques, quel que soit le secteur.
+function currentKeyName() {
+    return currentSecteur.isCustom ? CUSTOM_SECTEUR_CURRENT_KEY : SECTEUR_CURRENT_KEYS[currentSecteur.id];
+}
+
+function detailPage() {
+    return currentSecteur.isCustom ? CUSTOM_SECTEUR_DETAIL_PAGE : SECTEUR_DETAIL_PAGES[currentSecteur.id];
 }
 
 function renderList() {
@@ -77,11 +98,11 @@ function renderList() {
         card.addEventListener("click", function () {
 
             localStorage.setItem(
-                SECTEUR_CURRENT_KEYS[currentSecteur.id],
-                JSON.stringify({ moduleId: currentSecteur.id, numero: numero })
+                currentKeyName(),
+                JSON.stringify({ moduleId: currentSecteur.id, secteurId: currentSecteur.id, label: currentSecteur.label, numero: numero })
             );
 
-            window.location.href = SECTEUR_DETAIL_PAGES[currentSecteur.id];
+            window.location.href = detailPage();
 
         });
 
@@ -128,11 +149,11 @@ function deleteLocalisation(numero, nom) {
     delete data[numero];
     saveSecteurData(data);
 
-    var currentKeyRaw = localStorage.getItem(SECTEUR_CURRENT_KEYS[currentSecteur.id]);
+    var currentKeyRaw = localStorage.getItem(currentKeyName());
     if (currentKeyRaw) {
         var current = JSON.parse(currentKeyRaw);
         if (String(current.numero) === String(numero)) {
-            localStorage.removeItem(SECTEUR_CURRENT_KEYS[currentSecteur.id]);
+            localStorage.removeItem(currentKeyName());
         }
     }
 
@@ -163,11 +184,11 @@ if (currentSecteur) {
         saveSecteurData(data);
 
         localStorage.setItem(
-            SECTEUR_CURRENT_KEYS[currentSecteur.id],
-            JSON.stringify({ moduleId: currentSecteur.id, numero: nextNumero })
+            currentKeyName(),
+            JSON.stringify({ moduleId: currentSecteur.id, secteurId: currentSecteur.id, label: currentSecteur.label, numero: nextNumero })
         );
 
-        window.location.href = SECTEUR_DETAIL_PAGES[currentSecteur.id];
+        window.location.href = detailPage();
 
     });
 
