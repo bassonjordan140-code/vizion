@@ -6,6 +6,18 @@
 ============================================================ */
 
 /* =========================
+   RETOUR AU HUB DES HÔTELS
+========================= */
+
+document.getElementById("backToHotelsButton").addEventListener("click", function () {
+    // Retour au hub des hôtels : on sauvegarde l'hôtel en cours (siteInfo,
+    // bâtiments, bâtiment actif), rien n'est perdu ni supprimé.
+    HotelManager.saveCurrentHotelSnapshot().then(function () {
+        window.location.href = "select-hotel.html";
+    });
+});
+
+/* =========================
    INFORMATIONS DU SITE
 ========================= */
 

@@ -9,7 +9,7 @@
 /* Badge de version — a incrementer a chaque lot de modifications livre,
    pour que l'utilisateur puisse verifier qu'il a bien la derniere version. */
 body::after {
-    content: "v2026.08.06-3";
+    content: "v2026.08.06-4";
     position: fixed;
     top: 6px;
     right: 8px;

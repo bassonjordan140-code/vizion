@@ -7,7 +7,7 @@
     <meta name="viewport"
           content="width=device-width, initial-scale=1.0">
 
-    <title>Sélection de l'hôtel</title>
+    <title>Hôtels</title>
 
     <link rel="stylesheet"
           href="../css/style.css">
@@ -18,17 +18,26 @@
     <div class="container">
 
         <button class="back-icon-button"
-                id="backToHomeButton">
+                onclick="window.location.href='../index.html'">
             ←
         </button>
 
-        <h1>Quel hôtel suivez-vous ?</h1>
+        <h1>Hôtels</h1>
 
         <p class="subtitle">
-            Ce choix alimente la page de garde du rapport.
+            Ouvrez un hôtel pour continuer son audit, ou ajoutez-en un nouveau.
+        </p>
+
+        <!-- Liste des hôtels déjà commencés -->
+        <div id="hotelsDashboard" class="dashboard-list"></div>
+
+        <p id="noHotelsHint" class="section-hint hidden">
+            Aucun hôtel pour l'instant — ajoutez-en un ci-dessous.
         </p>
 
         <div class="module-detail-card">
+
+            <h2 class="section-title">Ajouter un hôtel</h2>
 
             <div class="field-group">
                 <label for="hotelSelect">Hôtel</label>
@@ -39,19 +48,21 @@
 
             <div id="hotelPreview" class="section-hint hidden"></div>
 
-        </div>
+            <button type="button"
+                    class="secondary-button"
+                    id="continueButton"
+                    disabled>
+                + Ajouter cet hôtel
+            </button>
 
-        <button class="primary-button"
-                id="continueButton"
-                disabled>
-            Continuer
-        </button>
+        </div>
 
     </div>
 
     <script src="../js/secteur-config.js"></script>
     <script src="../js/photo-manager.js"></script>
     <script src="../js/building-manager.js"></script>
+    <script src="../js/hotel-manager.js"></script>
     <script src="../js/hotels-data.js"></script>
     <script src="../js/select-hotel.js"></script>
 
