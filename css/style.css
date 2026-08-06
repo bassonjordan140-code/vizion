@@ -1683,3 +1683,124 @@ footer {
 .equipement-fields .field-group {
     margin-bottom: 0;
 }
+
+/* =========================
+   PERSONNES PRÉSENTES (CONTACTS)
+========================= */
+
+.contact-suggestions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+
+    margin-bottom: 18px;
+}
+
+.contact-suggestion-chip {
+    padding: 10px 16px;
+
+    border-radius: 999px;
+    border: 1px dashed rgba(157, 164, 178, 0.30);
+
+    background: transparent;
+    color: #C8CCD5;
+
+    font-size: 13px;
+    font-family: inherit;
+    text-align: left;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s,
+        border-color 0.2s,
+        color 0.2s;
+}
+
+.contact-suggestion-chip:hover {
+    border-color: rgba(200, 204, 213, 0.55);
+    background: rgba(10, 31, 79, 0.35);
+    color: #E6E8ED;
+}
+
+.contact-suggestion-chip small {
+    display: block;
+    margin-top: 2px;
+    color: #9DA4B2;
+    font-size: 11px;
+}
+
+.contact-card {
+    position: relative;
+
+    padding: 18px 54px 18px 18px;
+    margin-bottom: 14px;
+
+    border-radius: 16px;
+    border: 1px solid rgba(157, 164, 178, 0.15);
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(10, 31, 79, 0.35),
+            rgba(7, 22, 59, 0.35)
+        );
+}
+
+.contact-fields-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.contact-fields-grid .field-group {
+    margin-bottom: 12px;
+}
+
+.contact-fields-grid .field-group.full-width {
+    grid-column: 1 / -1;
+}
+
+.contact-card .field-group:last-child {
+    margin-bottom: 0;
+}
+
+.contact-card-delete {
+    position: absolute;
+    top: 16px;
+    right: 14px;
+
+    width: 30px;
+    height: 30px;
+
+    border-radius: 50%;
+    border: 1px solid rgba(157, 164, 178, 0.20);
+
+    background: rgba(10, 31, 79, 0.60);
+    color: #C8CCD5;
+
+    font-size: 14px;
+
+    cursor: pointer;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    transition:
+        background 0.2s,
+        border-color 0.2s,
+        color 0.2s;
+}
+
+.contact-card-delete:hover {
+    border-color: rgba(255, 120, 120, 0.45);
+    background: rgba(255, 120, 120, 0.10);
+    color: #ff9c9c;
+}
+
+@media (max-width: 500px) {
+    .contact-fields-grid {
+        grid-template-columns: 1fr;
+    }
+}

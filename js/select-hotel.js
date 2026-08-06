@@ -47,6 +47,10 @@ continueButton.addEventListener("click", function () {
     var hotel = HOTELS[hotelSelect.value];
     if (!hotel) return;
 
+    // Si on reconfirme le même hôtel (retour arrière puis re-validation), on garde
+    // les contacts déjà saisis ; sinon nouvel hôtel = liste de contacts repartant à zéro.
+    var keepContacts = existingSiteInfo.nom === hotel.nom ? existingSiteInfo.contacts : undefined;
+
     localStorage.setItem("siteInfo", JSON.stringify({
         nom: hotel.nom,
         typeConstruction: hotel.activite,
@@ -54,7 +58,8 @@ continueButton.addEventListener("click", function () {
         commune: hotel.commune,
         zonePerene: hotel.zonePerene,
         stationMeteo: hotel.stationMeteo,
-        activite: hotel.activite
+        activite: hotel.activite,
+        contacts: keepContacts
     }));
 
     window.location.href = "buildings.html";

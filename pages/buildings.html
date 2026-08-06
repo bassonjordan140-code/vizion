@@ -53,6 +53,23 @@
             <p id="siteMetaHint" class="section-hint hidden"></p>
         </div>
 
+        <!-- Personnes présentes -->
+        <div class="module-detail-card">
+            <h2 class="section-title">Personnes présentes</h2>
+            <p class="section-hint">
+                Contacts de cet hôtel pour l'audit — présélectionnés depuis l'annuaire,
+                à compléter ou ajouter librement.
+            </p>
+
+            <div id="contactSuggestions" class="contact-suggestions hidden"></div>
+
+            <div id="contactsList"></div>
+
+            <button type="button" id="addContactBtn" class="add-row-button">
+                + Ajouter une personne
+            </button>
+        </div>
+
         <!-- Liste des bâtiments -->
         <div id="buildingsDashboard" class="dashboard-list"></div>
 
@@ -111,6 +128,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 
     <script src="../js/secteur-config.js"></script>
+    <script src="../js/contacts-data.js"></script>
     <script src="../js/photo-manager.js"></script>
     <script src="../js/building-manager.js"></script>
     <script src="../js/progress.js"></script>

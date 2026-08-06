@@ -38,6 +38,152 @@ function saveSiteInfo() {
 });
 
 /* =========================
+   PERSONNES PRÉSENTES
+   Contacts saisis pour cet audit (siteInfo.contacts), pré-remplis
+   depuis l'annuaire HOTEL_CONTACTS (js/contacts-data.js) selon
+   l'hôtel choisi. Deux rôles par défaut (Responsable du site /
+   Responsable maintenance) sont toujours présents, complétables.
+========================= */
+
+var contactsList = document.getElementById("contactsList");
+var contactSuggestions = document.getElementById("contactSuggestions");
+var addContactBtn = document.getElementById("addContactBtn");
+
+function getContacts() {
+    return ReportExport.getSiteInfo().contacts || [];
+}
+
+function saveContacts(contacts) {
+    var current = ReportExport.getSiteInfo();
+    ReportExport.setSiteInfo(Object.assign({}, current, { contacts: contacts }));
+}
+
+function ensureDefaultContacts() {
+    if (!ReportExport.getSiteInfo().contacts) {
+        saveContacts([
+            { role: "Responsable du site", nom: "", telephone: "", abr: "", email: "", adresse: "", entreprise: "" },
+            { role: "Responsable maintenance", nom: "", telephone: "", abr: "", email: "", adresse: "", entreprise: "" }
+        ]);
+    }
+}
+
+function renderContactSuggestions() {
+
+    contactSuggestions.innerHTML = "";
+
+    var hotelNom = siteNomInput.value.trim();
+    var contacts = getContacts();
+
+    var suggestions = (window.HOTEL_CONTACTS || []).filter(function (c) {
+        return c.hotels.indexOf(hotelNom) !== -1;
+    }).filter(function (c) {
+        var key = c.email || (c.nom + "_" + c.prenom);
+        return !contacts.some(function (existing) { return existing._sourceKey === key; });
+    });
+
+    contactSuggestions.classList.toggle("hidden", suggestions.length === 0);
+
+    suggestions.forEach(function (c) {
+
+        var nomComplet = (c.prenom + " " + c.nom).trim();
+
+        var btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "contact-suggestion-chip";
+        btn.innerHTML = "+ " + nomComplet + (c.fonction ? "<small>" + c.fonction + "</small>" : "");
+
+        btn.addEventListener("click", function () {
+            var updated = getContacts();
+            updated.push({
+                role: c.fonction || "",
+                nom: nomComplet,
+                telephone: c.telPortable || c.telFixe || "",
+                abr: "",
+                email: c.email || "",
+                adresse: "",
+                entreprise: "",
+                _sourceKey: c.email || (c.nom + "_" + c.prenom)
+            });
+            saveContacts(updated);
+            renderContacts();
+            renderContactSuggestions();
+        });
+
+        contactSuggestions.appendChild(btn);
+    });
+}
+
+function renderContacts() {
+
+    contactsList.innerHTML = "";
+    var contacts = getContacts();
+
+    contacts.forEach(function (contact, idx) {
+
+        var card = document.createElement("div");
+        card.className = "contact-card";
+        card.innerHTML =
+            '<button type="button" class="contact-card-delete" aria-label="Supprimer cette personne">✕</button>' +
+            '<div class="contact-fields-grid">' +
+                '<div class="field-group"><label>Rôle</label><input type="text" class="contact-role" placeholder="Ex : Responsable du site"></div>' +
+                '<div class="field-group"><label>Nom</label><input type="text" class="contact-nom" placeholder="Ex : Jean Dupont"></div>' +
+                '<div class="field-group"><label>Téléphone</label><input type="tel" class="contact-telephone"></div>' +
+                '<div class="field-group"><label>Email</label><input type="email" class="contact-email"></div>' +
+                '<div class="field-group"><label>Entreprise</label><input type="text" class="contact-entreprise"></div>' +
+                '<div class="field-group"><label>ABR</label><input type="text" class="contact-abr"></div>' +
+                '<div class="field-group full-width"><label>Adresse</label><input type="text" class="contact-adresse"></div>' +
+            '</div>';
+
+        card.querySelector(".contact-role").value = contact.role || "";
+        card.querySelector(".contact-nom").value = contact.nom || "";
+        card.querySelector(".contact-telephone").value = contact.telephone || "";
+        card.querySelector(".contact-email").value = contact.email || "";
+        card.querySelector(".contact-entreprise").value = contact.entreprise || "";
+        card.querySelector(".contact-abr").value = contact.abr || "";
+        card.querySelector(".contact-adresse").value = contact.adresse || "";
+
+        function bindField(field, selector) {
+            card.querySelector(selector).addEventListener("change", function (e) {
+                var updated = getContacts();
+                if (!updated[idx]) return;
+                updated[idx][field] = e.target.value.trim();
+                saveContacts(updated);
+            });
+        }
+        bindField("role", ".contact-role");
+        bindField("nom", ".contact-nom");
+        bindField("telephone", ".contact-telephone");
+        bindField("email", ".contact-email");
+        bindField("entreprise", ".contact-entreprise");
+        bindField("abr", ".contact-abr");
+        bindField("adresse", ".contact-adresse");
+
+        card.querySelector(".contact-card-delete").addEventListener("click", function () {
+            var updated = getContacts();
+            updated.splice(idx, 1);
+            saveContacts(updated);
+            renderContacts();
+            renderContactSuggestions();
+        });
+
+        contactsList.appendChild(card);
+    });
+}
+
+ensureDefaultContacts();
+renderContacts();
+renderContactSuggestions();
+
+addContactBtn.addEventListener("click", function () {
+    var updated = getContacts();
+    updated.push({ role: "", nom: "", telephone: "", abr: "", email: "", adresse: "", entreprise: "" });
+    saveContacts(updated);
+    renderContacts();
+});
+
+siteNomInput.addEventListener("change", renderContactSuggestions);
+
+/* =========================
    LISTE DES BÂTIMENTS
 ========================= */
 

@@ -22,6 +22,8 @@ window.ReportExport = (function () {
 
     var PAGE_GARDE_HEADERS = ["Index", "Type construction", "Adresse"];
 
+    var CONTACTS_HEADERS = ["Rôle", "Nom", "Téléphone", "ABR", "Email", "Adresse", "Entreprise"];
+
     /* =========================
        INFOS SITE
     ========================= */
@@ -55,8 +57,24 @@ window.ReportExport = (function () {
                 siteInfo.nom || "Audit ViZion",
                 siteInfo.typeConstruction || "",
                 siteInfo.adresse || ""
-            ]
+            ],
+            [],
+            CONTACTS_HEADERS
         ];
+        var contacts = (siteInfo.contacts && siteInfo.contacts.length)
+            ? siteInfo.contacts
+            : [{ role: "Responsable du site" }, { role: "Responsable maintenance" }];
+        contacts.forEach(function (contact) {
+            pageGardeData.push([
+                contact.role || "",
+                contact.nom || "",
+                contact.telephone || "",
+                contact.abr || "",
+                contact.email || "",
+                contact.adresse || "",
+                contact.entreprise || ""
+            ]);
+        });
         var wsPageGarde = XLSX.utils.aoa_to_sheet(pageGardeData);
         XLSX.utils.book_append_sheet(wb, wsPageGarde, "Page de garde");
 
