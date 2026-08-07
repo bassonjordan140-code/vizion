@@ -16,6 +16,7 @@ var savedData =
 
 PhotoManager.initPage("bureaux", currentBureaux.numero);
 renderLocationContext("Bureaux");
+UnsavedGuard.watch(saveButton);
 
 /* ==============================
    UTILITAIRE TOGGLE

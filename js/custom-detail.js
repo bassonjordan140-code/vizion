@@ -38,6 +38,7 @@ if (savedData && observationInput) {
 
 PhotoManager.initPage(currentCustom.secteurId, currentCustom.numero);
 renderLocationContext(currentCustom.label || "Secteur personnalisé");
+UnsavedGuard.watch(saveButton);
 
 /* ==============================
    UTILITAIRE TOGGLE

@@ -16,6 +16,7 @@ var savedData =
 
 PhotoManager.initPage("bar", currentBar.numero);
 renderLocationContext("Bar");
+UnsavedGuard.watch(saveButton);
 
 /* ==============================
    UTILITAIRE TOGGLE

@@ -16,6 +16,7 @@ var savedData =
 
 PhotoManager.initPage("piscine", currentPiscine.numero);
 renderLocationContext("Piscine");
+UnsavedGuard.watch(saveButton);
 
 /* ==============================
    UTILITAIRE TOGGLE

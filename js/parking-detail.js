@@ -16,6 +16,7 @@ var savedData =
 
 PhotoManager.initPage("parking", currentParking.numero);
 renderLocationContext("Parking");
+UnsavedGuard.watch(saveButton);
 
 /* ==============================
    UTILITAIRE TOGGLE

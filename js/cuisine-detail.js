@@ -16,6 +16,7 @@ var savedData =
 
 PhotoManager.initPage("cuisine", currentCuisine.numero);
 renderLocationContext("Cuisine");
+UnsavedGuard.watch(saveButton);
 
 /* ==============================
    UTILITAIRE TOGGLE

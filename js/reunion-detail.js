@@ -16,6 +16,7 @@ var savedData =
 
 PhotoManager.initPage("reunion", currentReunion.numero);
 renderLocationContext("Salle de réunion");
+UnsavedGuard.watch(saveButton);
 
 /* ==============================
    UTILITAIRE TOGGLE
