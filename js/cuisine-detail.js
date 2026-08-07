@@ -247,42 +247,6 @@ equipementsDef.forEach(function (eq) {
 
 PhotoManager.bindAll(equipementsList);
 
-// ECS "Propre" pour le lave-vaisselle : ballon dédié -> nombre, volume, puissance.
-(function () {
-    var ecsSelect = document.getElementById("eq-laveVaisselle-ecs");
-    var fieldsDiv = document.getElementById("eqFields-laveVaisselle");
-    if (!ecsSelect || !fieldsDiv) return;
-
-    var savedLV = savedEquipements.laveVaisselle || {};
-
-    var propreDiv = document.createElement("div");
-    propreDiv.id = "laveVaisselle-ecsPropreDetail";
-    propreDiv.className = "field-group" + (ecsSelect.value === "Propre" ? "" : " hidden");
-    propreDiv.innerHTML =
-        '<label>Nombre de ballons ECS</label>' +
-        '<input type="number" min="0" step="1" inputmode="numeric" id="laveVaisselle-ecsBallons" value="' + (savedLV.ecsBallons || 0) + '">';
-
-    var volumeDiv = document.createElement("div");
-    volumeDiv.id = "laveVaisselle-ecsVolumeGroup";
-    volumeDiv.className = "field-group" + (ecsSelect.value === "Propre" ? "" : " hidden");
-    volumeDiv.innerHTML =
-        '<label>Volume ECS (L)</label>' +
-        '<input type="number" min="0" step="1" inputmode="numeric" id="laveVaisselle-ecsVolume" value="' + (savedLV.ecsVolume || "") + '">';
-
-    fieldsDiv.insertBefore(volumeDiv, fieldsDiv.lastElementChild);
-    fieldsDiv.insertBefore(propreDiv, volumeDiv);
-
-    function toggleEcsPropre() {
-        var show = ecsSelect.value === "Propre";
-        [propreDiv, volumeDiv].forEach(function (el) {
-            if (show) { el.classList.remove("hidden"); }
-            else { el.classList.add("hidden"); }
-        });
-    }
-
-    ecsSelect.addEventListener("change", toggleEcsPropre);
-})();
-
 /* =========================
    ÉQUIPEMENTS AJOUTÉS LIBREMENT (hors liste fixe)
 ========================= */
@@ -509,13 +473,6 @@ saveButton.addEventListener("click", function () {
                 obj[f] = parseFloat(el.value) || 0;
             }
         });
-        if (eq.id === "laveVaisselle" && obj.ecs === "Propre") {
-            var ballonsEl = document.getElementById("laveVaisselle-ecsBallons");
-            var volumeEl = document.getElementById("laveVaisselle-ecsVolume");
-            obj.ecsBallons = parseInt(ballonsEl.value) || 0;
-            obj.ecsVolume = parseFloat(volumeEl.value) || 0;
-        }
-
         equipements[eq.id] = obj;
     });
 

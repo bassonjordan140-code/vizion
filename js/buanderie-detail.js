@@ -171,10 +171,6 @@ var nbLaveLinge = document.getElementById("nbLaveLinge");
 var capaciteLaveLinge = document.getElementById("capaciteLaveLinge");
 var puissanceLaveLinge = document.getElementById("puissanceLaveLinge");
 var ecsLaveLinge = document.getElementById("ecsLaveLinge");
-var ecsLaveLingePropreContent = document.getElementById("ecsLaveLingePropreContent");
-var ecsLaveLingeBallons = document.getElementById("ecsLaveLingeBallons");
-var ecsLaveLingeVolume = document.getElementById("ecsLaveLingeVolume");
-var ecsLaveLingePuissance = document.getElementById("ecsLaveLingePuissance");
 var plaqueLaveLingeToggle = document.getElementById("plaqueLaveLingeToggle");
 var plaqueLaveLingePhoto = document.getElementById("plaqueLaveLingePhoto");
 
@@ -185,18 +181,7 @@ if (savedData && savedData.laveLinge) {
     capaciteLaveLinge.value = savedData.laveLinge.capaciteKg || "";
     puissanceLaveLinge.value = savedData.laveLinge.puissance || "";
     ecsLaveLinge.value = savedData.laveLinge.ecsAssociee || "Raccordée à l'ECS hôtel";
-    ecsLaveLingeBallons.value = savedData.laveLinge.ecsBallons || 0;
-    ecsLaveLingeVolume.value = savedData.laveLinge.ecsVolume || "";
-    ecsLaveLingePuissance.value = savedData.laveLinge.ecsPuissance || "";
 }
-
-function updateEcsLaveLingePropre() {
-    if (ecsLaveLinge.value === "Propre") { ecsLaveLingePropreContent.classList.remove("hidden"); }
-    else { ecsLaveLingePropreContent.classList.add("hidden"); }
-}
-
-ecsLaveLinge.addEventListener("change", updateEcsLaveLingePropre);
-updateEcsLaveLingePropre();
 
 function updatePlaqueLaveLingeToggle() {
     updateToggleUI(plaqueLaveLingeToggle, plaqueLaveLinge);
@@ -511,9 +496,6 @@ saveButton.addEventListener("click", function () {
             capaciteKg: parseFloat(capaciteLaveLinge.value) || 0,
             puissance: parseFloat(puissanceLaveLinge.value) || 0,
             ecsAssociee: ecsLaveLinge.value,
-            ecsBallons: parseInt(ecsLaveLingeBallons.value) || 0,
-            ecsVolume: parseFloat(ecsLaveLingeVolume.value) || 0,
-            ecsPuissance: parseFloat(ecsLaveLingePuissance.value) || 0,
             plaque: plaqueLaveLinge ? "oui" : "non"
         },
         secheLinge: {

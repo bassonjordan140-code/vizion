@@ -538,14 +538,6 @@ window.LotMapping = (function () {
                 description: "Lave-linge (" + (fiche.laveLinge.capaciteKg || "?") + " kg)",
                 lot: "3-3", formulaireOrigine: ctx.formulaireOrigine, nomFormulaire: ctx.nomFormulaire
             }));
-            if (fiche.laveLinge.ecsAssociee === "Propre" && fiche.laveLinge.ecsBallons) {
-                rows.push(makeRow({
-                    localisation: localisation, secteur: ctx.secteur,
-                    puissance: fiche.laveLinge.ecsPuissance, nombre: fiche.laveLinge.ecsBallons,
-                    description: "Ballon ECS lave-linge (" + (fiche.laveLinge.ecsVolume || "?") + " L)",
-                    lot: "2-1", formulaireOrigine: ctx.formulaireOrigine, nomFormulaire: ctx.nomFormulaire
-                }));
-            }
         }
         if (fiche.secheLinge && fiche.secheLinge.nombre) {
             rows.push(makeRow({
@@ -636,14 +628,6 @@ window.LotMapping = (function () {
                 description: "Lave-vaisselle (" + (equipements.laveVaisselle.typeLV || "?") + ")",
                 lot: "3-3", formulaireOrigine: ctx.formulaireOrigine, nomFormulaire: ctx.nomFormulaire
             }));
-            if (equipements.laveVaisselle.ecs === "Propre" && equipements.laveVaisselle.ecsBallons) {
-                rows.push(makeRow({
-                    localisation: localisation, secteur: ctx.secteur,
-                    puissance: equipements.laveVaisselle.puissance, nombre: equipements.laveVaisselle.ecsBallons,
-                    description: "Ballon ECS lave-vaisselle (" + (equipements.laveVaisselle.ecsVolume || "?") + " L)",
-                    lot: "2-1", formulaireOrigine: ctx.formulaireOrigine, nomFormulaire: ctx.nomFormulaire
-                }));
-            }
         }
 
         addEclairageRows(rows, fiche.eclairages, ctx);
