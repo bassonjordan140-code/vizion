@@ -521,6 +521,7 @@ window.LotMapping = (function () {
         if (fiche.laveLinge && fiche.laveLinge.nombre) {
             rows.push(makeRow({
                 localisation: localisation, secteur: ctx.secteur, nombre: fiche.laveLinge.nombre,
+                puissance: fiche.laveLinge.puissance,
                 description: "Lave-linge (" + (fiche.laveLinge.capaciteKg || "?") + " kg)",
                 lot: "3-3", formulaireOrigine: ctx.formulaireOrigine, nomFormulaire: ctx.nomFormulaire
             }));
