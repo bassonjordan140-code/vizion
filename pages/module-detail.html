@@ -41,6 +41,24 @@
             </button>
         </div>
 
+        <div id="duplicatePanel" class="module-detail-card hidden">
+            <h2 class="section-title">Dupliquer "<span id="duplicateSourceName"></span>"</h2>
+            <p class="section-hint">
+                Choisissez le bâtiment de destination. La copie pourra ensuite être
+                modifiée librement, indépendamment de l'originale.
+            </p>
+            <div class="field-group">
+                <label for="duplicateTargetSelect">Bâtiment</label>
+                <select id="duplicateTargetSelect"></select>
+            </div>
+            <button type="button" id="duplicateConfirmBtn" class="secondary-button">
+                Dupliquer
+            </button>
+            <button type="button" id="duplicateCancelBtn" class="secondary-button">
+                Annuler
+            </button>
+        </div>
+
         <div id="moduleContent"
              class="dashboard-list">
         </div>
@@ -48,6 +66,8 @@
     </div>
 
     <script src="../js/secteur-config.js"></script>
+    <script src="../js/photo-manager.js"></script>
+    <script src="../js/building-manager.js"></script>
     <script src="../js/progress.js"></script>
     <script src="../js/module-detail.js"></script>
 

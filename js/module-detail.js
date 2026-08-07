@@ -25,6 +25,23 @@ var newLocalisationInput =
 var addLocalisationBtn =
     document.getElementById("addLocalisationBtn");
 
+var duplicatePanel =
+    document.getElementById("duplicatePanel");
+
+var duplicateSourceName =
+    document.getElementById("duplicateSourceName");
+
+var duplicateTargetSelect =
+    document.getElementById("duplicateTargetSelect");
+
+var duplicateConfirmBtn =
+    document.getElementById("duplicateConfirmBtn");
+
+var duplicateCancelBtn =
+    document.getElementById("duplicateCancelBtn");
+
+var duplicateSourceNumero = null;
+
 if (currentSecteur && moduleTitle) {
     moduleTitle.textContent = currentSecteur.label;
 }
@@ -80,7 +97,7 @@ function renderList() {
         var nom = saved.nom || (currentSecteur.label + " " + numero);
 
         var card = document.createElement("div");
-        card.className = "dashboard-card";
+        card.className = "dashboard-card has-duplicate";
         card.setAttribute("tabindex", "0");
         card.setAttribute("role", "button");
 
@@ -92,6 +109,7 @@ function renderList() {
             '<div class="progress-bar">' +
                 '<div class="progress-fill" style="width: ' + progress + '%"></div>' +
             '</div>' +
+            '<button type="button" class="card-duplicate-btn" aria-label="Dupliquer cette localisation">⧉</button>' +
             '<button type="button" class="card-rename-btn" aria-label="Renommer cette localisation">✎</button>' +
             '<button type="button" class="card-delete-btn" aria-label="Supprimer cette localisation">✕</button>';
 
@@ -104,6 +122,11 @@ function renderList() {
 
             window.location.href = detailPage();
 
+        });
+
+        card.querySelector(".card-duplicate-btn").addEventListener("click", function (e) {
+            e.stopPropagation();
+            openDuplicatePanel(numero, nom);
         });
 
         card.querySelector(".card-rename-btn").addEventListener("click", function (e) {
@@ -138,6 +161,54 @@ function renameLocalisation(numero, nomActuel) {
     renderList();
 
 }
+
+function openDuplicatePanel(numero, nom) {
+
+    duplicateSourceNumero = numero;
+    duplicateSourceName.textContent = nom;
+
+    duplicateTargetSelect.innerHTML = "";
+    BuildingManager.listBuildings().forEach(function (b) {
+        var option = document.createElement("option");
+        option.value = b.id;
+        option.textContent = b.nom + (b.id === BuildingManager.getCurrentBuildingId() ? " (bâtiment actuel)" : "");
+        duplicateTargetSelect.appendChild(option);
+    });
+
+    duplicatePanel.classList.remove("hidden");
+    duplicatePanel.scrollIntoView({ behavior: "smooth", block: "center" });
+
+}
+
+function closeDuplicatePanel() {
+    duplicatePanel.classList.add("hidden");
+    duplicateSourceNumero = null;
+}
+
+duplicateCancelBtn.addEventListener("click", closeDuplicatePanel);
+
+duplicateConfirmBtn.addEventListener("click", function () {
+
+    var targetId = duplicateTargetSelect.value;
+    if (!targetId || duplicateSourceNumero === null) return;
+
+    var result = BuildingManager.duplicateLocalisation(
+        currentSecteur.id, duplicateSourceNumero, !!currentSecteur.isCustom, currentSecteur.label, targetId
+    );
+    if (!result) { closeDuplicatePanel(); return; }
+
+    var targetNom = duplicateTargetSelect.options[duplicateTargetSelect.selectedIndex].textContent;
+    var sameBuilding = targetId === BuildingManager.getCurrentBuildingId();
+
+    closeDuplicatePanel();
+
+    if (sameBuilding) {
+        renderList();
+    }
+
+    alert('Localisation dupliquée dans "' + targetNom + '".');
+
+});
 
 function deleteLocalisation(numero, nom) {
 

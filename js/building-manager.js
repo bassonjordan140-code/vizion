@@ -178,6 +178,91 @@ window.BuildingManager = (function () {
     }
 
     /* =========================
+       DUPLICATION D'UNE LOCALISATION
+       Copie une fiche déjà remplie (ex: "Chambre standard") vers un autre
+       bâtiment (ou le même, pour une variante côte à côte), afin d'éviter de
+       ressaisir une localisation quasi identique. La copie peut ensuite être
+       modifiée librement, indépendamment de l'original.
+    ========================= */
+
+    // secteurId : id du secteur (fixe ou personnalisé) ; isCustom : vrai si
+    // secteur personnalisé ; customLabel : son libellé (créé dans le bâtiment
+    // cible s'il n'y existe pas encore) ; targetBuildingId : bâtiment de
+    // destination (peut être getCurrentBuildingId() lui-même).
+    // Opère toujours sur les clés ACTIVES pour lire la fiche source : à
+    // n'appeler que depuis l'écran de localisation du bâtiment actif.
+    function duplicateLocalisation(secteurId, sourceNumero, isCustom, customLabel, targetBuildingId) {
+        var currentId = getCurrentBuildingId();
+        var sameBuilding = targetBuildingId === currentId;
+
+        var sourceFiche;
+        if (isCustom) {
+            var allCustomSrc = JSON.parse(localStorage.getItem(CUSTOM_SECTEUR_DATA_KEY)) || {};
+            sourceFiche = (allCustomSrc[secteurId] || {})[sourceNumero];
+        } else {
+            var dataSrc = JSON.parse(localStorage.getItem(SECTEUR_DATA_KEYS[secteurId])) || {};
+            sourceFiche = dataSrc[sourceNumero];
+        }
+        if (!sourceFiche) return null;
+        var ficheCopy = JSON.parse(JSON.stringify(sourceFiche));
+
+        var newNumero;
+
+        if (sameBuilding) {
+            if (isCustom) {
+                var allCustomSame = JSON.parse(localStorage.getItem(CUSTOM_SECTEUR_DATA_KEY)) || {};
+                var secteurDataSame = allCustomSame[secteurId] || {};
+                var numsSame = Object.keys(secteurDataSame).map(Number);
+                newNumero = numsSame.length ? Math.max.apply(null, numsSame) + 1 : 1;
+                secteurDataSame[newNumero] = ficheCopy;
+                allCustomSame[secteurId] = secteurDataSame;
+                localStorage.setItem(CUSTOM_SECTEUR_DATA_KEY, JSON.stringify(allCustomSame));
+            } else {
+                var dataSame = JSON.parse(localStorage.getItem(SECTEUR_DATA_KEYS[secteurId])) || {};
+                var numsSame2 = Object.keys(dataSame).map(Number);
+                newNumero = numsSame2.length ? Math.max.apply(null, numsSame2) + 1 : 1;
+                dataSame[newNumero] = ficheCopy;
+                localStorage.setItem(SECTEUR_DATA_KEYS[secteurId], JSON.stringify(dataSame));
+            }
+        } else {
+            var raw = localStorage.getItem(snapshotKey(targetBuildingId));
+            var snapshot = raw ? JSON.parse(raw) : {};
+
+            if (isCustom) {
+                snapshot.customSecteurs = snapshot.customSecteurs || [];
+                if (!snapshot.customSecteurs.some(function (s) { return s.id === secteurId; })) {
+                    snapshot.customSecteurs.push({ id: secteurId, label: customLabel || secteurId });
+                }
+                snapshot.customSecteurData = snapshot.customSecteurData || {};
+                var secteurDataOther = snapshot.customSecteurData[secteurId] || {};
+                var numsOther = Object.keys(secteurDataOther).map(Number);
+                newNumero = numsOther.length ? Math.max.apply(null, numsOther) + 1 : 1;
+                secteurDataOther[newNumero] = ficheCopy;
+                snapshot.customSecteurData[secteurId] = secteurDataOther;
+            } else {
+                var key = SECTEUR_DATA_KEYS[secteurId];
+                snapshot[key] = snapshot[key] || {};
+                var numsOther2 = Object.keys(snapshot[key]).map(Number);
+                newNumero = numsOther2.length ? Math.max.apply(null, numsOther2) + 1 : 1;
+                snapshot[key][newNumero] = ficheCopy;
+
+                snapshot.activeSecteurs = snapshot.activeSecteurs || [];
+                if (snapshot.activeSecteurs.indexOf(secteurId) === -1) {
+                    snapshot.activeSecteurs.push(secteurId);
+                }
+            }
+
+            localStorage.setItem(snapshotKey(targetBuildingId), JSON.stringify(snapshot));
+        }
+
+        var photoPromise = PhotoManager.duplicatePhotosForLocalisation(
+            secteurId, sourceNumero, newNumero, targetBuildingId, sameBuilding
+        );
+
+        return { newNumero: newNumero, photoPromise: photoPromise };
+    }
+
+    /* =========================
        REMISE À ZÉRO COMPLÈTE
     ========================= */
 
@@ -290,6 +375,7 @@ window.BuildingManager = (function () {
         loadBuildingSnapshot: loadBuildingSnapshot,
         switchToBuilding: switchToBuilding,
         hasSecteursConfigured: hasSecteursConfigured,
+        duplicateLocalisation: duplicateLocalisation,
         wipeEverything: wipeEverything,
         collectAllBuildingsAuditData: collectAllBuildingsAuditData,
         collectAllBuildingsPhotos: collectAllBuildingsPhotos

@@ -16,7 +16,7 @@
 }
 
 .container::before {
-    content: "v2026.08.07-7";
+    content: "v2026.08.07-8";
     position: absolute;
     top: 14px;
     right: 14px;
@@ -521,6 +521,49 @@ footer {
     border-color: rgba(255, 120, 120, 0.45);
     background: rgba(255, 120, 120, 0.10);
     color: #ff9c9c;
+}
+
+/* Bouton "dupliquer" — un 3e bouton sur les cartes de localisation
+   uniquement, d'où la classe modificatrice sur .dashboard-card plutôt
+   qu'un padding-right global (qui affecterait les cartes à 1-2 boutons
+   ailleurs dans l'app). */
+.dashboard-card.has-duplicate {
+    padding-right: 136px;
+}
+
+.card-duplicate-btn {
+    position: absolute;
+    top: 20px;
+    right: 92px;
+
+    width: 30px;
+    height: 30px;
+
+    border-radius: 50%;
+    border: 1px solid rgba(157, 164, 178, 0.20);
+
+    background: rgba(10, 31, 79, 0.60);
+
+    color: #C8CCD5;
+
+    font-size: 14px;
+
+    cursor: pointer;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    transition:
+        background 0.2s,
+        border-color 0.2s,
+        color 0.2s;
+}
+
+.card-duplicate-btn:hover {
+    border-color: rgba(200, 204, 213, 0.45);
+    background: rgba(200, 204, 213, 0.12);
+    color: #E6E8ED;
 }
 
 .dashboard-header {
