@@ -145,6 +145,23 @@
 
         </div>
 
+        <!-- Récapitulatif des équipements incomplets (avant export) -->
+        <div id="equipmentCheckPanel" class="module-detail-card hidden">
+
+            <h2 class="section-title">⚠️ Équipements incomplets</h2>
+            <p class="section-hint">
+                Ces équipements n'ont pas de nombre et/ou de puissance unitaire renseigné.
+                Corrigez-les directement, ou continuez quand même.
+            </p>
+
+            <div id="equipmentIssuesList"></div>
+
+            <button type="button" id="ignoreIssuesBtn" class="secondary-button">
+                Continuer quand même →
+            </button>
+
+        </div>
+
     </div>
 
     <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
@@ -158,6 +175,7 @@
     <script src="../js/progress.js"></script>
     <script src="../js/export-github.js"></script>
     <script src="../js/lot-mapping.js"></script>
+    <script src="../js/equipment-check.js"></script>
     <script src="../js/report-export.js"></script>
     <script src="../js/buildings.js"></script>
 

@@ -587,6 +587,14 @@ window.LotMapping = (function () {
         hotte:           { label: "Hotte d'extraction", lot: "3-6" }
     };
 
+    // Nom lisible d'un équipement fixe de cuisine à partir de son id (utilisé
+    // aussi par EquipmentCheck pour le récapitulatif pré-export).
+    function cuisineEquipLabel(id) {
+        if (id === "friteuse") return "Friteuse";
+        if (id === "laveVaisselle") return "Lave-vaisselle";
+        return (CUISINE_EQUIP[id] && CUISINE_EQUIP[id].label) || id;
+    }
+
     function extractCuisineRows(fiche, numero) {
         var rows = [];
         var localisation = fiche.nom || "Cuisine " + numero;
@@ -837,7 +845,8 @@ window.LotMapping = (function () {
     return {
         LOTS: LOTS,
         lotNom: lotNom,
-        buildAllRows: buildAllRows
+        buildAllRows: buildAllRows,
+        cuisineEquipLabel: cuisineEquipLabel
     };
 
 })();

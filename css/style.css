@@ -16,7 +16,7 @@
 }
 
 .container::before {
-    content: "v2026.08.07-14";
+    content: "v2026.08.07-15";
     position: absolute;
     top: 14px;
     right: 14px;
@@ -730,6 +730,54 @@ footer {
 
 .export-link:hover {
     background: rgba(34, 197, 94, 0.20);
+}
+
+/* Récapitulatif des équipements incomplets avant export */
+.equipment-issue-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+
+    padding: 12px 14px;
+    margin-bottom: 8px;
+
+    border-radius: 12px;
+    border: 1px solid rgba(255, 190, 90, 0.25);
+    background: rgba(255, 190, 90, 0.08);
+}
+
+.equipment-issue-info strong {
+    color: #E6E8ED;
+    font-size: 15px;
+}
+
+.equipment-issue-info small {
+    display: block;
+    margin-top: 2px;
+    color: #9DA4B2;
+    font-size: 12px;
+}
+
+.equipment-issue-fix-btn {
+    flex-shrink: 0;
+
+    padding: 8px 14px;
+
+    border-radius: 8px;
+    border: 1px solid rgba(58, 95, 217, 0.40);
+    background: rgba(58, 95, 217, 0.15);
+
+    color: #E6E8ED;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+
+    transition: background 0.2s;
+}
+
+.equipment-issue-fix-btn:hover {
+    background: rgba(58, 95, 217, 0.30);
 }
 
 /* =========================

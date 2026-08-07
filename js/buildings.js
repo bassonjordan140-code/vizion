@@ -357,9 +357,40 @@ var exportBtn = document.getElementById("exportBtn");
 var exportStatus = document.getElementById("exportStatus");
 var exportLink = document.getElementById("exportLink");
 
-exportBtn.addEventListener("click", function () {
+var equipmentCheckPanel = document.getElementById("equipmentCheckPanel");
+var equipmentIssuesList = document.getElementById("equipmentIssuesList");
+var ignoreIssuesBtn = document.getElementById("ignoreIssuesBtn");
 
-    saveSiteInfo();
+function renderEquipmentIssues(issues) {
+
+    equipmentIssuesList.innerHTML = "";
+
+    issues.forEach(function (issue) {
+
+        var manque = [];
+        if (issue.missingNombre) manque.push("nombre");
+        if (issue.missingPuissance) manque.push("puissance unitaire");
+
+        var row = document.createElement("div");
+        row.className = "equipment-issue-row";
+        row.innerHTML =
+            '<div class="equipment-issue-info">' +
+                '<strong>' + issue.equipNom + '</strong> — ' + manque.join(" et ") + ' manquant' + (manque.length > 1 ? "s" : "") +
+                '<small>' + issue.buildingNom + ' · ' + issue.secteurLabel + ' · ' + issue.localisationNom + '</small>' +
+            '</div>' +
+            '<button type="button" class="equipment-issue-fix-btn">Corriger →</button>';
+
+        row.querySelector(".equipment-issue-fix-btn").addEventListener("click", function () {
+            EquipmentCheck.gotoIssue(issue);
+        });
+
+        equipmentIssuesList.appendChild(row);
+
+    });
+
+}
+
+function runExport() {
 
     exportBtn.disabled = true;
     exportBtn.textContent = "⏳ Génération en cours...";
@@ -383,4 +414,40 @@ exportBtn.addEventListener("click", function () {
         exportStatus.textContent = "❌ Erreur : " + err.message;
         console.error("Export error:", err);
     });
+
+}
+
+ignoreIssuesBtn.addEventListener("click", function () {
+    equipmentCheckPanel.classList.add("hidden");
+    runExport();
+});
+
+exportBtn.addEventListener("click", function () {
+
+    saveSiteInfo();
+
+    equipmentCheckPanel.classList.add("hidden");
+    exportBtn.disabled = true;
+    exportBtn.textContent = "⏳ Vérification...";
+    exportStatus.textContent = "";
+    exportLink.classList.add("hidden");
+
+    BuildingManager.collectAllBuildingsAuditData().then(function (buildingsAuditData) {
+
+        var issues = EquipmentCheck.findIncompleteEquipment(buildingsAuditData);
+
+        exportBtn.disabled = false;
+        exportBtn.textContent = "📥 Valider & Télécharger le rapport";
+
+        if (issues.length > 0) {
+            renderEquipmentIssues(issues);
+            equipmentCheckPanel.classList.remove("hidden");
+            equipmentCheckPanel.scrollIntoView({ behavior: "smooth", block: "start" });
+            return;
+        }
+
+        runExport();
+
+    });
+
 });
