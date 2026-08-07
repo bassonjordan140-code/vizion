@@ -20,7 +20,6 @@ window.EquipmentDatabase = (function () {
         { nom: "Équipement de sport", lot: "9-1", puissance: 1300 },
         { nom: "Lave-linge", lot: "8-1", puissance: 2000 },
         { nom: "Sèche-linge", lot: "8-1", puissance: 2500 },
-        { nom: "Repasseuse", lot: "9-1", puissance: 7500 },
         { nom: "Calandre", lot: "9-1", puissance: 7500 },
         { nom: "Jacuzzi", lot: "9-1", puissance: 7500 },
         { nom: "Sauna", lot: "9-1", puissance: 9000 },
