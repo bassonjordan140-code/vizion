@@ -541,7 +541,7 @@ window.LotMapping = (function () {
             if (fiche.laveLinge.ecsAssociee === "Propre" && fiche.laveLinge.ecsBallons) {
                 rows.push(makeRow({
                     localisation: localisation, secteur: ctx.secteur,
-                    puissance: fiche.laveLinge.puissance, nombre: fiche.laveLinge.ecsBallons,
+                    puissance: fiche.laveLinge.ecsPuissance, nombre: fiche.laveLinge.ecsBallons,
                     description: "Ballon ECS lave-linge (" + (fiche.laveLinge.ecsVolume || "?") + " L)",
                     lot: "2-1", formulaireOrigine: ctx.formulaireOrigine, nomFormulaire: ctx.nomFormulaire
                 }));
