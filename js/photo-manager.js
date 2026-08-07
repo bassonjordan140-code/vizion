@@ -82,6 +82,31 @@ window.PhotoManager = (function () {
         });
     }
 
+    // Déplace la photo (si elle existe) de oldKey vers newKey — utilisé quand
+    // l'utilisateur renomme un équipement libre dont la clé photo est
+    // construite à partir de son nom.
+    function renamePhotoKey(oldKey, newKey) {
+        if (oldKey === newKey) return Promise.resolve();
+        return openDB().then(function (db) {
+            return new Promise(function (resolve, reject) {
+                var tx = db.transaction(STORE_NAME, "readwrite");
+                var store = tx.objectStore(STORE_NAME);
+                var getReq = store.get(oldKey);
+                getReq.onsuccess = function () {
+                    var record = getReq.result;
+                    if (record) {
+                        record.key = newKey;
+                        store.put(record);
+                        store.delete(oldKey);
+                    }
+                };
+                getReq.onerror = function () { reject(getReq.error); };
+                tx.oncomplete = function () { resolve(); };
+                tx.onerror = function () { reject(tx.error); };
+            });
+        });
+    }
+
     /* =========================
        Archive par bâtiment
        Le store "photos" représente toujours le bâtiment actif ;
@@ -380,6 +405,7 @@ window.PhotoManager = (function () {
         savePhoto: savePhoto,
         loadThumbnail: loadThumbnail,
         deletePhoto: deletePhoto,
+        renamePhotoKey: renamePhotoKey,
         deletePhotosByPrefix: deletePhotosByPrefix,
         archivePhotosForBuilding: archivePhotosForBuilding,
         restorePhotosForBuilding: restorePhotosForBuilding,

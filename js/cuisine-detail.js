@@ -331,7 +331,9 @@ function renderCustomEquipements() {
 
         item.innerHTML =
             '<button type="button" class="custom-equip-delete" data-idx="' + idx + '" aria-label="Supprimer cet équipement">✕</button>' +
-            '<div class="custom-equip-name">' + equip.nom + '</div>' +
+            '<div class="custom-equip-name">' + equip.nom +
+            '<button type="button" class="custom-equip-rename-btn" data-idx="' + idx + '" aria-label="Renommer cet équipement">✎</button>' +
+            '</div>' +
             '<div class="custom-equip-fields">' +
                 '<div class="field-group"><label>Nombre</label>' +
                 '<input type="number" min="1" step="1" inputmode="numeric" class="custom-equip-nombre" data-idx="' + idx + '" value="' + (equip.nombre || 1) + '"></div>' +
@@ -348,6 +350,21 @@ function renderCustomEquipements() {
         btn.addEventListener("click", function () {
             customEquipements.splice(parseInt(btn.dataset.idx), 1);
             renderCustomEquipements();
+        });
+    });
+
+    customEquipementsList.querySelectorAll(".custom-equip-rename-btn").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+            var idx = parseInt(btn.dataset.idx);
+            var ancienNom = customEquipements[idx].nom;
+            var nouveauNom = prompt("Nouveau nom pour cet équipement :", ancienNom);
+            if (nouveauNom === null) return;
+            nouveauNom = nouveauNom.trim();
+            if (nouveauNom === "" || nouveauNom === ancienNom) return;
+            var oldKey = "cuisine_" + currentCuisine.numero + "_customeq_" + ancienNom;
+            var newKey = "cuisine_" + currentCuisine.numero + "_customeq_" + nouveauNom;
+            customEquipements[idx].nom = nouveauNom;
+            PhotoManager.renamePhotoKey(oldKey, newKey).then(renderCustomEquipements);
         });
     });
 

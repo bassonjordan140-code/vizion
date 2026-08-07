@@ -183,7 +183,9 @@ function renderEquipements() {
 
         item.innerHTML =
             '<button type="button" class="custom-equip-delete" data-idx="' + idx + '" aria-label="Supprimer cet équipement">✕</button>' +
-            '<div class="custom-equip-name">' + equip.nom + '</div>' +
+            '<div class="custom-equip-name">' + equip.nom +
+            '<button type="button" class="custom-equip-rename-btn" data-idx="' + idx + '" aria-label="Renommer cet équipement">✎</button>' +
+            '</div>' +
             '<div class="custom-equip-fields">' +
                 '<div class="field-group"><label>Nombre</label>' +
                 '<input type="number" min="1" step="1" inputmode="numeric" class="custom-equip-nombre" data-idx="' + idx + '" value="' + (equip.nombre || 1) + '"></div>' +
@@ -200,6 +202,21 @@ function renderEquipements() {
         btn.addEventListener("click", function () {
             equipements.splice(parseInt(btn.dataset.idx), 1);
             renderEquipements();
+        });
+    });
+
+    customEquipementsList.querySelectorAll(".custom-equip-rename-btn").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+            var idx = parseInt(btn.dataset.idx);
+            var ancienNom = equipements[idx].nom;
+            var nouveauNom = prompt("Nouveau nom pour cet équipement :", ancienNom);
+            if (nouveauNom === null) return;
+            nouveauNom = nouveauNom.trim();
+            if (nouveauNom === "" || nouveauNom === ancienNom) return;
+            var oldKey = currentCustom.secteurId + "_" + currentCustom.numero + "_customeq_" + ancienNom;
+            var newKey = currentCustom.secteurId + "_" + currentCustom.numero + "_customeq_" + nouveauNom;
+            equipements[idx].nom = nouveauNom;
+            PhotoManager.renamePhotoKey(oldKey, newKey).then(renderEquipements);
         });
     });
 

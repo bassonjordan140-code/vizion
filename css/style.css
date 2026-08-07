@@ -16,7 +16,7 @@
 }
 
 .container::before {
-    content: "v2026.08.06-7";
+    content: "v2026.08.06-8";
     position: absolute;
     top: 14px;
     right: 14px;
@@ -1879,6 +1879,23 @@ footer {
     color: #E6E8ED;
     font-weight: 600;
     word-break: break-word;
+}
+
+.custom-equip-rename-btn {
+    margin-left: 6px;
+
+    padding: 0;
+    border: none;
+    background: none;
+
+    color: #9DA4B2;
+    font-size: 13px;
+    vertical-align: middle;
+    cursor: pointer;
+}
+
+.custom-equip-rename-btn:hover {
+    color: #E6E8ED;
 }
 
 .custom-equip-fields {

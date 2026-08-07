@@ -1162,7 +1162,9 @@ function renderCustomEquipements() {
 
         item.innerHTML =
             '<button type="button" class="custom-equip-delete" data-custom-equip="' + equip.nom + '" aria-label="Supprimer cet équipement">✕</button>' +
-            '<div class="custom-equip-name">' + equip.nom + '</div>' +
+            '<div class="custom-equip-name">' + equip.nom +
+            '<button type="button" class="custom-equip-rename-btn" data-custom-equip="' + equip.nom + '" aria-label="Renommer cet équipement">✎</button>' +
+            '</div>' +
             '<div class="custom-equip-fields">' +
             '<div class="equipement-nombre-group">' +
             '<label class="equipement-nombre-label">Nombre</label>' +
@@ -1180,7 +1182,7 @@ function renderCustomEquipements() {
     });
 
     customEquipementsList
-        .querySelectorAll("[data-custom-equip]")
+        .querySelectorAll(".custom-equip-delete")
         .forEach(function (btn) {
 
             btn.addEventListener("click", function () {
@@ -1188,6 +1190,26 @@ function renderCustomEquipements() {
                 var idx = equipements.findIndex(function (eq) { return eq.nom === nom; });
                 if (idx !== -1) { equipements.splice(idx, 1); }
                 renderCustomEquipements();
+            });
+
+        });
+
+    customEquipementsList
+        .querySelectorAll(".custom-equip-rename-btn")
+        .forEach(function (btn) {
+
+            btn.addEventListener("click", function () {
+                var ancienNom = btn.dataset.customEquip;
+                var equip = findEquip(ancienNom);
+                if (!equip) return;
+                var nouveauNom = prompt("Nouveau nom pour cet équipement :", ancienNom);
+                if (nouveauNom === null) return;
+                nouveauNom = nouveauNom.trim();
+                if (nouveauNom === "" || nouveauNom === ancienNom) return;
+                equip.nom = nouveauNom;
+                var oldKey = "hebergement_" + currentHebergement.numero + "_equip_" + ancienNom;
+                var newKey = "hebergement_" + currentHebergement.numero + "_equip_" + nouveauNom;
+                PhotoManager.renamePhotoKey(oldKey, newKey).then(renderCustomEquipements);
             });
 
         });
