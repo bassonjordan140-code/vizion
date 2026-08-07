@@ -166,6 +166,7 @@ function buildFieldHTML(eqId, fieldName, savedEq, puissanceDefaut) {
     var val = savedEq ? savedEq[fieldName] || "" : "";
 
     if (fieldName === "nombre") {
+        if (val === "") { val = 1; }
         return '<div class="field-group"><label>Nombre</label>' +
             '<input type="number" min="1" step="1" inputmode="numeric" ' +
             'id="eq-' + eqId + '-nombre" placeholder="Ex : 2" value="' + val + '"></div>';
