@@ -16,7 +16,7 @@
 }
 
 .container::before {
-    content: "v2026.08.07-1";
+    content: "v2026.08.07-2";
     position: absolute;
     top: 14px;
     right: 14px;
@@ -1521,6 +1521,22 @@ footer {
             rgba(10, 31, 79, 0.35),
             rgba(7, 22, 59, 0.35)
         );
+}
+
+/* Hammams/saunas ont un champ de plus (puissance) que les pompes :
+   3 champs + le bouton supprimer, sur une seule ligne. */
+.spa-thermal-row {
+    grid-template-columns: 1fr 1fr 1fr 44px;
+}
+
+@media (max-width: 600px) {
+    .spa-thermal-row {
+        grid-template-columns: 1fr 1fr;
+    }
+    .spa-thermal-row .parois-delete-btn {
+        grid-column: 1 / -1;
+        justify-self: end;
+    }
 }
 
 /* =========================

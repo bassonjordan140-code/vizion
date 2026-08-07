@@ -285,20 +285,12 @@ PhotoManager.bindAll(equipementsList);
         '<label>Volume ECS (L)</label>' +
         '<input type="number" min="0" step="1" inputmode="numeric" id="laveVaisselle-ecsVolume" value="' + (savedLV.ecsVolume || "") + '">';
 
-    var puissanceDiv = document.createElement("div");
-    puissanceDiv.id = "laveVaisselle-ecsPuissanceGroup";
-    puissanceDiv.className = "field-group" + (ecsSelect.value === "Propre" ? "" : " hidden");
-    puissanceDiv.innerHTML =
-        '<label>Puissance ECS (W)</label>' +
-        '<input type="number" min="0" step="1" inputmode="numeric" id="laveVaisselle-ecsPuissance" value="' + (savedLV.ecsPuissance || "") + '">';
-
-    fieldsDiv.insertBefore(puissanceDiv, fieldsDiv.lastElementChild);
-    fieldsDiv.insertBefore(volumeDiv, puissanceDiv);
+    fieldsDiv.insertBefore(volumeDiv, fieldsDiv.lastElementChild);
     fieldsDiv.insertBefore(propreDiv, volumeDiv);
 
     function toggleEcsPropre() {
         var show = ecsSelect.value === "Propre";
-        [propreDiv, volumeDiv, puissanceDiv].forEach(function (el) {
+        [propreDiv, volumeDiv].forEach(function (el) {
             if (show) { el.classList.remove("hidden"); }
             else { el.classList.add("hidden"); }
         });
@@ -536,10 +528,8 @@ saveButton.addEventListener("click", function () {
         if (eq.id === "laveVaisselle" && obj.ecs === "Propre") {
             var ballonsEl = document.getElementById("laveVaisselle-ecsBallons");
             var volumeEl = document.getElementById("laveVaisselle-ecsVolume");
-            var puissanceEl = document.getElementById("laveVaisselle-ecsPuissance");
             obj.ecsBallons = parseInt(ballonsEl.value) || 0;
             obj.ecsVolume = parseFloat(volumeEl.value) || 0;
-            obj.ecsPuissance = parseFloat(puissanceEl.value) || 0;
         }
 
         equipements[eq.id] = obj;

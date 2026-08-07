@@ -267,57 +267,6 @@ addEquipementButton.addEventListener("click", function () {
 });
 
 /* =========================
-   SALLE SERVEUR
-========================= */
-
-var serveurToggle = document.getElementById("serveurToggle");
-var serveurContent = document.getElementById("serveurContent");
-var serveurSurface = document.getElementById("serveurSurface");
-var serveurClimToggle = document.getElementById("serveurClimToggle");
-var serveurPuissance = document.getElementById("serveurPuissance");
-
-var salleServeur =
-    savedData && savedData.salleServeur
-        ? JSON.parse(JSON.stringify(savedData.salleServeur))
-        : { presente: false, surface: 0, climDediee: false, puissance: 0 };
-
-function updateServeurToggle() {
-    updateToggleUI(serveurToggle, salleServeur.presente);
-    if (salleServeur.presente) { serveurContent.classList.remove("hidden"); }
-    else { serveurContent.classList.add("hidden"); }
-}
-
-function updateServeurClimToggle() {
-    updateToggleUI(serveurClimToggle, salleServeur.climDediee);
-}
-
-setupToggle(serveurToggle, function (val) {
-    salleServeur.presente = val;
-    updateServeurToggle();
-});
-
-setupToggle(serveurClimToggle, function (val) {
-    salleServeur.climDediee = val;
-    updateServeurClimToggle();
-});
-
-if (savedData && savedData.salleServeur && savedData.salleServeur.presente) {
-    serveurSurface.value = savedData.salleServeur.surface || "";
-    serveurPuissance.value = savedData.salleServeur.puissance || "";
-}
-
-serveurSurface.addEventListener("input", function () {
-    salleServeur.surface = parseFloat(serveurSurface.value) || 0;
-});
-
-serveurPuissance.addEventListener("input", function () {
-    salleServeur.puissance = parseFloat(serveurPuissance.value) || 0;
-});
-
-updateServeurToggle();
-updateServeurClimToggle();
-
-/* =========================
    ÉCLAIRAGE
 ========================= */
 
@@ -454,12 +403,6 @@ saveButton.addEventListener("click", function () {
         nbEcrans: parseInt(nbEcrans.value) || 0,
         nbImprimantes: parseInt(nbImprimantes.value) || 0,
         equipements: equipements,
-        salleServeur: {
-            presente: salleServeur.presente,
-            surface: parseFloat(serveurSurface.value) || 0,
-            climDediee: salleServeur.climDediee,
-            puissance: parseFloat(serveurPuissance.value) || 0
-        },
         detectionPresence: detectionPresence,
         eclairages: eclairages,
         photos: {},

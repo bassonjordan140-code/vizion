@@ -27,12 +27,14 @@ var siteAdresseInput = document.getElementById("siteAdresseInput");
 var centralePvToggle = document.getElementById("centralePvToggle");
 var centralePvContent = document.getElementById("centralePvContent");
 var centralePvPuissanceInput = document.getElementById("centralePvPuissanceInput");
+var centralePvModeInput = document.getElementById("centralePvModeInput");
 
 var siteInfo = ReportExport.getSiteInfo();
 siteNomInput.value = siteInfo.nom || "";
 siteTypeInput.value = siteInfo.typeConstruction || "";
 siteAdresseInput.value = siteInfo.adresse || "";
 centralePvPuissanceInput.value = siteInfo.centralePvPuissance || "";
+centralePvModeInput.value = siteInfo.centralePvMode || "Autoconsommation sans revente";
 
 var siteMetaHint = document.getElementById("siteMetaHint");
 if (siteInfo.commune) {
@@ -81,11 +83,12 @@ function saveSiteInfo() {
         typeConstruction: siteTypeInput.value.trim(),
         adresse: siteAdresseInput.value.trim(),
         centralePvPresente: centralePvPresente,
-        centralePvPuissance: parseFloat(centralePvPuissanceInput.value) || 0
+        centralePvPuissance: parseFloat(centralePvPuissanceInput.value) || 0,
+        centralePvMode: centralePvModeInput.value
     }));
 }
 
-[siteNomInput, siteTypeInput, siteAdresseInput, centralePvPuissanceInput].forEach(function (input) {
+[siteNomInput, siteTypeInput, siteAdresseInput, centralePvPuissanceInput, centralePvModeInput].forEach(function (input) {
     input.addEventListener("change", saveSiteInfo);
 });
 

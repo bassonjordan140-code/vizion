@@ -67,12 +67,19 @@ function deleteCustomSecteur(secteur) {
 
 }
 
+// "Partie Commune" est un secteur personnalisé à id fixe (pré-suggéré à la
+// création d'un bâtiment), proposé ici comme n'importe quel secteur de la
+// liste fixe tant qu'il n'est pas déjà présent.
+var PARTIE_COMMUNE_ID = "customPartieCommune";
+var PARTIE_COMMUNE_LABEL = "Partie Commune";
+
 function renderAddPicker(activeIds) {
 
+    var hasPartieCommune = getCustomSecteurs().some(function (s) { return s.id === PARTIE_COMMUNE_ID; });
     var remaining = SECTEURS.filter(function (s) { return activeIds.indexOf(s.id) === -1; });
 
-    addSecteurCard.classList.toggle("hidden", remaining.length === 0);
-    if (!remaining.length) return;
+    addSecteurCard.classList.toggle("hidden", remaining.length === 0 && hasPartieCommune);
+    if (remaining.length === 0 && hasPartieCommune) return;
 
     addSecteurSelect.innerHTML = "";
     remaining.forEach(function (secteur) {
@@ -81,6 +88,13 @@ function renderAddPicker(activeIds) {
         option.textContent = secteur.label;
         addSecteurSelect.appendChild(option);
     });
+
+    if (!hasPartieCommune) {
+        var pcOption = document.createElement("option");
+        pcOption.value = PARTIE_COMMUNE_ID;
+        pcOption.textContent = PARTIE_COMMUNE_LABEL;
+        addSecteurSelect.appendChild(pcOption);
+    }
 
 }
 
@@ -136,8 +150,12 @@ function renderSecteurs() {
     secteurDashboard.innerHTML = "";
     noSecteursHint.classList.toggle("hidden", activeIds.length > 0 || customSecteurs.length > 0);
 
-    SECTEURS
-        .filter(function (secteur) { return activeIds.indexOf(secteur.id) !== -1; })
+    // On affiche dans l'ordre d'ajout (activeIds), pas dans l'ordre fixe de
+    // SECTEURS — sinon un secteur ajouté après coup apparaîtrait au milieu
+    // de la liste au lieu de rejoindre la fin.
+    activeIds
+        .map(function (id) { return SECTEURS.find(function (s) { return s.id === id; }); })
+        .filter(Boolean)
         .forEach(function (secteur) {
             var data = JSON.parse(localStorage.getItem(SECTEUR_DATA_KEYS[secteur.id])) || {};
             renderSecteurCard(secteur, Object.keys(data).length, deleteSecteurData, "Retirer ce secteur");
@@ -162,6 +180,16 @@ renderSecteurs();
 addSecteurBtn.addEventListener("click", function () {
     var id = addSecteurSelect.value;
     if (!id) return;
+
+    if (id === PARTIE_COMMUNE_ID) {
+        var customSecteurs = getCustomSecteurs();
+        if (!customSecteurs.some(function (s) { return s.id === PARTIE_COMMUNE_ID; })) {
+            customSecteurs.push({ id: PARTIE_COMMUNE_ID, label: PARTIE_COMMUNE_LABEL });
+            setCustomSecteurs(customSecteurs);
+        }
+        renderSecteurs();
+        return;
+    }
 
     var activeIds = getActiveSecteurs();
     if (activeIds.indexOf(id) === -1) {

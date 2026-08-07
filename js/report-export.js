@@ -20,7 +20,7 @@ window.ReportExport = (function () {
 
     var LOTS_HEADERS = ["Index", "Nom", "Contact", "Tel", "ABR", "Email", "Entreprise", "Adresse"];
 
-    var PAGE_GARDE_HEADERS = ["Index", "Type construction", "Adresse", "Centrale PV", "Puissance PV (W)"];
+    var PAGE_GARDE_HEADERS = ["Index", "Type construction", "Adresse", "Centrale PV", "Puissance PV (kWc)", "Mode d'exploitation PV"];
 
     var CONTACTS_HEADERS = ["Rôle", "Nom", "Téléphone", "ABR", "Email", "Adresse", "Entreprise"];
 
@@ -58,7 +58,8 @@ window.ReportExport = (function () {
                 siteInfo.typeConstruction || "",
                 siteInfo.adresse || "",
                 siteInfo.centralePvPresente ? "Oui" : "Non",
-                siteInfo.centralePvPresente ? (siteInfo.centralePvPuissance || 0) : ""
+                siteInfo.centralePvPresente ? (siteInfo.centralePvPuissance || 0) : "",
+                siteInfo.centralePvPresente ? (siteInfo.centralePvMode || "") : ""
             ],
             [],
             CONTACTS_HEADERS

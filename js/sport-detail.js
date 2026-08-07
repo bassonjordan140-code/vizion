@@ -252,11 +252,13 @@ addEquipementButton.addEventListener("click", function () {
 var vestiairesToggle = document.getElementById("vestiairesToggle");
 var vestiairesContent = document.getElementById("vestiairesContent");
 var nbDouches = document.getElementById("nbDouches");
+var vestiairesEcsDistribution = document.getElementById("vestiairesEcsDistribution");
+var vestiairesEcsPuissance = document.getElementById("vestiairesEcsPuissance");
 
 var vestiaires =
     savedData && savedData.vestiaires
         ? JSON.parse(JSON.stringify(savedData.vestiaires))
-        : { present: false, nbDouches: 0 };
+        : { present: false, nbDouches: 0, ecsDistribution: "Centralisée hôtel", ecsPuissance: 0 };
 
 function updateVestiairesToggle() {
     updateToggleUI(vestiairesToggle, vestiaires.present);
@@ -271,10 +273,21 @@ setupToggle(vestiairesToggle, function (val) {
 
 if (savedData && savedData.vestiaires && savedData.vestiaires.present) {
     nbDouches.value = savedData.vestiaires.nbDouches || "";
+    vestiairesEcsDistribution.value = savedData.vestiaires.ecsDistribution || "Centralisée hôtel";
+    vestiairesEcsPuissance.value = savedData.vestiaires.ecsPuissance || "";
 }
 
 nbDouches.addEventListener("input", function () {
     vestiaires.nbDouches = parseInt(nbDouches.value) || 0;
+});
+
+vestiairesEcsDistribution.addEventListener("change", function () {
+    vestiaires.ecsDistribution = vestiairesEcsDistribution.value;
+});
+
+vestiairesEcsPuissance.addEventListener("input", function () {
+    var v = parseFloat(vestiairesEcsPuissance.value);
+    vestiaires.ecsPuissance = isNaN(v) || v < 0 ? 0 : v;
 });
 
 updateVestiairesToggle();
@@ -403,7 +416,9 @@ saveButton.addEventListener("click", function () {
         equipements: equipements,
         vestiaires: {
             present: vestiaires.present,
-            nbDouches: parseInt(nbDouches.value) || 0
+            nbDouches: parseInt(nbDouches.value) || 0,
+            ecsDistribution: vestiairesEcsDistribution.value,
+            ecsPuissance: parseFloat(vestiairesEcsPuissance.value) || 0
         },
         eclairages: eclairages,
         photos: {},

@@ -335,13 +335,12 @@ function calcCuisineProgress(d) {
 /* ============================================================
    BUREAUX — Champs actifs :
    1. nom
-   2. surface > 0
-   3. nbPostes > 0
-   4. nbEcrans > 0
+   2. nbPostes > 0
+   3. nbEcrans > 0
+   4. au moins 1 équipement
    5. au moins 1 éclairage
    + si brasseur=oui : nombre (1)
    + si clim=oui : nombre (1)
-   + si salleServeur=oui : puissance > 0 (1)
 ============================================================ */
 
 function calcBureauxProgress(d) {
@@ -363,11 +362,6 @@ function calcBureauxProgress(d) {
     if (d.climatisation && d.climatisation.present) {
         total += 1;
         if (d.climatisation.nombre > 0) filled++;
-    }
-
-    if (d.salleServeur && d.salleServeur.presente) {
-        total += 1;
-        if (d.salleServeur.puissance > 0) filled++;
     }
 
     return pct(filled, total);

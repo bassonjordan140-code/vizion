@@ -319,7 +319,7 @@ function renderHammams() {
     hammamsList.innerHTML = "";
     hammams.forEach(function (hammam, index) {
         var row = document.createElement("div");
-        row.className = "pompe-row";
+        row.className = "pompe-row spa-thermal-row";
         var opts = ["Électrique", "Gaz", "Autre"].map(function (t) {
             return '<option value="' + t + '"' + (t === hammam.typeGenerateur ? ' selected' : '') + '>' + t + '</option>';
         }).join("");
@@ -370,7 +370,7 @@ function renderSaunas() {
     saunasList.innerHTML = "";
     saunas.forEach(function (sauna, index) {
         var row = document.createElement("div");
-        row.className = "pompe-row";
+        row.className = "pompe-row spa-thermal-row";
         var opts = ["Électrique", "Bois", "Infrarouge", "Autre"].map(function (t) {
             return '<option value="' + t + '"' + (t === sauna.type ? ' selected' : '') + '>' + t + '</option>';
         }).join("");

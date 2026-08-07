@@ -158,7 +158,6 @@ var ecsLaveLinge = document.getElementById("ecsLaveLinge");
 var ecsLaveLingePropreContent = document.getElementById("ecsLaveLingePropreContent");
 var ecsLaveLingeBallons = document.getElementById("ecsLaveLingeBallons");
 var ecsLaveLingeVolume = document.getElementById("ecsLaveLingeVolume");
-var ecsLaveLingePuissance = document.getElementById("ecsLaveLingePuissance");
 var plaqueLaveLingeToggle = document.getElementById("plaqueLaveLingeToggle");
 var plaqueLaveLingePhoto = document.getElementById("plaqueLaveLingePhoto");
 
@@ -171,7 +170,6 @@ if (savedData && savedData.laveLinge) {
     ecsLaveLinge.value = savedData.laveLinge.ecsAssociee || "Raccordée à l'ECS hôtel";
     ecsLaveLingeBallons.value = savedData.laveLinge.ecsBallons || 0;
     ecsLaveLingeVolume.value = savedData.laveLinge.ecsVolume || "";
-    ecsLaveLingePuissance.value = savedData.laveLinge.ecsPuissance || "";
 }
 
 function updateEcsLaveLingePropre() {
@@ -400,7 +398,6 @@ saveButton.addEventListener("click", function () {
             ecsAssociee: ecsLaveLinge.value,
             ecsBallons: parseInt(ecsLaveLingeBallons.value) || 0,
             ecsVolume: parseFloat(ecsLaveLingeVolume.value) || 0,
-            ecsPuissance: parseFloat(ecsLaveLingePuissance.value) || 0,
             plaque: plaqueLaveLinge ? "oui" : "non"
         },
         secheLinge: {

@@ -528,7 +528,7 @@ window.LotMapping = (function () {
             if (fiche.laveLinge.ecsAssociee === "Propre" && fiche.laveLinge.ecsBallons) {
                 rows.push(makeRow({
                     localisation: localisation, secteur: ctx.secteur,
-                    puissance: fiche.laveLinge.ecsPuissance, nombre: fiche.laveLinge.ecsBallons,
+                    puissance: fiche.laveLinge.puissance, nombre: fiche.laveLinge.ecsBallons,
                     description: "Ballon ECS lave-linge (" + (fiche.laveLinge.ecsVolume || "?") + " L)",
                     lot: "2-1", formulaireOrigine: ctx.formulaireOrigine, nomFormulaire: ctx.nomFormulaire
                 }));
@@ -626,7 +626,7 @@ window.LotMapping = (function () {
             if (equipements.laveVaisselle.ecs === "Propre" && equipements.laveVaisselle.ecsBallons) {
                 rows.push(makeRow({
                     localisation: localisation, secteur: ctx.secteur,
-                    puissance: equipements.laveVaisselle.ecsPuissance, nombre: equipements.laveVaisselle.ecsBallons,
+                    puissance: equipements.laveVaisselle.puissance, nombre: equipements.laveVaisselle.ecsBallons,
                     description: "Ballon ECS lave-vaisselle (" + (equipements.laveVaisselle.ecsVolume || "?") + " L)",
                     lot: "2-1", formulaireOrigine: ctx.formulaireOrigine, nomFormulaire: ctx.nomFormulaire
                 }));
@@ -690,8 +690,9 @@ window.LotMapping = (function () {
         if (fiche.vestiaires && fiche.vestiaires.present && fiche.vestiaires.nbDouches) {
             rows.push(makeRow({
                 localisation: localisation, secteur: ctx.secteur, nombre: fiche.vestiaires.nbDouches,
-                description: "Vestiaires — douches", lot: "9-1", // TODO lot à confirmer (ECS douches, énergie non collectée)
-                formulaireOrigine: ctx.formulaireOrigine, nomFormulaire: ctx.nomFormulaire
+                puissance: fiche.vestiaires.ecsPuissance,
+                description: "Vestiaires — douches (ECS " + (fiche.vestiaires.ecsDistribution || "?") + ")",
+                lot: "9-1", formulaireOrigine: ctx.formulaireOrigine, nomFormulaire: ctx.nomFormulaire
             }));
         }
 
@@ -725,15 +726,6 @@ window.LotMapping = (function () {
                 localisation: localisation, secteur: ctx.secteur, nombre: fiche.nbImprimantes,
                 description: "Imprimantes", lot: "8-1",
                 formulaireOrigine: ctx.formulaireOrigine, nomFormulaire: ctx.nomFormulaire
-            }));
-        }
-
-        if (fiche.salleServeur && fiche.salleServeur.presente) {
-            rows.push(makeRow({
-                localisation: localisation, secteur: ctx.secteur,
-                puissance: fiche.salleServeur.puissance, nombre: 1,
-                description: "Salle serveur (" + (fiche.salleServeur.surface || "?") + " m²)",
-                lot: "7-1", formulaireOrigine: ctx.formulaireOrigine, nomFormulaire: ctx.nomFormulaire
             }));
         }
 
