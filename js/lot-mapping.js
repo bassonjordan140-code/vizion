@@ -212,7 +212,18 @@ window.LotMapping = (function () {
         var localisation = fiche.nom || (fiche.type ? fiche.type + " " + numero : "Hébergement " + numero);
         var ctx = makeCtx(localisation, "Hébergements", "hebergements", numero);
 
+        // "Nombre d'hébergements" = combien de chambres identiques cette fiche
+        // représente (l'utilisateur ne remplit qu'une fiche par TYPE de chambre,
+        // pas une par chambre). Les quantités d'équipements saisies sont donc
+        // celles d'UNE chambre : on les multiplie ici par ce nombre pour que le
+        // rapport reflète la quantité totale sur l'ensemble des chambres du type.
+        var mult = fiche.nbHebergements > 0 ? fiche.nbHebergements : 1;
+
+        var avantClim = rows.length;
         addClimatisationRow(rows, fiche.climatisation, ctx);
+        for (var i = avantClim; i < rows.length; i++) {
+            if (typeof rows[i].nombre === "number") rows[i].nombre *= mult;
+        }
 
         if (fiche.ecs && fiche.ecs.present) {
             var ecsLot = { "Électrique": "2-1", "Solaire": "2-4", "Thermodynamique": "2-5", "Gaz": "2-3" }[fiche.ecs.energie] || "9-1";
@@ -227,7 +238,7 @@ window.LotMapping = (function () {
         (fiche.equipements || []).forEach(function (eq) {
             rows.push(makeRow({
                 localisation: localisation, secteur: ctx.secteur,
-                puissance: eq.puissance, nombre: eq.nombre,
+                puissance: eq.puissance, nombre: (eq.nombre || 0) * mult,
                 description: eq.nom,
                 lot: HEBERGEMENT_EQUIP_LOT[eq.nom] || "9-1",
                 formulaireOrigine: ctx.formulaireOrigine, nomFormulaire: ctx.nomFormulaire
@@ -237,7 +248,7 @@ window.LotMapping = (function () {
         if (fiche.piscinePrivee && fiche.piscinePrivee.present && fiche.piscinePrivee.chauffee) {
             rows.push(makeRow({
                 localisation: localisation, secteur: ctx.secteur,
-                puissance: fiche.piscinePrivee.chauffePuissance, nombre: 1,
+                puissance: fiche.piscinePrivee.chauffePuissance, nombre: 1 * mult,
                 description: "Chauffage piscine privée (" + (fiche.piscinePrivee.chauffeType || "") + ")",
                 lot: PISCINE_CHAUFFE_LOT[fiche.piscinePrivee.chauffeType] || "9-1",
                 formulaireOrigine: ctx.formulaireOrigine, nomFormulaire: ctx.nomFormulaire
@@ -248,18 +259,22 @@ window.LotMapping = (function () {
             var pLot = { "LED": "6-1", "Halogène": "6-4" }[fiche.piscinePrivee.eclairageType] || "9-1";
             rows.push(makeRow({
                 localisation: localisation, secteur: ctx.secteur,
-                nombre: fiche.piscinePrivee.eclairageNombre,
+                nombre: (fiche.piscinePrivee.eclairageNombre || 0) * mult,
                 description: "Éclairage piscine privée (" + (fiche.piscinePrivee.eclairageType || "") + ")",
                 lot: pLot, formulaireOrigine: ctx.formulaireOrigine, nomFormulaire: ctx.nomFormulaire
             }));
         }
 
+        var avantEclairages = rows.length;
         addEclairageRows(rows, fiche.eclairages, ctx);
+        for (var j = avantEclairages; j < rows.length; j++) {
+            if (typeof rows[j].nombre === "number") rows[j].nombre *= mult;
+        }
 
         (fiche.parois || []).forEach(function (p) {
             rows.push(makeRow({
                 localisation: localisation, secteur: ctx.secteur,
-                nombre: p.epaisseur, // épaisseur en cm (pas une quantité, colonne réutilisée)
+                nombre: p.epaisseur, // épaisseur en cm (pas une quantité, colonne réutilisée — jamais multipliée)
                 description: "Paroi " + p.materiau + " — épaisseur " + p.epaisseur + " cm",
                 lot: "12-2", formulaireOrigine: ctx.formulaireOrigine, nomFormulaire: ctx.nomFormulaire
             }));
@@ -269,7 +284,7 @@ window.LotMapping = (function () {
             (fiche.ouvrants[orientation] || []).forEach(function (o) {
                 rows.push(makeRow({
                     localisation: localisation, secteur: ctx.secteur,
-                    nombre: o.nombre,
+                    nombre: (o.nombre || 0) * mult,
                     description: o.type + " (façade " + (ORIENTATION_LABELS[orientation] || orientation) + ")",
                     lot: "12-3", formulaireOrigine: ctx.formulaireOrigine, nomFormulaire: ctx.nomFormulaire
                 }));
