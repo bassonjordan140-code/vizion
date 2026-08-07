@@ -338,7 +338,7 @@ addEquipementButton.addEventListener("click", function () {
         return;
     }
 
-    customEquipements.unshift({ nom: nom, nombre: 1, puissance: "" });
+    customEquipements.push({ nom: nom, nombre: 1, puissance: "" });
     nouvelEquipementInput.value = "";
     renderCustomEquipements();
 

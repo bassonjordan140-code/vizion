@@ -145,7 +145,7 @@ addEquipementButton.addEventListener("click", function () {
         return;
     }
 
-    equipements.unshift({ nom: nom, nombre: 1, puissance: "" });
+    equipements.push({ nom: nom, nombre: 1, puissance: "" });
     nouvelEquipementInput.value = "";
     renderEquipements();
 
