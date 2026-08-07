@@ -16,7 +16,6 @@ window.EquipmentDatabase = (function () {
         { nom: "Théière", lot: "8-1", puissance: 850 },
         { nom: "Bouilloire", lot: "8-1", puissance: 800 },
         { nom: "Cafetière", lot: "8-1", puissance: 1200 },
-        { nom: "Machine à café", lot: "8-1", puissance: 1200 },
         { nom: "Ascenseur", lot: "9-1", puissance: 7500 },
         { nom: "Équipement de sport", lot: "9-1", puissance: 1300 },
         { nom: "Lave-linge", lot: "8-1", puissance: 2000 },
