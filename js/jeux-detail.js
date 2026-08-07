@@ -15,6 +15,7 @@ var savedData =
     jeuxData[currentJeux.numero];
 
 PhotoManager.initPage("jeux", currentJeux.numero);
+renderLocationContext("Salle de jeux");
 
 /* ==============================
    UTILITAIRE TOGGLE

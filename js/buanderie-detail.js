@@ -15,6 +15,7 @@ var savedData =
     buanderieData[currentBuanderie.numero];
 
 PhotoManager.initPage("buanderie", currentBuanderie.numero);
+renderLocationContext("Buanderie");
 
 /* ==============================
    UTILITAIRE TOGGLE

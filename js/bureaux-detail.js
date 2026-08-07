@@ -15,6 +15,7 @@ var savedData =
     bureauxData[currentBureaux.numero];
 
 PhotoManager.initPage("bureaux", currentBureaux.numero);
+renderLocationContext("Bureaux");
 
 /* ==============================
    UTILITAIRE TOGGLE

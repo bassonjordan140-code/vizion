@@ -15,6 +15,7 @@ var savedData =
     barData[currentBar.numero];
 
 PhotoManager.initPage("bar", currentBar.numero);
+renderLocationContext("Bar");
 
 /* ==============================
    UTILITAIRE TOGGLE

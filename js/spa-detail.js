@@ -15,6 +15,7 @@ var savedData =
     spaData[currentSpa.numero];
 
 PhotoManager.initPage("spa", currentSpa.numero);
+renderLocationContext("Spa");
 
 /* ==============================
    UTILITAIRE TOGGLE

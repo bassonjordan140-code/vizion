@@ -15,6 +15,7 @@ var savedData =
     cuisineData[currentCuisine.numero];
 
 PhotoManager.initPage("cuisine", currentCuisine.numero);
+renderLocationContext("Cuisine");
 
 /* ==============================
    UTILITAIRE TOGGLE

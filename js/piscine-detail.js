@@ -15,6 +15,7 @@ var savedData =
     piscinesData[currentPiscine.numero];
 
 PhotoManager.initPage("piscine", currentPiscine.numero);
+renderLocationContext("Piscine");
 
 /* ==============================
    UTILITAIRE TOGGLE

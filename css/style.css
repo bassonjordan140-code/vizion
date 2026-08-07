@@ -16,7 +16,7 @@
 }
 
 .container::before {
-    content: "v2026.08.07-4";
+    content: "v2026.08.07-5";
     position: absolute;
     top: 14px;
     right: 14px;
@@ -126,6 +126,19 @@ h1 {
 
     font-size: 17px;
     line-height: 1.6;
+}
+
+/* Petit repère "Bâtiment · Secteur" affiché sur les fiches de localisation,
+   pour se situer sans avoir à remonter dans la navigation. */
+.location-context {
+    margin-top: 10px;
+    margin-bottom: 0;
+
+    color: #8A8F9C;
+
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.2px;
 }
 
 /* =========================

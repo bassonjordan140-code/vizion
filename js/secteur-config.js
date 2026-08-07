@@ -98,3 +98,14 @@ window.CUSTOM_SECTEUR_DETAIL_PAGE = "custom-detail.html";
 function isCustomSecteurId(id) {
     return typeof id === "string" && id.indexOf("custom") === 0;
 }
+
+// Affiche "Bâtiment · Secteur" dans l'élément #locationContext d'une fiche de
+// localisation (ex: hebergement-detail.html), pour se repérer sans remonter
+// dans la navigation. Nécessite que js/building-manager.js soit chargé.
+function renderLocationContext(secteurLabel) {
+    var el = document.getElementById("locationContext");
+    if (!el || typeof BuildingManager === "undefined") return;
+    var buildingId = BuildingManager.getCurrentBuildingId();
+    var building = BuildingManager.listBuildings().find(function (b) { return b.id === buildingId; });
+    el.textContent = (building ? building.nom : "Bâtiment") + " · " + secteurLabel;
+}

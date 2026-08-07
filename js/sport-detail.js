@@ -15,6 +15,7 @@ var savedData =
     sportData[currentSport.numero];
 
 PhotoManager.initPage("sport", currentSport.numero);
+renderLocationContext("Salle de sport");
 
 /* ==============================
    UTILITAIRE TOGGLE

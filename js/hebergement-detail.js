@@ -22,6 +22,7 @@ if (currentHebergement && hebergementTitle) {
 }
 
 PhotoManager.initPage("hebergement", currentHebergement.numero);
+renderLocationContext("Hébergement");
 
 const counters = [
     { id: "nbEtages", label: "Nombre d’étages", value: 0 },
