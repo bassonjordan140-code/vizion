@@ -64,16 +64,24 @@ var plaquePhotoContainer = document.getElementById("plaquePhotoContainer");
 
 var climNombre = document.getElementById("climNombre");
 var climPuissance = document.getElementById("climPuissance");
+var climCentraliseeToggle = document.getElementById("climCentraliseeToggle");
+var climSplitsContent = document.getElementById("climSplitsContent");
 
 var climatisation =
     savedData && savedData.climatisation
         ? JSON.parse(JSON.stringify(savedData.climatisation))
-        : { present: false, nombre: 0, puissance: 0, etat: "Bon", plaque: false };
+        : { present: false, centralisee: false, nombre: 0, puissance: 0, etat: "Bon", plaque: false };
 
 function updateClimToggle() {
     updateToggleUI(climToggle, climatisation.present);
     if (climatisation.present) { climContent.classList.remove("hidden"); }
     else { climContent.classList.add("hidden"); }
+}
+
+function updateClimCentraliseeToggle() {
+    updateToggleUI(climCentraliseeToggle, climatisation.centralisee);
+    if (climatisation.centralisee) { climSplitsContent.classList.add("hidden"); }
+    else { climSplitsContent.classList.remove("hidden"); }
 }
 
 function updatePlaqueToggle() {
@@ -94,6 +102,11 @@ setupToggle(climToggle, function (val) {
 setupToggle(plaqueToggle, function (val) {
     climatisation.plaque = val;
     updatePlaqueToggle();
+});
+
+setupToggle(climCentraliseeToggle, function (val) {
+    climatisation.centralisee = val;
+    updateClimCentraliseeToggle();
 });
 
 climEtat.addEventListener("change", function () {
@@ -118,6 +131,7 @@ if (savedData && savedData.climatisation) {
 
 updateClimToggle();
 updatePlaqueToggle();
+updateClimCentraliseeToggle();
 
 /* =========================
    BRASSEUR D'AIR

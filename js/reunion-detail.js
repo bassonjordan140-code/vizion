@@ -63,16 +63,24 @@ var plaqueToggle = document.getElementById("plaqueToggle");
 var plaquePhotoContainer = document.getElementById("plaquePhotoContainer");
 var climNombre = document.getElementById("climNombre");
 var climPuissance = document.getElementById("climPuissance");
+var climCentraliseeToggle = document.getElementById("climCentraliseeToggle");
+var climSplitsContent = document.getElementById("climSplitsContent");
 
 var climatisation =
     savedData && savedData.climatisation
         ? JSON.parse(JSON.stringify(savedData.climatisation))
-        : { present: false, nombre: 0, puissance: 0, etat: "Bon", plaque: false };
+        : { present: false, centralisee: false, nombre: 0, puissance: 0, etat: "Bon", plaque: false };
 
 function updateClimToggle() {
     updateToggleUI(climToggle, climatisation.present);
     if (climatisation.present) { climContent.classList.remove("hidden"); }
     else { climContent.classList.add("hidden"); }
+}
+
+function updateClimCentraliseeToggle() {
+    updateToggleUI(climCentraliseeToggle, climatisation.centralisee);
+    if (climatisation.centralisee) { climSplitsContent.classList.add("hidden"); }
+    else { climSplitsContent.classList.remove("hidden"); }
 }
 
 function updatePlaqueToggle() {
@@ -95,6 +103,11 @@ setupToggle(plaqueToggle, function (val) {
     updatePlaqueToggle();
 });
 
+setupToggle(climCentraliseeToggle, function (val) {
+    climatisation.centralisee = val;
+    updateClimCentraliseeToggle();
+});
+
 climEtat.addEventListener("change", function () { climatisation.etat = climEtat.value; });
 climNombre.addEventListener("input", function () {
     var v = parseInt(climNombre.value);
@@ -114,39 +127,7 @@ if (savedData && savedData.climatisation) {
 
 updateClimToggle();
 updatePlaqueToggle();
-
-/* =========================
-   BRASSEUR D'AIR
-========================= */
-
-var brasseurToggle = document.getElementById("brasseurToggle");
-var brasseurContent = document.getElementById("brasseurContent");
-var brasseurNombre = document.getElementById("brasseurNombre");
-
-var brasseurAir =
-    savedData && savedData.brasseurAir
-        ? { present: savedData.brasseurAir.present === "oui", nombre: savedData.brasseurAir.nombre || 0 }
-        : { present: false, nombre: 0 };
-
-if (brasseurAir.present) { brasseurNombre.value = brasseurAir.nombre; }
-
-function updateBrasseurToggle() {
-    updateToggleUI(brasseurToggle, brasseurAir.present);
-    if (brasseurAir.present) { brasseurContent.classList.remove("hidden"); }
-    else { brasseurContent.classList.add("hidden"); }
-}
-
-setupToggle(brasseurToggle, function (val) {
-    brasseurAir.present = val;
-    updateBrasseurToggle();
-});
-
-brasseurNombre.addEventListener("input", function () {
-    var v = parseInt(brasseurNombre.value);
-    brasseurAir.nombre = isNaN(v) || v < 0 ? 0 : v;
-});
-
-updateBrasseurToggle();
+updateClimCentraliseeToggle();
 
 /* =========================
    ÉQUIPEMENTS (100% libres)
@@ -362,10 +343,6 @@ saveButton.addEventListener("click", function () {
         placesAssises: parseInt(placesAssises.value) || 0,
         frequence: frequence.value,
         climatisation: climatisation,
-        brasseurAir: {
-            present: brasseurAir.present ? "oui" : "non",
-            nombre: brasseurAir.nombre
-        },
         equipements: equipements,
         eclairages: eclairages,
         photos: {},

@@ -126,7 +126,7 @@ window.LotMapping = (function () {
             secteur: ctx.secteur,
             nombre: clim.nombre,
             puissance: clim.puissance,
-            description: "Climatisation" + (clim.etat ? " (état : " + clim.etat + ")" : ""),
+            description: "Climatisation (" + (clim.centralisee ? "centralisée" : "splits") + ")" + (clim.etat ? " — état : " + clim.etat : ""),
             lot: "1-2", // TODO lot à confirmer — sous-type de climatisation non collecté par ViZion
             formulaireOrigine: ctx.formulaireOrigine,
             nomFormulaire: ctx.nomFormulaire
@@ -213,7 +213,6 @@ window.LotMapping = (function () {
         var ctx = makeCtx(localisation, "Hébergements", "hebergements", numero);
 
         addClimatisationRow(rows, fiche.climatisation, ctx);
-        addBrasseurRow(rows, fiche.brasseurAir, ctx);
 
         if (fiche.ecs && fiche.ecs.present) {
             var ecsLot = { "Électrique": "2-1", "Solaire": "2-4", "Thermodynamique": "2-5", "Gaz": "2-3" }[fiche.ecs.energie] || "9-1";
@@ -342,7 +341,6 @@ window.LotMapping = (function () {
         var ctx = makeCtx(localisation, "Restaurant", "restaurant", numero);
 
         addClimatisationRow(rows, fiche.climatisation, ctx);
-        addBrasseurRow(rows, fiche.brasseurAir, ctx);
         addCustomEquipementsRows(rows, fiche.equipements, ctx);
         addEclairageRows(rows, fiche.eclairages, ctx);
         addObservationRow(rows, fiche.observations, ctx);
@@ -587,7 +585,6 @@ window.LotMapping = (function () {
         var ctx = makeCtx(localisation, "Cuisine", "cuisine", numero);
 
         addClimatisationRow(rows, fiche.climatisation, ctx);
-        addBrasseurRow(rows, fiche.brasseurAir, ctx);
         addCustomEquipementsRows(rows, fiche.equipementsPersonnalises, ctx);
 
         var equipements = fiche.equipements || {};
@@ -648,7 +645,6 @@ window.LotMapping = (function () {
         var ctx = makeCtx(localisation, "Salle de jeux", "jeux", numero);
 
         addClimatisationRow(rows, fiche.climatisation, ctx);
-        addBrasseurRow(rows, fiche.brasseurAir, ctx);
         addCustomEquipementsRows(rows, fiche.equipements, ctx);
 
         addEclairageRows(rows, fiche.eclairages, ctx);
@@ -666,7 +662,6 @@ window.LotMapping = (function () {
         var ctx = makeCtx(localisation, "Salle de réunion", "reunion", numero);
 
         addClimatisationRow(rows, fiche.climatisation, ctx);
-        addBrasseurRow(rows, fiche.brasseurAir, ctx);
         addCustomEquipementsRows(rows, fiche.equipements, ctx);
 
         addEclairageRows(rows, fiche.eclairages, ctx);
@@ -684,7 +679,6 @@ window.LotMapping = (function () {
         var ctx = makeCtx(localisation, "Salle de sport", "sport", numero);
 
         addClimatisationRow(rows, fiche.climatisation, ctx);
-        addBrasseurRow(rows, fiche.brasseurAir, ctx);
         addCustomEquipementsRows(rows, fiche.equipements, ctx);
 
         if (fiche.vestiaires && fiche.vestiaires.present && fiche.vestiaires.nbDouches) {
@@ -711,7 +705,6 @@ window.LotMapping = (function () {
         var ctx = makeCtx(localisation, "Bureaux", "bureaux", numero);
 
         addClimatisationRow(rows, fiche.climatisation, ctx);
-        addBrasseurRow(rows, fiche.brasseurAir, ctx);
         addCustomEquipementsRows(rows, fiche.equipements, ctx);
 
         if (fiche.nbEcrans) {
@@ -779,7 +772,6 @@ window.LotMapping = (function () {
         var rows = [];
 
         addClimatisationRow(rows, fiche.climatisation, ctx);
-        addBrasseurRow(rows, fiche.brasseurAir, ctx);
         addCustomEquipementsRows(rows, fiche.equipements, ctx);
         addEclairageRows(rows, fiche.eclairages, ctx);
         addObservationRow(rows, fiche.observation, ctx);

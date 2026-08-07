@@ -700,64 +700,6 @@ updateProtectionToggle();
 renderProtections();
 
 /* =========================
-   BRASSEUR D'AIR
-========================= */
-
-const brasseurToggle =
-    document.getElementById("brasseurToggle");
-
-const brasseurContent =
-    document.getElementById("brasseurContent");
-
-const brasseurNombre =
-    document.getElementById("brasseurNombre");
-
-let brasseurAir =
-    savedData && savedData.brasseurAir
-        ? { present: savedData.brasseurAir.present === "oui", nombre: savedData.brasseurAir.nombre || 0 }
-        : { present: false, nombre: 0 };
-
-if (brasseurAir.present) {
-    brasseurNombre.value = brasseurAir.nombre;
-}
-
-function updateBrasseurToggle() {
-
-    brasseurToggle
-        .querySelectorAll(".toggle-btn")
-        .forEach(function (btn) {
-            var isActive =
-                (btn.dataset.value === "oui" && brasseurAir.present) ||
-                (btn.dataset.value === "non" && !brasseurAir.present);
-            if (isActive) { btn.classList.add("active"); }
-            else { btn.classList.remove("active"); }
-        });
-
-    if (brasseurAir.present) {
-        brasseurContent.classList.remove("hidden");
-    } else {
-        brasseurContent.classList.add("hidden");
-    }
-
-}
-
-brasseurToggle
-    .querySelectorAll(".toggle-btn")
-    .forEach(function (btn) {
-        btn.addEventListener("click", function () {
-            brasseurAir.present = btn.dataset.value === "oui";
-            updateBrasseurToggle();
-        });
-    });
-
-brasseurNombre.addEventListener("input", function () {
-    var v = parseInt(brasseurNombre.value);
-    brasseurAir.nombre = isNaN(v) || v < 0 ? 0 : v;
-});
-
-updateBrasseurToggle();
-
-/* =========================
    BLOC 5 — CLIMATISATION
 ========================= */
 
@@ -782,10 +724,16 @@ const climNombre =
 const climPuissance =
     document.getElementById("climPuissance");
 
+const climCentraliseeToggle =
+    document.getElementById("climCentraliseeToggle");
+
+const climSplitsContent =
+    document.getElementById("climSplitsContent");
+
 let climatisation =
     savedData && savedData.climatisation
         ? JSON.parse(JSON.stringify(savedData.climatisation))
-        : { present: false, nombre: 0, puissance: 0, etat: "Bon", plaque: false };
+        : { present: false, centralisee: false, nombre: 0, puissance: 0, etat: "Bon", plaque: false };
 
 function updateClimToggle() {
 
@@ -809,6 +757,32 @@ function updateClimToggle() {
         climContent.classList.remove("hidden");
     } else {
         climContent.classList.add("hidden");
+    }
+
+}
+
+function updateClimCentraliseeToggle() {
+
+    climCentraliseeToggle
+        .querySelectorAll(".toggle-btn")
+        .forEach(function (btn) {
+
+            var isActive =
+                (btn.dataset.value === "oui" && climatisation.centralisee) ||
+                (btn.dataset.value === "non" && !climatisation.centralisee);
+
+            if (isActive) {
+                btn.classList.add("active");
+            } else {
+                btn.classList.remove("active");
+            }
+
+        });
+
+    if (climatisation.centralisee) {
+        climSplitsContent.classList.add("hidden");
+    } else {
+        climSplitsContent.classList.remove("hidden");
     }
 
 }
@@ -874,6 +848,21 @@ plaqueToggle
 
     });
 
+climCentraliseeToggle
+    .querySelectorAll(".toggle-btn")
+    .forEach(function (btn) {
+
+        btn.addEventListener("click", function () {
+
+            climatisation.centralisee =
+                btn.dataset.value === "oui";
+
+            updateClimCentraliseeToggle();
+
+        });
+
+    });
+
 climEtat.addEventListener("change", function () {
     climatisation.etat = climEtat.value;
 });
@@ -896,6 +885,7 @@ if (savedData && savedData.climatisation) {
 
 updateClimToggle();
 updatePlaqueToggle();
+updateClimCentraliseeToggle();
 
 /* =========================
    BLOC 6 — EAU CHAUDE SANITAIRE
@@ -1689,10 +1679,6 @@ saveButton.addEventListener("click", function () {
         parois: parois,
         ouvrants: ouvrants,
         protectionsSolaires: protectionsSolaires,
-        brasseurAir: {
-            present: brasseurAir.present ? "oui" : "non",
-            nombre: brasseurAir.nombre
-        },
         climatisation: climatisation,
         ecs: ecs,
         equipements: equipements,
