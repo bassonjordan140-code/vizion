@@ -848,6 +848,11 @@ climToggle
             climatisation.present =
                 btn.dataset.value === "oui";
 
+            if (climatisation.present && !climatisation.nombre) {
+                climatisation.nombre = 1;
+                climNombre.value = 1;
+            }
+
             updateClimToggle();
 
         });

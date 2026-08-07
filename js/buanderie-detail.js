@@ -79,6 +79,10 @@ function updatePlaqueToggle() {
 
 setupToggle(climToggle, function (val) {
     climatisation.present = val;
+    if (val && !climatisation.nombre) {
+        climatisation.nombre = 1;
+        climNombre.value = 1;
+    }
     updateClimToggle();
 });
 
