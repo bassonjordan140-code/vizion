@@ -393,12 +393,21 @@ function renderEquipmentIssues(issues) {
 function runExport() {
 
     exportBtn.disabled = true;
-    exportBtn.textContent = "⏳ Génération en cours...";
+    exportBtn.textContent = "⏳ Sauvegarde en cours...";
     exportStatus.textContent = "";
     exportLink.classList.add("hidden");
 
-    ReportExport.sendReport(function (msg) {
-        exportStatus.textContent = msg;
+    BackupManager.exportBackup().catch(function (err) {
+        // La sauvegarde est un bonus : si elle échoue, ne bloque pas le rapport.
+        console.error("Backup error:", err);
+    }).then(function () {
+
+        exportBtn.textContent = "⏳ Génération en cours...";
+
+        return ReportExport.sendReport(function (msg) {
+            exportStatus.textContent = msg;
+        });
+
     }).then(function (result) {
         exportBtn.disabled = false;
         exportBtn.textContent = "📥 Valider & Télécharger le rapport";
