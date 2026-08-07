@@ -248,6 +248,65 @@ window.PhotoManager = (function () {
         });
     }
 
+    // Lit toutes les photos (store actif + archive) pour une sauvegarde complète.
+    function exportAllPhotoRecords() {
+        return openDB().then(function (db) {
+            return new Promise(function (resolve, reject) {
+                var tx = db.transaction([STORE_NAME, ARCHIVE_STORE_NAME], "readonly");
+                var active = [];
+                var archived = [];
+                tx.objectStore(STORE_NAME).getAll().onsuccess = function (e) { active = e.target.result || []; };
+                tx.objectStore(ARCHIVE_STORE_NAME).getAll().onsuccess = function (e) { archived = e.target.result || []; };
+                tx.oncomplete = function () {
+                    resolve(
+                        active.map(function (p) {
+                            return { store: "photos", key: p.key, blob: p.blob, thumbnail: p.thumbnail, timestamp: p.timestamp };
+                        }).concat(archived.map(function (p) {
+                            return { store: "photos_archive", key: p.key, buildingId: p.buildingId, blob: p.blob, thumbnail: p.thumbnail, timestamp: p.timestamp };
+                        }))
+                    );
+                };
+                tx.onerror = function () { reject(tx.error); };
+            });
+        });
+    }
+
+    // Remplace tout le contenu photo (store actif + archive) par les enregistrements fournis
+    // (utilisé pour restaurer une sauvegarde complète). N'importe jamais de manière partielle :
+    // les deux stores sont d'abord vidés.
+    function importAllPhotoRecords(records) {
+        return clearAllPhotosAndArchive().then(function () {
+            return openDB();
+        }).then(function (db) {
+            return new Promise(function (resolve, reject) {
+                var tx = db.transaction([STORE_NAME, ARCHIVE_STORE_NAME], "readwrite");
+                var activeStore = tx.objectStore(STORE_NAME);
+                var archiveStore = tx.objectStore(ARCHIVE_STORE_NAME);
+                (records || []).forEach(function (record) {
+                    if (record.store === "photos_archive") {
+                        archiveStore.put({
+                            archiveKey: record.buildingId + "::" + record.key,
+                            buildingId: record.buildingId,
+                            key: record.key,
+                            blob: record.blob,
+                            thumbnail: record.thumbnail,
+                            timestamp: record.timestamp
+                        });
+                    } else {
+                        activeStore.put({
+                            key: record.key,
+                            blob: record.blob,
+                            thumbnail: record.thumbnail,
+                            timestamp: record.timestamp
+                        });
+                    }
+                });
+                tx.oncomplete = function () { resolve(); };
+                tx.onerror = function () { reject(tx.error); };
+            });
+        });
+    }
+
     /* =========================
        Image processing
     ========================= */
@@ -412,7 +471,9 @@ window.PhotoManager = (function () {
         getArchivedPhotosForBuilding: getArchivedPhotosForBuilding,
         deleteArchivedPhotosForBuilding: deleteArchivedPhotosForBuilding,
         clearPhotos: clearPhotos,
-        clearAllPhotosAndArchive: clearAllPhotosAndArchive
+        clearAllPhotosAndArchive: clearAllPhotosAndArchive,
+        exportAllPhotoRecords: exportAllPhotoRecords,
+        importAllPhotoRecords: importAllPhotoRecords
     };
 
 })();

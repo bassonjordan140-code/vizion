@@ -137,3 +137,49 @@ continueButton.addEventListener("click", function () {
 
 renderHotels();
 renderHotelOptions();
+
+/* =========================
+   SAUVEGARDE / RESTAURATION
+========================= */
+
+var exportBackupBtn = document.getElementById("exportBackupBtn");
+var importBackupInput = document.getElementById("importBackupInput");
+var backupStatus = document.getElementById("backupStatus");
+
+exportBackupBtn.addEventListener("click", function () {
+    exportBackupBtn.disabled = true;
+    backupStatus.textContent = "Préparation de la sauvegarde…";
+    BackupManager.exportBackup()
+        .then(function () {
+            backupStatus.textContent = "Sauvegarde téléchargée.";
+        })
+        .catch(function (err) {
+            console.error(err);
+            backupStatus.textContent = "Échec de la sauvegarde : " + err.message;
+        })
+        .finally(function () {
+            exportBackupBtn.disabled = false;
+        });
+});
+
+importBackupInput.addEventListener("change", function () {
+    var file = importBackupInput.files[0];
+    if (!file) return;
+
+    if (!confirm("Importer cette sauvegarde va remplacer TOUTES les données actuelles (tous les hôtels, bâtiments, fiches et photos) par celles du fichier. Cette action est irréversible. Continuer ?")) {
+        importBackupInput.value = "";
+        return;
+    }
+
+    backupStatus.textContent = "Import en cours…";
+    BackupManager.importBackup(file)
+        .then(function () {
+            backupStatus.textContent = "Sauvegarde importée. Rechargement…";
+            window.location.reload();
+        })
+        .catch(function (err) {
+            console.error(err);
+            backupStatus.textContent = "Échec de l'import : " + err.message;
+            importBackupInput.value = "";
+        });
+});
