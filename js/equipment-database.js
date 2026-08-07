@@ -38,7 +38,7 @@ window.EquipmentDatabase = (function () {
         { nom: "Imprimante", lot: "8-1", puissance: 500 },
         { nom: "Ordinateur", lot: "8-1", puissance: 200 },
         { nom: "Équipement musique", lot: "8-1", puissance: 300 },
-        { nom: "Baie informatique", lot: "9-1", puissance: 200 },
+        { nom: "Baie informatique", lot: "8-2", puissance: 200 },
         { nom: "Pompe à chaleur", lot: "10-5", puissance: 11000 },
         { nom: "Pompe", lot: "4-1", puissance: 1100 }
     ];
