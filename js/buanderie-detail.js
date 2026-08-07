@@ -279,6 +279,103 @@ calandrePuissance.addEventListener("input", function () {
 updateCalandreToggle();
 
 /* =========================
+   ÉQUIPEMENTS (100% libres)
+========================= */
+
+var equipements =
+    savedData && Array.isArray(savedData.equipements)
+        ? JSON.parse(JSON.stringify(savedData.equipements))
+        : [];
+
+var customEquipementsList = document.getElementById("customEquipementsList");
+var nouvelEquipementInput = document.getElementById("nouvelEquipementInput");
+var addEquipementButton = document.getElementById("addEquipementButton");
+
+function renderEquipements() {
+
+    customEquipementsList.innerHTML = "";
+
+    equipements.forEach(function (equip, idx) {
+
+        var item = document.createElement("div");
+        item.className = "custom-equip-card";
+
+        item.innerHTML =
+            '<button type="button" class="custom-equip-delete" data-idx="' + idx + '" aria-label="Supprimer cet équipement">✕</button>' +
+            '<div class="custom-equip-name">' + equip.nom +
+            '<button type="button" class="custom-equip-rename-btn" data-idx="' + idx + '" aria-label="Renommer cet équipement">✎</button>' +
+            '</div>' +
+            '<div class="custom-equip-fields">' +
+                '<div class="field-group"><label>Nombre</label>' +
+                '<input type="number" min="1" step="1" inputmode="numeric" class="custom-equip-nombre" data-idx="' + idx + '" value="' + (equip.nombre || 1) + '"></div>' +
+                '<div class="field-group"><label>Puissance unitaire (W)</label>' +
+                '<input type="number" min="0" step="1" inputmode="numeric" class="custom-equip-puissance" data-idx="' + idx + '" value="' + (equip.puissance !== undefined ? equip.puissance : "") + '" placeholder="Ex : 500"></div>' +
+                '<div class="field-group">' + PhotoManager.createPhotoWidget("buanderie_" + currentBuanderie.numero + "_customeq_" + equip.nom) + '</div>' +
+            '</div>';
+
+        customEquipementsList.appendChild(item);
+
+    });
+
+    customEquipementsList.querySelectorAll(".custom-equip-delete").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+            equipements.splice(parseInt(btn.dataset.idx), 1);
+            renderEquipements();
+        });
+    });
+
+    customEquipementsList.querySelectorAll(".custom-equip-rename-btn").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+            var idx = parseInt(btn.dataset.idx);
+            var ancienNom = equipements[idx].nom;
+            var nouveauNom = prompt("Nouveau nom pour cet équipement :", ancienNom);
+            if (nouveauNom === null) return;
+            nouveauNom = nouveauNom.trim();
+            if (nouveauNom === "" || nouveauNom === ancienNom) return;
+            var oldKey = "buanderie_" + currentBuanderie.numero + "_customeq_" + ancienNom;
+            var newKey = "buanderie_" + currentBuanderie.numero + "_customeq_" + nouveauNom;
+            equipements[idx].nom = nouveauNom;
+            PhotoManager.renamePhotoKey(oldKey, newKey).then(renderEquipements);
+        });
+    });
+
+    customEquipementsList.querySelectorAll(".custom-equip-nombre").forEach(function (input) {
+        input.addEventListener("input", function () {
+            var idx = parseInt(input.dataset.idx);
+            var v = parseInt(input.value);
+            equipements[idx].nombre = isNaN(v) || v < 1 ? 1 : v;
+        });
+    });
+
+    customEquipementsList.querySelectorAll(".custom-equip-puissance").forEach(function (input) {
+        input.addEventListener("input", function () {
+            var idx = parseInt(input.dataset.idx);
+            var v = parseFloat(input.value);
+            equipements[idx].puissance = isNaN(v) || v < 0 ? 0 : v;
+        });
+    });
+
+    PhotoManager.bindAll(customEquipementsList);
+
+}
+
+renderEquipements();
+
+addEquipementButton.addEventListener("click", function () {
+
+    var nom = nouvelEquipementInput.value.trim();
+    if (nom === "") {
+        alert("Veuillez entrer un nom d'équipement.");
+        return;
+    }
+
+    equipements.unshift({ nom: nom, nombre: 1, puissance: "" });
+    nouvelEquipementInput.value = "";
+    renderEquipements();
+
+});
+
+/* =========================
    USAGE
 ========================= */
 
@@ -430,6 +527,7 @@ saveButton.addEventListener("click", function () {
             presente: calandre.presente ? "oui" : "non",
             puissance: calandre.puissance
         },
+        equipements: equipements,
         cyclesLaveLinge: parseInt(cyclesLaveLinge.value) || 0,
         cyclesSecheLinge: parseInt(cyclesSecheLinge.value) || 0,
         eclairages: eclairages,
