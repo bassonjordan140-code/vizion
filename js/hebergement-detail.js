@@ -1166,6 +1166,10 @@ function renderCustomEquipements() {
             '<label class="equipement-nombre-label">Puissance unitaire (W)</label>' +
             '<input type="number" min="0" step="1" inputmode="numeric" class="equipement-puissance-input" data-equip="' + equip.nom + '" value="' + (equip.puissance !== undefined ? equip.puissance : "") + '" placeholder="Ex : 500">' +
             '</div>' +
+            '<div class="equipement-nombre-group">' +
+            '<label class="equipement-nombre-label">Lot</label>' +
+            '<select class="custom-equip-lot" data-equip="' + equip.nom + '">' + LotMapping.lotSelectOptionsHTML(equip.lot) + '</select>' +
+            '</div>' +
             PhotoManager.createPhotoWidget("hebergement_" + currentHebergement.numero + "_equip_" + equip.nom) +
             '</div>';
 
@@ -1232,6 +1236,16 @@ function renderCustomEquipements() {
             });
         });
 
+    customEquipementsList
+        .querySelectorAll(".custom-equip-lot")
+        .forEach(function (select) {
+            select.addEventListener("change", function () {
+                var nom = select.dataset.equip;
+                var equip = findEquip(nom);
+                if (equip) { equip.lot = select.value; }
+            });
+        });
+
     PhotoManager.bindAll(customEquipementsList);
 
 }
@@ -1245,6 +1259,9 @@ const nouvelEquipementInput =
 const addEquipementButton =
     document.getElementById("addEquipementButton");
 
+const equipSuggestions =
+    document.getElementById("equipSuggestions");
+
 addEquipementButton.addEventListener("click", function () {
 
     var nom = nouvelEquipementInput.value.trim();
@@ -1253,10 +1270,15 @@ addEquipementButton.addEventListener("click", function () {
         return;
     }
 
-    equipements.push({ nom: nom, nombre: 1, puissance: "" });
+    equipements.push({ nom: nom, nombre: 1, puissance: "", lot: "" });
     nouvelEquipementInput.value = "";
     renderCustomEquipements();
 
+});
+
+EquipmentDatabase.wireAutocomplete(nouvelEquipementInput, equipSuggestions, function (entry) {
+    equipements.push({ nom: entry.nom, nombre: 1, puissance: entry.puissance, lot: entry.lot });
+    renderCustomEquipements();
 });
 
 /* =========================

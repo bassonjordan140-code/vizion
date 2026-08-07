@@ -162,6 +162,7 @@ var equipements =
 var customEquipementsList = document.getElementById("customEquipementsList");
 var nouvelEquipementInput = document.getElementById("nouvelEquipementInput");
 var addEquipementButton = document.getElementById("addEquipementButton");
+var equipSuggestions = document.getElementById("equipSuggestions");
 
 function renderEquipements() {
 
@@ -182,6 +183,8 @@ function renderEquipements() {
                 '<input type="number" min="1" step="1" inputmode="numeric" class="custom-equip-nombre" data-idx="' + idx + '" value="' + (equip.nombre || 1) + '"></div>' +
                 '<div class="field-group"><label>Puissance unitaire (W)</label>' +
                 '<input type="number" min="0" step="1" inputmode="numeric" class="custom-equip-puissance" data-idx="' + idx + '" value="' + (equip.puissance !== undefined ? equip.puissance : "") + '" placeholder="Ex : 500"></div>' +
+                '<div class="field-group"><label>Lot</label>' +
+                '<select class="custom-equip-lot" data-idx="' + idx + '">' + LotMapping.lotSelectOptionsHTML(equip.lot) + '</select></div>' +
                 '<div class="field-group">' + PhotoManager.createPhotoWidget("restaurant_" + currentRestaurant.numero + "_customeq_" + equip.nom) + '</div>' +
             '</div>';
 
@@ -227,6 +230,13 @@ function renderEquipements() {
         });
     });
 
+    customEquipementsList.querySelectorAll(".custom-equip-lot").forEach(function (select) {
+        select.addEventListener("change", function () {
+            var idx = parseInt(select.dataset.idx);
+            equipements[idx].lot = select.value;
+        });
+    });
+
     PhotoManager.bindAll(customEquipementsList);
 
 }
@@ -241,10 +251,15 @@ addEquipementButton.addEventListener("click", function () {
         return;
     }
 
-    equipements.push({ nom: nom, nombre: 1, puissance: "" });
+    equipements.push({ nom: nom, nombre: 1, puissance: "", lot: "" });
     nouvelEquipementInput.value = "";
     renderEquipements();
 
+});
+
+EquipmentDatabase.wireAutocomplete(nouvelEquipementInput, equipSuggestions, function (entry) {
+    equipements.push({ nom: entry.nom, nombre: 1, puissance: entry.puissance, lot: entry.lot });
+    renderEquipements();
 });
 
 /* =========================

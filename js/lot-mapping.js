@@ -69,6 +69,16 @@ window.LotMapping = (function () {
         return "";
     }
 
+    // <option> d'un <select> de lot pour une carte équipement libre — aucun
+    // lot n'est présélectionné, l'utilisateur choisit toujours activement.
+    function lotSelectOptionsHTML(selectedCode) {
+        var html = '<option value="">— Choisir un lot —</option>';
+        LOTS.forEach(function (l) {
+            html += '<option value="' + l.code + '"' + (selectedCode === l.code ? ' selected' : '') + '>' + l.code + ' — ' + l.nom + '</option>';
+        });
+        return html;
+    }
+
     /* =========================
        HELPERS DE LIGNE
     ========================= */
@@ -149,12 +159,14 @@ window.LotMapping = (function () {
     }
 
     // Équipements ajoutés librement par l'utilisateur hors liste fixe d'un secteur
-    // (cuisine, salle de jeux, salle de sport, bureaux) — pas de sous-type connu.
+    // (cuisine, salle de jeux, salle de sport, bureaux) — lot choisi par
+    // l'utilisateur à la saisie (ou suggéré depuis EquipmentDatabase) ; "Autres"
+    // en dernier recours si aucun lot n'a été renseigné (anciennes fiches).
     function addCustomEquipementsRows(rows, equipementsPersonnalises, ctx) {
         (equipementsPersonnalises || []).forEach(function (eq) {
             rows.push(makeRow({
                 localisation: ctx.localisation, secteur: ctx.secteur,
-                puissance: eq.puissance, nombre: eq.nombre, description: eq.nom, lot: "9-1",
+                puissance: eq.puissance, nombre: eq.nombre, description: eq.nom, lot: eq.lot || "9-1",
                 formulaireOrigine: ctx.formulaireOrigine, nomFormulaire: ctx.nomFormulaire
             }));
         });
@@ -240,7 +252,9 @@ window.LotMapping = (function () {
                 localisation: localisation, secteur: ctx.secteur,
                 puissance: eq.puissance, nombre: (eq.nombre || 0) * mult,
                 description: eq.nom,
-                lot: HEBERGEMENT_EQUIP_LOT[eq.nom] || "9-1",
+                // Équipement libre : lot choisi par l'utilisateur (eq.lot) en priorité.
+                // Sinon (checklist fixe, sans sélecteur de lot), lot connu du nom.
+                lot: eq.lot || HEBERGEMENT_EQUIP_LOT[eq.nom] || "9-1",
                 formulaireOrigine: ctx.formulaireOrigine, nomFormulaire: ctx.nomFormulaire
             }));
         });
@@ -845,6 +859,7 @@ window.LotMapping = (function () {
     return {
         LOTS: LOTS,
         lotNom: lotNom,
+        lotSelectOptionsHTML: lotSelectOptionsHTML,
         buildAllRows: buildAllRows,
         cuisineEquipLabel: cuisineEquipLabel
     };
