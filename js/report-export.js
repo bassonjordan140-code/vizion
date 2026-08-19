@@ -130,6 +130,37 @@ window.ReportExport = (function () {
     }
 
     /* =========================
+       EXPORT JSON BRUT (toutes les données de l'audit)
+       Contrairement au rapport.xlsx (résumé "Observations" construit par
+       LotMapping), ce fichier contient les fiches telles que saisies :
+       parois, ouvrants, protections solaires, toggles oui/non, cycles de
+       machines, etc. — utile pour ré-exploiter l'audit ailleurs qu'Excel.
+    ========================= */
+
+    // buildingsAuditData = [{ id, nom, donnees, customLabels }, ...].
+    function buildAuditJSON(siteInfo, buildingsAuditData) {
+        var audit = {
+            meta: {
+                exportDate: new Date().toISOString(),
+                exportDateFormatted: new Date().toLocaleDateString("fr-FR", {
+                    day: "2-digit", month: "2-digit", year: "numeric",
+                    hour: "2-digit", minute: "2-digit"
+                })
+            },
+            siteInfo: siteInfo,
+            batiments: buildingsAuditData.map(function (b) {
+                return {
+                    id: b.id,
+                    nom: b.nom,
+                    secteurs: b.donnees,
+                    secteursPersonnalisesLabels: b.customLabels
+                };
+            })
+        };
+        return new Blob([JSON.stringify(audit, null, 2)], { type: "application/json" });
+    }
+
+    /* =========================
        CONSTRUCTION DU ZIP PHOTOS
     ========================= */
 
@@ -151,11 +182,12 @@ window.ReportExport = (function () {
        REPLI GITHUB (optionnel)
     ========================= */
 
-    function sendToGithub(xlsxBlob, zipBlob, siteInfo, onProgress) {
+    function sendToGithub(xlsxBlob, zipBlob, jsonBlob, siteInfo, onProgress) {
         var folderName = ExportGitHub.buildFolderName(siteInfo.nom);
         var msg = "📋 Rapport audit — " + new Date().toLocaleDateString("fr-FR");
         return ExportGitHub.pushFiles(folderName, [
             { path: "rapport.xlsx", blob: xlsxBlob },
+            { path: "audit.json", blob: jsonBlob },
             { path: "photos.zip", blob: zipBlob }
         ], msg, onProgress);
     }
@@ -190,18 +222,21 @@ window.ReportExport = (function () {
             if (onProgress) onProgress("Génération du rapport Excel...");
             var xlsxBlob = buildWorkbook(siteInfo, buildingsAuditData);
 
+            if (onProgress) onProgress("Génération du JSON complet...");
+            var jsonBlob = buildAuditJSON(siteInfo, buildingsAuditData);
+
             if (onProgress) onProgress("Préparation des photos...");
 
             return BuildingManager.collectAllBuildingsPhotos().then(function (buildingsPhotos) {
                 return buildPhotosZip(buildingsPhotos).then(function (zipBlob) {
 
                     var nbPhotos = buildingsPhotos.reduce(function (sum, b) { return sum + b.photos.length; }, 0);
-                    var result = { xlsxBlob: xlsxBlob, zipBlob: zipBlob, nbPhotos: nbPhotos, channel: "local", detail: "Rapport téléchargé sur cet appareil." };
+                    var result = { xlsxBlob: xlsxBlob, zipBlob: zipBlob, jsonBlob: jsonBlob, nbPhotos: nbPhotos, channel: "local", detail: "Rapport téléchargé sur cet appareil." };
 
                     // Le repli GitHub est optionnel (nécessite un token configuré) : s'il échoue
                     // ou n'est pas configuré, le téléchargement local reste toujours disponible.
                     var afterGithub = ExportGitHub.getToken()
-                        ? sendToGithub(xlsxBlob, zipBlob, siteInfo, onProgress).then(function (gh) {
+                        ? sendToGithub(xlsxBlob, zipBlob, jsonBlob, siteInfo, onProgress).then(function (gh) {
                             result.channel = "github";
                             result.detail = "Rapport téléchargé sur cet appareil, et copié sur GitHub.";
                             result.url = gh.url;
@@ -214,6 +249,7 @@ window.ReportExport = (function () {
 
                     return afterGithub.then(function (r) {
                         downloadBlob(r.xlsxBlob, "rapport.xlsx");
+                        downloadBlob(r.jsonBlob, "audit.json");
                         downloadBlob(r.zipBlob, "photos.zip");
                         return r;
                     });
@@ -230,6 +266,7 @@ window.ReportExport = (function () {
         getSiteInfo: getSiteInfo,
         setSiteInfo: setSiteInfo,
         buildWorkbook: buildWorkbook,
+        buildAuditJSON: buildAuditJSON,
         buildPhotosZip: buildPhotosZip,
         sendReport: sendReport
     };
