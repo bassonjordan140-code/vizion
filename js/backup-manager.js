@@ -43,10 +43,14 @@ window.BackupManager = (function () {
         return Promise.resolve();
     }
 
-    // Réinjecte les photos du bâtiment actif dans le store actif : l'export
+    // Réinjecte les photos du bâtiment actif dans le store actif : flushActiveState
     // vient de les déplacer vers l'archive (comportement normal de
-    // saveCurrentBuildingSnapshot), on annule cet effet de bord pour ne pas
-    // perturber l'écran resté ouvert pendant l'export.
+    // saveCurrentBuildingSnapshot). Sans cette étape, le store actif serait vide
+    // au moment de lire les photos pour la sauvegarde et les photos du bâtiment
+    // en cours n'apparaîtraient que dans l'archive du zip — donc absentes du
+    // store actif après un import, invisibles sur la fiche ouverte. On l'annule
+    // AVANT de lire les photos (pas après le zip, sinon le zip lui-même garde
+    // le trou).
     function restoreActivePhotosAfterExport() {
         var buildingId = typeof BuildingManager !== "undefined" ? BuildingManager.getCurrentBuildingId() : "";
         if (!buildingId) return Promise.resolve();
@@ -55,6 +59,7 @@ window.BackupManager = (function () {
 
     function exportBackup() {
         return flushActiveState()
+            .then(function () { return restoreActivePhotosAfterExport(); })
             .then(function () { return PhotoManager.exportAllPhotoRecords(); })
             .then(function (photoRecords) {
                 var manifest = {
@@ -79,9 +84,7 @@ window.BackupManager = (function () {
                     zip.file("blobs/" + index + ".jpg", record.blob);
                 });
 
-                return zip.generateAsync({ type: "blob" }).then(function (blob) {
-                    return restoreActivePhotosAfterExport().then(function () { return blob; });
-                });
+                return zip.generateAsync({ type: "blob" });
             })
             .then(function (blob) {
                 var url = URL.createObjectURL(blob);
