@@ -370,6 +370,27 @@ function renderOuvrants() {
                                 ✕
                             </button>
 
+                            <div class="ouvrant-extra-row">
+                                <div class="parois-cell">
+                                    <label>Double vitrage</label>
+                                    <select class="ouvrant-vitrage-select"
+                                            data-orientation="${orientation.id}"
+                                            data-index="${index}">
+                                        <option value="non" ${!ouvrant.doubleVitrage ? "selected" : ""}>Non</option>
+                                        <option value="oui" ${ouvrant.doubleVitrage ? "selected" : ""}>Oui</option>
+                                    </select>
+                                </div>
+                                <div class="parois-cell">
+                                    <label>Persiennes / volets</label>
+                                    <select class="ouvrant-persiennes-select"
+                                            data-orientation="${orientation.id}"
+                                            data-index="${index}">
+                                        <option value="non" ${!ouvrant.persiennesVolets ? "selected" : ""}>Non</option>
+                                        <option value="oui" ${ouvrant.persiennesVolets ? "selected" : ""}>Oui</option>
+                                    </select>
+                                </div>
+                            </div>
+
                             <div class="row-photo-group">
                                 ${PhotoManager.createPhotoWidget("hebergement_" + currentHebergement.numero + "_ouvrant_" + orientation.id + "_" + index)}
                             </div>
@@ -410,7 +431,9 @@ function renderOuvrants() {
 
                 ouvrants[orientation].push({
                     type: "Porte",
-                    nombre: 1
+                    nombre: 1,
+                    doubleVitrage: false,
+                    persiennesVolets: false
                 });
 
                 renderOuvrants();
@@ -429,6 +452,36 @@ function renderOuvrants() {
                 const idx = parseInt(select.dataset.index);
 
                 ouvrants[orientation][idx].type = select.value;
+
+            });
+
+        });
+
+    document
+        .querySelectorAll(".ouvrant-vitrage-select")
+        .forEach(function (select) {
+
+            select.addEventListener("change", function () {
+
+                const orientation = select.dataset.orientation;
+                const idx = parseInt(select.dataset.index);
+
+                ouvrants[orientation][idx].doubleVitrage = select.value === "oui";
+
+            });
+
+        });
+
+    document
+        .querySelectorAll(".ouvrant-persiennes-select")
+        .forEach(function (select) {
+
+            select.addEventListener("change", function () {
+
+                const orientation = select.dataset.orientation;
+                const idx = parseInt(select.dataset.index);
+
+                ouvrants[orientation][idx].persiennesVolets = select.value === "oui";
 
             });
 

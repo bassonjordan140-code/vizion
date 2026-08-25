@@ -16,7 +16,7 @@
 }
 
 .container::before {
-    content: "v2026.08.07-25";
+    content: "v2026.08.07-26";
     position: absolute;
     top: 14px;
     right: 14px;
@@ -1749,6 +1749,22 @@ footer {
 .row-photo-group {
     grid-column: 1 / -1;
     margin-top: 4px;
+}
+
+.ouvrant-extra-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-column: 1 / -1;
+    gap: 10px;
+    margin-top: 4px;
+}
+
+@media (max-width: 480px) {
+
+    .ouvrant-extra-row {
+        grid-template-columns: 1fr;
+    }
+
 }
 
 

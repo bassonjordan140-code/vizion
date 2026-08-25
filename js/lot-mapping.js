@@ -296,10 +296,14 @@ window.LotMapping = (function () {
 
         Object.keys(fiche.ouvrants || {}).forEach(function (orientation) {
             (fiche.ouvrants[orientation] || []).forEach(function (o) {
+                var details = [
+                    o.doubleVitrage ? "double vitrage" : "simple vitrage",
+                    o.persiennesVolets ? "avec persiennes/volets" : "sans persiennes/volets"
+                ].join(", ");
                 rows.push(makeRow({
                     localisation: localisation, secteur: ctx.secteur,
                     nombre: (o.nombre || 0) * mult,
-                    description: o.type + " (façade " + (ORIENTATION_LABELS[orientation] || orientation) + ")",
+                    description: o.type + " (façade " + (ORIENTATION_LABELS[orientation] || orientation) + ", " + details + ")",
                     lot: "12-3", formulaireOrigine: ctx.formulaireOrigine, nomFormulaire: ctx.nomFormulaire
                 }));
             });
