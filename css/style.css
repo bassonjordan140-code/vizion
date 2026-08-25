@@ -16,7 +16,7 @@
 }
 
 .container::before {
-    content: "v2026.08.07-24";
+    content: "v2026.08.07-25";
     position: absolute;
     top: 14px;
     right: 14px;
@@ -620,6 +620,23 @@ footer {
     color: #9DA4B2;
 
     font-size: 13px;
+}
+
+.duplicate-tag {
+    display: inline-block;
+
+    padding: 2px 8px;
+    margin-left: 6px;
+
+    border-radius: 20px;
+
+    background: #E6E8ED;
+    color: #6B7280;
+
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    vertical-align: middle;
 }
 
 /* =========================

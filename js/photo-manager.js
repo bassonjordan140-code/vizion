@@ -307,43 +307,6 @@ window.PhotoManager = (function () {
         });
     }
 
-    // Copie les photos d'une localisation (préfixe "secteurId_ancienNumero_")
-    // vers une nouvelle localisation ("secteurId_nouveauNumero_"), utilisé pour
-    // la duplication d'une fiche. Si sameBuilding est vrai, la copie va dans le
-    // store actif ; sinon elle va directement dans l'archive du bâtiment cible
-    // (targetBuildingId), sans passer par le store actif.
-    function duplicatePhotosForLocalisation(secteurId, oldNumero, newNumero, targetBuildingId, sameBuilding) {
-        var prefix = secteurId + "_" + oldNumero + "_";
-        return getAllPhotos().then(function (photos) {
-            var matching = photos.filter(function (p) { return p.key.indexOf(prefix) === 0; });
-            if (!matching.length) return;
-            return openDB().then(function (db) {
-                return new Promise(function (resolve, reject) {
-                    var storeName = sameBuilding ? STORE_NAME : ARCHIVE_STORE_NAME;
-                    var tx = db.transaction(storeName, "readwrite");
-                    var store = tx.objectStore(storeName);
-                    matching.forEach(function (p) {
-                        var newKey = secteurId + "_" + newNumero + "_" + p.key.slice(prefix.length);
-                        if (sameBuilding) {
-                            store.put({ key: newKey, blob: p.blob, thumbnail: p.thumbnail, timestamp: p.timestamp });
-                        } else {
-                            store.put({
-                                archiveKey: targetBuildingId + "::" + newKey,
-                                buildingId: targetBuildingId,
-                                key: newKey,
-                                blob: p.blob,
-                                thumbnail: p.thumbnail,
-                                timestamp: p.timestamp
-                            });
-                        }
-                    });
-                    tx.oncomplete = function () { resolve(); };
-                    tx.onerror = function () { reject(tx.error); };
-                });
-            });
-        });
-    }
-
     /* =========================
        Image processing
     ========================= */
@@ -510,8 +473,7 @@ window.PhotoManager = (function () {
         clearPhotos: clearPhotos,
         clearAllPhotosAndArchive: clearAllPhotosAndArchive,
         exportAllPhotoRecords: exportAllPhotoRecords,
-        importAllPhotoRecords: importAllPhotoRecords,
-        duplicatePhotosForLocalisation: duplicatePhotosForLocalisation
+        importAllPhotoRecords: importAllPhotoRecords
     };
 
 })();

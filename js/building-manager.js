@@ -199,6 +199,10 @@ window.BuildingManager = (function () {
         }
         if (!sourceFiche) return null;
         var ficheCopy = JSON.parse(JSON.stringify(sourceFiche));
+        // La copie récupère les informations saisies mais pas les photos (voir
+        // plus bas) : on le signale sur la fiche pour que l'utilisateur ne
+        // pense pas que les photos ont été perdues par erreur.
+        ficheCopy._dupliquee = true;
 
         var newNumero;
 
@@ -249,11 +253,9 @@ window.BuildingManager = (function () {
             localStorage.setItem(snapshotKey(targetBuildingId), JSON.stringify(snapshot));
         }
 
-        var photoPromise = PhotoManager.duplicatePhotosForLocalisation(
-            secteurId, sourceNumero, newNumero, targetBuildingId, sameBuilding
-        );
-
-        return { newNumero: newNumero, photoPromise: photoPromise };
+        // Les photos ne sont volontairement PAS dupliquées (fiche marquée
+        // "_dupliquee" ci-dessus) : elles restent propres à l'original.
+        return { newNumero: newNumero };
     }
 
     /* =========================

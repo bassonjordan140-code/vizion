@@ -103,9 +103,10 @@ function renderList() {
 
         card.innerHTML =
             '<div class="dashboard-header">' +
-                '<strong>' + nom + '</strong>' +
+                '<strong>' + nom + (saved._dupliquee ? ' <span class="duplicate-tag">copie</span>' : '') + '</strong>' +
                 '<span>' + progress + '% ' + (progress === 100 ? "✅" : "") + '</span>' +
             '</div>' +
+            (saved._dupliquee ? '<small>Version dupliquée — informations reprises, photos non copiées.</small>' : '') +
             '<div class="progress-bar">' +
                 '<div class="progress-fill" style="width: ' + progress + '%"></div>' +
             '</div>' +
@@ -206,7 +207,7 @@ duplicateConfirmBtn.addEventListener("click", function () {
         renderList();
     }
 
-    alert('Localisation dupliquée dans "' + targetNom + '".');
+    alert('Localisation dupliquée dans "' + targetNom + '" (informations reprises, photos non copiées).');
 
 });
 
