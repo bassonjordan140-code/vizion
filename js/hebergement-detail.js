@@ -1609,7 +1609,7 @@ function renderEclairages() {
             </button>
 
             <div class="row-photo-group row-photo-fullwidth">
-                ${PhotoManager.createPhotoWidget("hebergement_" + currentHebergement.numero + "_eclairage_" + index)}
+                ${PhotoManager.createMultiPhotoWidget("hebergement_" + currentHebergement.numero + "_eclairage_" + index)}
             </div>
         `;
 

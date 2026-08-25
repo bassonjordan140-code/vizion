@@ -327,7 +327,7 @@ function renderEclairages() {
             '<div class="parois-cell"><label>Quantité</label><input type="number" min="1" step="1" inputmode="numeric" pattern="[0-9]*" class="eclairage-quantite-input" data-index="' + index + '" value="' + item.quantite + '"></div>' +
             '<div class="parois-cell eclairage-total-cell"><label>Total</label><span class="eclairage-total-value">' + total + ' W</span></div>' +
             '<button type="button" class="parois-delete-btn eclairage-delete-btn" data-index="' + index + '" aria-label="Supprimer">✕</button>' +
-            '<div class="row-photo-group row-photo-fullwidth">' + PhotoManager.createPhotoWidget("sport_" + currentSport.numero + "_eclairage_" + index) + '</div>';
+            '<div class="row-photo-group row-photo-fullwidth">' + PhotoManager.createMultiPhotoWidget("sport_" + currentSport.numero + "_eclairage_" + index) + '</div>';
 
         eclairageList.appendChild(row);
     });

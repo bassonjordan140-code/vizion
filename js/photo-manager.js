@@ -370,6 +370,61 @@ window.PhotoManager = (function () {
         '</div>';
     }
 
+    // Groupe de plusieurs photos pour une même entrée (ex: éclairage LED —
+    // photo d'une dalle ET d'une lampe). La 1ère photo garde la clé de base
+    // (compatibilité avec les photos déjà enregistrées avant l'ajout du
+    // multi-photo) ; les suivantes utilisent "<baseKey>_photoN". Le nombre de
+    // clichés déjà présents est déterminé au rendu (voir renderMultiPhotoSlots),
+    // pas stocké côté fiche.
+    function createMultiPhotoWidget(baseKey) {
+        return '<div class="multi-photo-widget" data-base-key="' + baseKey + '"></div>';
+    }
+
+    function renderMultiPhotoSlots(group) {
+        var baseKey = group.getAttribute("data-base-key");
+        var prefix = baseKey + "_photo";
+
+        return getAllPhotos().then(function (photos) {
+
+            var maxIndex = 1;
+            photos.forEach(function (p) {
+                if (p.key.indexOf(prefix) === 0) {
+                    var n = parseInt(p.key.slice(prefix.length), 10);
+                    if (!isNaN(n) && n > maxIndex) maxIndex = n;
+                }
+            });
+
+            group.innerHTML = "";
+
+            for (var i = 1; i <= maxIndex; i++) {
+                var item = document.createElement("div");
+                item.className = "multi-photo-item";
+                item.innerHTML = createPhotoWidget(i === 1 ? baseKey : baseKey + "_photo" + i);
+                group.appendChild(item);
+            }
+
+            if (maxIndex < 6) {
+                var addBtn = document.createElement("button");
+                addBtn.type = "button";
+                addBtn.className = "add-row-button add-photo-slot-btn";
+                addBtn.textContent = "+ Ajouter une photo";
+                group.appendChild(addBtn);
+
+                addBtn.addEventListener("click", function () {
+                    maxIndex++;
+                    var item = document.createElement("div");
+                    item.className = "multi-photo-item";
+                    item.innerHTML = createPhotoWidget(baseKey + "_photo" + maxIndex);
+                    group.insertBefore(item, addBtn);
+                    bindWidget(item.querySelector(".photo-widget"));
+                    if (maxIndex >= 6) addBtn.remove();
+                });
+            }
+
+            bindAll(group);
+        });
+    }
+
     /* =========================
        Widget binding
     ========================= */
@@ -432,6 +487,10 @@ window.PhotoManager = (function () {
         var root = container || document;
         var widgets = root.querySelectorAll(".photo-widget");
         widgets.forEach(function (w) { bindWidget(w); });
+        var multiGroups = root.querySelectorAll(".multi-photo-widget[data-base-key]");
+        multiGroups.forEach(function (g) {
+            if (!g.childElementCount) renderMultiPhotoSlots(g);
+        });
     }
 
     /* =========================
@@ -445,7 +504,8 @@ window.PhotoManager = (function () {
         slots.forEach(function (slot) {
             var field = slot.getAttribute("data-photo-field");
             var key = moduleId + "_" + numero + "_" + field;
-            slot.innerHTML = createPhotoWidget(key);
+            // Clim : plusieurs photos possibles (ex: unité intérieure + extérieure).
+            slot.innerHTML = field === "clim" ? createMultiPhotoWidget(key) : createPhotoWidget(key);
         });
         // Bind les widgets statiques
         bindAll();
@@ -458,6 +518,7 @@ window.PhotoManager = (function () {
     return {
         openDB: openDB,
         createPhotoWidget: createPhotoWidget,
+        createMultiPhotoWidget: createMultiPhotoWidget,
         bindWidget: bindWidget,
         bindAll: bindAll,
         initPage: initPage,
