@@ -204,17 +204,17 @@ window.LotMapping = (function () {
 
     // Équipements de la fiche hébergement (checklist bloc 7) -> lot.
     var HEBERGEMENT_EQUIP_LOT = {
-        "Télé": "9-1",
-        "Minibar": "9-1",
+        "Télé": "8-1",
+        "Minibar": "8-1",
         "Frigo": "9-1",
-        "Machine café": "9-1",
-        "Sèche-cheveux": "9-1",
+        "Machine café": "8-1",
+        "Sèche-cheveux": "8-1",
         "Téléphone": "9-1",
         "Cave vin": "9-1",
         "Machine glaçons": "9-1",
         "Bain remous": "9-1",
         "Brasseur air": "5-2",
-        "Bouilloire": "9-1",
+        "Bouilloire": "8-1",
         "Plaques cuisson": "3-1",
         "Micro-ondes": "3-7"
     };
