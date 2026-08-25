@@ -28,6 +28,8 @@ var centralePvToggle = document.getElementById("centralePvToggle");
 var centralePvContent = document.getElementById("centralePvContent");
 var centralePvPuissanceInput = document.getElementById("centralePvPuissanceInput");
 var centralePvModeInput = document.getElementById("centralePvModeInput");
+var etudeFaisabilitePvToggle = document.getElementById("etudeFaisabilitePvToggle");
+var etudeFaisabiliteEcsToggle = document.getElementById("etudeFaisabiliteEcsToggle");
 
 var siteInfo = ReportExport.getSiteInfo();
 siteNomInput.value = siteInfo.nom || "";
@@ -76,6 +78,24 @@ setupToggle(centralePvToggle, function (val) {
 
 updateCentralePvToggle();
 
+var etudeFaisabilitePv = !!siteInfo.etudeFaisabilitePv;
+var etudeFaisabiliteEcs = !!siteInfo.etudeFaisabiliteEcs;
+
+setupToggle(etudeFaisabilitePvToggle, function (val) {
+    etudeFaisabilitePv = val;
+    updateToggleUI(etudeFaisabilitePvToggle, etudeFaisabilitePv);
+    saveSiteInfo();
+});
+
+setupToggle(etudeFaisabiliteEcsToggle, function (val) {
+    etudeFaisabiliteEcs = val;
+    updateToggleUI(etudeFaisabiliteEcsToggle, etudeFaisabiliteEcs);
+    saveSiteInfo();
+});
+
+updateToggleUI(etudeFaisabilitePvToggle, etudeFaisabilitePv);
+updateToggleUI(etudeFaisabiliteEcsToggle, etudeFaisabiliteEcs);
+
 function saveSiteInfo() {
     var current = ReportExport.getSiteInfo();
     ReportExport.setSiteInfo(Object.assign({}, current, {
@@ -84,7 +104,9 @@ function saveSiteInfo() {
         adresse: siteAdresseInput.value.trim(),
         centralePvPresente: centralePvPresente,
         centralePvPuissance: parseFloat(centralePvPuissanceInput.value) || 0,
-        centralePvMode: centralePvModeInput.value
+        centralePvMode: centralePvModeInput.value,
+        etudeFaisabilitePv: etudeFaisabilitePv,
+        etudeFaisabiliteEcs: etudeFaisabiliteEcs
     }));
 }
 
