@@ -30,10 +30,10 @@ window.BuildingManager = (function () {
         return localStorage.getItem(CURRENT_BUILDING_KEY) || "";
     }
 
-    function createBuilding(nom) {
+    function createBuilding(nom, niveaux) {
         var buildings = listBuildings();
         var id = "b_" + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
-        buildings.push({ id: id, nom: nom });
+        buildings.push({ id: id, nom: nom, niveaux: niveaux || 1 });
         saveBuildingsList(buildings);
 
         return id;

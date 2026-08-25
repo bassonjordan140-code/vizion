@@ -295,7 +295,8 @@ function renderBuildings() {
                 '<strong>' + building.nom + '</strong>' +
                 '<span>' + (configured ? "✅" : "à configurer") + '</span>' +
             '</div>' +
-            '<small>' + (configured ? "Modifier les secteurs / localisations" : "Ajouter des localisations") + '</small>' +
+            '<small>' + (configured ? "Modifier les secteurs / localisations" : "Ajouter des localisations") +
+                (building.niveaux ? " — " + building.niveaux + " niveau" + (building.niveaux > 1 ? "x" : "") : "") + '</small>' +
             '<button type="button" class="card-rename-btn" aria-label="Renommer ce bâtiment">✎</button>' +
             '<button type="button" class="card-delete-btn" aria-label="Supprimer ce bâtiment">✕</button>';
 
@@ -338,6 +339,7 @@ renderBuildings();
 ========================= */
 
 var newBuildingInput = document.getElementById("newBuildingInput");
+var newBuildingNiveauxInput = document.getElementById("newBuildingNiveauxInput");
 var addBuildingBtn = document.getElementById("addBuildingBtn");
 
 addBuildingBtn.addEventListener("click", function () {
@@ -346,7 +348,8 @@ addBuildingBtn.addEventListener("click", function () {
         alert("Veuillez entrer un nom de bâtiment.");
         return;
     }
-    var id = BuildingManager.createBuilding(nom);
+    var niveaux = parseInt(newBuildingNiveauxInput.value) || 1;
+    var id = BuildingManager.createBuilding(nom, niveaux);
     BuildingManager.switchToBuilding(id).then(function () {
         window.location.href = "audit.html";
     });
