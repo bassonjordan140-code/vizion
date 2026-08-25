@@ -128,12 +128,28 @@ function renderPompes() {
             '<button type="button" class="parois-delete-btn pompe-delete-btn" ' +
                 'data-index="' + index + '" aria-label="Supprimer cette pompe">✕</button>' +
             '<div class="row-photo-group row-photo-fullwidth">' +
+                '<div class="field-group">' +
+                    '<label>Période de fonctionnement</label>' +
+                    '<input type="text" class="pompe-periode-input" data-index="' + index + '" ' +
+                    'placeholder="Ex : toute l\'année, saison été…" value="' + (pompe.periode || "") + '">' +
+                '</div>' +
+            '</div>' +
+            '<div class="row-photo-group row-photo-fullwidth">' +
                 PhotoManager.createPhotoWidget("piscine_" + currentPiscine.numero + "_pompe_" + index) +
             '</div>' +
             '<div class="row-photo-group row-photo-fullwidth pompe-plaque-toggle-group">' +
                 '<div class="toggle-group">' +
                     '<label>Plaque signalétique visible ?</label>' +
                     '<div class="toggle-buttons pompe-plaque-toggle" data-index="' + index + '">' +
+                        '<button type="button" class="toggle-btn" data-value="non">Non</button>' +
+                        '<button type="button" class="toggle-btn" data-value="oui">Oui</button>' +
+                    '</div>' +
+                '</div>' +
+            '</div>' +
+            '<div class="row-photo-group row-photo-fullwidth pompe-variateur-toggle-group">' +
+                '<div class="toggle-group">' +
+                    '<label>Pompe à variateur de vitesse ?</label>' +
+                    '<div class="toggle-buttons pompe-variateur-toggle" data-index="' + index + '">' +
                         '<button type="button" class="toggle-btn" data-value="non">Non</button>' +
                         '<button type="button" class="toggle-btn" data-value="oui">Oui</button>' +
                     '</div>' +
@@ -171,6 +187,14 @@ function renderPompes() {
         });
     });
 
+    /* --- Période de fonctionnement --- */
+    document.querySelectorAll("#pompesList .pompe-periode-input").forEach(function (input) {
+        input.addEventListener("input", function () {
+            var idx = parseInt(input.dataset.index);
+            pompes[idx].periode = input.value;
+        });
+    });
+
     /* --- Delete buttons --- */
     document.querySelectorAll("#pompesList .pompe-delete-btn").forEach(function (btn) {
         btn.addEventListener("click", function () {
@@ -192,11 +216,21 @@ function renderPompes() {
         });
     });
 
+    /* --- Variateur de vitesse toggles --- */
+    document.querySelectorAll("#pompesList .pompe-variateur-toggle").forEach(function (toggle) {
+        var idx = parseInt(toggle.dataset.index);
+        updateToggleUI(toggle, !!pompes[idx].variateur);
+        setupToggle(toggle, function (val) {
+            pompes[idx].variateur = val;
+            updateToggleUI(toggle, val);
+        });
+    });
+
     PhotoManager.bindAll(pompesList);
 }
 
 addPompeButton.addEventListener("click", function () {
-    pompes.push({ puissance: 1.5, duree: 12, plaque: false });
+    pompes.push({ puissance: 1.5, duree: 12, plaque: false, periode: "", variateur: false });
     renderPompes();
 });
 
@@ -209,7 +243,9 @@ renderPompes();
 var chauffeeToggle = document.getElementById("chauffeeToggle");
 var chauffageContent = document.getElementById("chauffageContent");
 var typeChauffe = document.getElementById("typeChauffe");
+var chauffagePuissance = document.getElementById("chauffagePuissance");
 var temperatureConsigne = document.getElementById("temperatureConsigne");
+var periodeChauffage = document.getElementById("periodeChauffage");
 var chauffagePlaqueToggle = document.getElementById("chauffagePlaqueToggle");
 var chauffagePlaquePhoto = document.getElementById("chauffagePlaquePhoto");
 var bacheToggle = document.getElementById("bacheToggle");
@@ -220,7 +256,9 @@ var chauffagePlaque = savedData && savedData.chauffagePlaque === "oui" ? true : 
 
 if (savedData) {
     typeChauffe.value = savedData.typeChauffe || "Pompe à chaleur";
+    chauffagePuissance.value = savedData.chauffagePuissance || "";
     temperatureConsigne.value = savedData.temperatureConsigne || "";
+    periodeChauffage.value = savedData.periodeChauffage || "";
 }
 
 function updateChauffeeUI() {
@@ -291,7 +329,9 @@ saveButton.addEventListener("click", function () {
         traitementEau: traitementEau.value,
         chauffee: chauffee ? "oui" : "non",
         typeChauffe: typeChauffe.value,
+        chauffagePuissance: parseFloat(chauffagePuissance.value) || 0,
         temperatureConsigne: parseFloat(temperatureConsigne.value) || 0,
+        periodeChauffage: periodeChauffage.value,
         chauffagePlaque: chauffagePlaque ? "oui" : "non",
         bache: bache ? "oui" : "non",
         photos: {},

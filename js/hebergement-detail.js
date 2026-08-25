@@ -1356,6 +1356,9 @@ const piscineChauffeType =
 const piscineChauffePuissance =
     document.getElementById("piscineChauffePuissance");
 
+const piscineChauffePeriode =
+    document.getElementById("piscineChauffePeriode");
+
 const piscineVolume =
     document.getElementById("piscineVolume");
 
@@ -1388,6 +1391,7 @@ let piscinePrivee =
 if (savedData && savedData.piscinePrivee) {
     piscineChauffeType.value = piscinePrivee.chauffeType || "Pompe à chaleur";
     piscineChauffePuissance.value = piscinePrivee.chauffePuissance || "";
+    piscineChauffePeriode.value = piscinePrivee.chauffePeriode || "";
 }
 
 piscineChauffeType.addEventListener("change", function () {
@@ -1397,6 +1401,10 @@ piscineChauffeType.addEventListener("change", function () {
 piscineChauffePuissance.addEventListener("input", function () {
     var v = parseFloat(piscineChauffePuissance.value);
     piscinePrivee.chauffePuissance = isNaN(v) || v < 0 ? 0 : v;
+});
+
+piscineChauffePeriode.addEventListener("input", function () {
+    piscinePrivee.chauffePeriode = piscineChauffePeriode.value;
 });
 
 function updatePiscineToggle() {

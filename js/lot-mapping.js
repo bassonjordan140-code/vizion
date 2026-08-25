@@ -263,7 +263,8 @@ window.LotMapping = (function () {
             rows.push(makeRow({
                 localisation: localisation, secteur: ctx.secteur,
                 puissance: fiche.piscinePrivee.chauffePuissance, nombre: 1 * mult,
-                description: "Chauffage piscine privée (" + (fiche.piscinePrivee.chauffeType || "") + ")",
+                description: "Chauffage piscine privée (" + (fiche.piscinePrivee.chauffeType || "") +
+                    ", période : " + (fiche.piscinePrivee.chauffePeriode || "non précisée") + ")",
                 lot: PISCINE_CHAUFFE_LOT[fiche.piscinePrivee.chauffeType] || "9-1",
                 formulaireOrigine: ctx.formulaireOrigine, nomFormulaire: ctx.nomFormulaire
             }));
@@ -346,7 +347,8 @@ window.LotMapping = (function () {
             rows.push(makeRow({
                 localisation: localisation, secteur: ctx.secteur,
                 puissance: p.puissance, nombre: 1,
-                description: "Pompe de filtration (" + (p.duree || "?") + " h/jour)",
+                description: "Pompe de filtration (" + (p.duree || "?") + " h/jour, période : " +
+                    (p.periode || "non précisée") + (p.variateur ? ", variateur de vitesse" : ", sans variateur de vitesse") + ")",
                 lot: "4-1", formulaireOrigine: ctx.formulaireOrigine, nomFormulaire: ctx.nomFormulaire
             }));
         });
@@ -354,7 +356,9 @@ window.LotMapping = (function () {
         if (fiche.chauffee === "oui" && fiche.typeChauffe) {
             rows.push(makeRow({
                 localisation: localisation, secteur: ctx.secteur, nombre: 1,
-                description: "Chauffage piscine (" + fiche.typeChauffe + ", consigne " + (fiche.temperatureConsigne || "?") + "°C)",
+                puissance: fiche.chauffagePuissance,
+                description: "Chauffage piscine (" + fiche.typeChauffe + ", consigne " + (fiche.temperatureConsigne || "?") +
+                    "°C, période : " + (fiche.periodeChauffage || "non précisée") + ")",
                 lot: PISCINE_CHAUFFE_LOT[fiche.typeChauffe] || "9-1",
                 formulaireOrigine: ctx.formulaireOrigine, nomFormulaire: ctx.nomFormulaire
             }));
