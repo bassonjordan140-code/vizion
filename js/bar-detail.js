@@ -331,6 +331,118 @@ cafeNombre.addEventListener("input", function () {
 updateCafeToggle();
 
 /* =========================
+   ÉQUIPEMENTS (100% libres)
+========================= */
+
+var equipements =
+    savedData && Array.isArray(savedData.equipements)
+        ? JSON.parse(JSON.stringify(savedData.equipements))
+        : [];
+
+var customEquipementsList = document.getElementById("customEquipementsList");
+var nouvelEquipementInput = document.getElementById("nouvelEquipementInput");
+var addEquipementButton = document.getElementById("addEquipementButton");
+var equipSuggestions = document.getElementById("equipSuggestions");
+
+function renderEquipements() {
+
+    customEquipementsList.innerHTML = "";
+
+    equipements.forEach(function (equip, idx) {
+
+        var item = document.createElement("div");
+        item.className = "custom-equip-card";
+
+        item.innerHTML =
+            '<button type="button" class="custom-equip-delete" data-idx="' + idx + '" aria-label="Supprimer cet équipement">✕</button>' +
+            '<div class="custom-equip-name">' + equip.nom +
+            '<button type="button" class="custom-equip-rename-btn" data-idx="' + idx + '" aria-label="Renommer cet équipement">✎</button>' +
+            '</div>' +
+            '<div class="custom-equip-fields">' +
+                '<div class="field-group"><label>Nombre</label>' +
+                '<input type="number" min="1" step="1" inputmode="numeric" class="custom-equip-nombre" data-idx="' + idx + '" value="' + (equip.nombre || 1) + '"></div>' +
+                '<div class="field-group"><label>Puissance unitaire (W)</label>' +
+                '<input type="number" min="0" step="1" inputmode="numeric" class="custom-equip-puissance" data-idx="' + idx + '" value="' + (equip.puissance !== undefined ? equip.puissance : "") + '" placeholder="Ex : 500"></div>' +
+                '<div class="field-group"><label>Lot</label>' +
+                '<select class="custom-equip-lot" data-idx="' + idx + '">' + LotMapping.lotSelectOptionsHTML(equip.lot) + '</select></div>' +
+                '<div class="field-group">' + PhotoManager.createPhotoWidget("bar_" + currentBar.numero + "_customeq_" + equip.nom) + '</div>' +
+            '</div>';
+
+        customEquipementsList.appendChild(item);
+
+    });
+
+    customEquipementsList.querySelectorAll(".custom-equip-delete").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+            equipements.splice(parseInt(btn.dataset.idx), 1);
+            renderEquipements();
+        });
+    });
+
+    customEquipementsList.querySelectorAll(".custom-equip-rename-btn").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+            var idx = parseInt(btn.dataset.idx);
+            var ancienNom = equipements[idx].nom;
+            var nouveauNom = prompt("Nouveau nom pour cet équipement :", ancienNom);
+            if (nouveauNom === null) return;
+            nouveauNom = nouveauNom.trim();
+            if (nouveauNom === "" || nouveauNom === ancienNom) return;
+            var oldKey = "bar_" + currentBar.numero + "_customeq_" + ancienNom;
+            var newKey = "bar_" + currentBar.numero + "_customeq_" + nouveauNom;
+            equipements[idx].nom = nouveauNom;
+            PhotoManager.renamePhotoKey(oldKey, newKey).then(renderEquipements);
+        });
+    });
+
+    customEquipementsList.querySelectorAll(".custom-equip-nombre").forEach(function (input) {
+        input.addEventListener("input", function () {
+            var idx = parseInt(input.dataset.idx);
+            var v = parseInt(input.value);
+            equipements[idx].nombre = isNaN(v) || v < 1 ? 1 : v;
+        });
+    });
+
+    customEquipementsList.querySelectorAll(".custom-equip-puissance").forEach(function (input) {
+        input.addEventListener("input", function () {
+            var idx = parseInt(input.dataset.idx);
+            var v = parseFloat(input.value);
+            equipements[idx].puissance = isNaN(v) || v < 0 ? 0 : v;
+        });
+    });
+
+    customEquipementsList.querySelectorAll(".custom-equip-lot").forEach(function (select) {
+        select.addEventListener("change", function () {
+            var idx = parseInt(select.dataset.idx);
+            equipements[idx].lot = select.value;
+        });
+    });
+
+    PhotoManager.bindAll(customEquipementsList);
+
+}
+
+renderEquipements();
+
+addEquipementButton.addEventListener("click", function () {
+
+    var nom = nouvelEquipementInput.value.trim();
+    if (nom === "") {
+        alert("Veuillez entrer un nom d'équipement.");
+        return;
+    }
+
+    equipements.push({ nom: nom, nombre: 1, puissance: "", lot: "" });
+    nouvelEquipementInput.value = "";
+    renderEquipements();
+
+});
+
+EquipmentDatabase.wireAutocomplete(nouvelEquipementInput, equipSuggestions, function (entry) {
+    equipements.push({ nom: entry.nom, nombre: 1, puissance: entry.puissance, lot: entry.lot });
+    renderEquipements();
+});
+
+/* =========================
    ÉCLAIRAGE (pattern hébergement)
 ========================= */
 
@@ -514,6 +626,7 @@ saveButton.addEventListener("click", function () {
             presente: machineCafe.presente ? "oui" : "non",
             nombre: machineCafe.nombre
         },
+        equipements: equipements,
         eclairages: eclairages,
         ecrans: {
             present: ecrans.present ? "oui" : "non",

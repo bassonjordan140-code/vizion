@@ -287,6 +287,33 @@
 
         </div>
 
+        <!-- ÉQUIPEMENTS -->
+
+        <div class="module-detail-card">
+
+            <p class="section-title">Équipements</p>
+
+            <p class="section-hint">
+                Ajoutez librement les équipements présents (pas de liste prédéfinie).
+            </p>
+
+            <div id="customEquipementsList"></div>
+
+            <div class="field-group" style="margin-top: 16px;">
+                <label>Ajouter un équipement</label>
+                <input type="text" id="nouvelEquipementInput" placeholder="Ex : Fontaine à glace, Douche sensorielle…">
+            </div>
+
+            <div id="equipSuggestions" class="equip-suggestions hidden"></div>
+
+            <button type="button"
+                    class="add-row-button"
+                    id="addEquipementButton">
+                + Ajouter cet équipement
+            </button>
+
+        </div>
+
         <!-- ÉCLAIRAGE (pattern hébergement) -->
 
         <div class="module-detail-card">
@@ -340,6 +367,8 @@
     <script src="../js/building-manager.js"></script>
     <script src="../js/photo-manager.js"></script>
     <script src="../js/unsaved-guard.js"></script>
+    <script src="../js/lot-mapping.js"></script>
+    <script src="../js/equipment-database.js"></script>
     <script src="../js/spa-detail.js"></script>
 
 </body>

@@ -426,6 +426,7 @@ window.LotMapping = (function () {
             }));
         }
 
+        addCustomEquipementsRows(rows, fiche.equipements, ctx);
         addEclairageRows(rows, fiche.eclairages, ctx);
 
         if (fiche.ecrans && (fiche.ecrans.present === "oui" || fiche.ecrans.present === true)) {
@@ -524,6 +525,7 @@ window.LotMapping = (function () {
             }));
         }
 
+        addCustomEquipementsRows(rows, fiche.equipements, ctx);
         addEclairageRows(rows, fiche.eclairages, ctx);
         addObservationRow(rows, fiche.observations, ctx);
         return rows;
