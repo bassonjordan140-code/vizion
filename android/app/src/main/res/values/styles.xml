@@ -16,7 +16,14 @@
     </style>
 
 
+    <!-- android:background sert de repli pour l'ancien système de splash
+         (androidx core-splashscreen, appareils < Android 12) ; sur Android 12+,
+         c'est l'API native SplashScreen qui prend le relais et lit uniquement
+         windowSplashScreenBackground (couleur) + windowSplashScreenAnimatedIcon
+         (par défaut : icône de l'app, déjà à notre DA sauge). -->
     <style name="AppTheme.NoActionBarLaunch" parent="Theme.SplashScreen">
         <item name="android:background">@drawable/splash</item>
+        <item name="windowSplashScreenBackground">@color/splashBackground</item>
+        <item name="postSplashScreenTheme">@style/AppTheme.NoActionBar</item>
     </style>
 </resources>

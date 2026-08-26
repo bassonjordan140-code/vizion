@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Palette "Sauge Premium" de l'app (voir css/style.css) -->
+    <color name="colorPrimary">#5D7052</color>
+    <color name="colorPrimaryDark">#4E5F45</color>
+    <color name="colorAccent">#E3CD8B</color>
+    <color name="splashBackground">#5D7052</color>
+</resources>
