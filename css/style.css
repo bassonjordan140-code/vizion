@@ -22,14 +22,14 @@
 }
 
 .container::before {
-    content: "v2026.08.07-33";
+    content: "v2026.08.26-34";
     position: absolute;
     top: 14px;
     right: 14px;
     font-size: 12px;
     font-weight: 600;
     font-family: monospace;
-    color: #A8A296;
+    color: #C4BEA8;
     background: transparent;
     border: 1px solid rgba(227, 205, 139, 0.3);
     padding: 3px 8px;
@@ -147,7 +147,7 @@ h1 {
     margin-top: 10px;
     margin-bottom: 0;
 
-    color: #A8A296;
+    color: #C4BEA8;
 
     font-size: 13px;
     font-weight: 600;
@@ -293,7 +293,7 @@ h1 {
 
     margin-top: 6px;
 
-    color: #A8A296;
+    color: #C4BEA8;
 
     font-size: 14px;
     line-height: 1.4;
@@ -302,7 +302,7 @@ h1 {
 footer {
     margin-top: 36px;
 
-    color: #A8A296;
+    color: #C4BEA8;
 
     font-size: 13px;
 }
@@ -420,7 +420,7 @@ footer {
         linear-gradient(
             145deg,
             #F2ECD8,
-            #A8A296
+            #C4BEA8
         );
 
     color: #20261A;
@@ -473,7 +473,7 @@ footer {
         linear-gradient(
             135deg,
             #F2ECD8,
-            #A8A296
+            #C4BEA8
         );
 
     color: #20261A;
@@ -692,7 +692,7 @@ footer {
     background:
         linear-gradient(
             90deg,
-            #A8A296,
+            #C4BEA8,
             #DCD6C2,
             #F2ECD8
         );
@@ -703,7 +703,7 @@ footer {
 
     margin-top: 12px;
 
-    color: #A8A296;
+    color: #C4BEA8;
 
     font-size: 13px;
 }
@@ -717,7 +717,7 @@ footer {
     border-radius: 20px;
 
     background: #F2ECD8;
-    color: #A8A296;
+    color: #C4BEA8;
 
     font-size: 11px;
     font-weight: 600;
@@ -744,14 +744,14 @@ footer {
 }
 
 .export-info {
-    color: #A8A296;
+    color: #C4BEA8;
     font-size: 14px;
     line-height: 1.5;
     margin: 0;
 }
 
 .export-info small {
-    color: #A8A296;
+    color: #C4BEA8;
 }
 
 .export-section details {
@@ -814,7 +814,7 @@ footer {
 
 .export-status {
     margin-top: 12px;
-    color: #A8A296;
+    color: #C4BEA8;
     font-size: 14px;
     min-height: 20px;
 }
@@ -860,7 +860,7 @@ footer {
 .equipment-issue-info small {
     display: block;
     margin-top: 2px;
-    color: #A8A296;
+    color: #C4BEA8;
     font-size: 12px;
 }
 
@@ -1083,7 +1083,7 @@ footer {
     margin-top: -16px;
     margin-bottom: 22px;
 
-    color: #A8A296;
+    color: #C4BEA8;
 
     font-size: 14px;
     line-height: 1.5;
@@ -1128,7 +1128,7 @@ footer {
 .parois-cell label {
     margin-bottom: 6px;
 
-    color: #A8A296;
+    color: #C4BEA8;
 
     font-size: 12px;
     font-weight: 500;
@@ -1205,7 +1205,7 @@ footer {
 
     background: rgba(74, 90, 62, 0.20);
 
-    color: #A8A296;
+    color: #C4BEA8;
 
     font-size: 14px;
     text-align: center;
@@ -1293,7 +1293,7 @@ footer {
 }
 
 .ouvrants-section-count {
-    color: #A8A296;
+    color: #C4BEA8;
     font-size: 12px;
     font-weight: 500;
     text-transform: uppercase;
@@ -1396,7 +1396,7 @@ footer {
     background: rgba(36, 46, 30, 0.42);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
-    color: #A8A296;
+    color: #C4BEA8;
 
     font-size: 15px;
     font-weight: 600;
@@ -1421,7 +1421,7 @@ footer {
         linear-gradient(
             135deg,
             #F2ECD8,
-            #A8A296
+            #C4BEA8
         );
 
     color: #20261A;
@@ -1487,7 +1487,7 @@ footer {
     border-radius: 12px;
     border: 1px dashed rgba(227, 205, 139, 0.35);
     background: rgba(36, 46, 30, 0.40);
-    color: #A8A296;
+    color: #C4BEA8;
     font-size: 13px;
     font-family: inherit;
     cursor: pointer;
@@ -1641,7 +1641,7 @@ footer {
 }
 
 .equipement-nombre-label {
-    color: #A8A296;
+    color: #C4BEA8;
     font-size: 12px;
     font-weight: 500;
     text-transform: uppercase;
@@ -1739,7 +1739,7 @@ footer {
 }
 
 .commentaire-textarea::placeholder {
-    color: #A8A296;
+    color: #C4BEA8;
 }
 
 /* =========================
@@ -2054,7 +2054,7 @@ footer {
 .contact-suggestion-chip small {
     display: block;
     margin-top: 2px;
-    color: #A8A296;
+    color: #C4BEA8;
     font-size: 11px;
 }
 
@@ -2192,7 +2192,7 @@ footer {
     border: none;
     background: none;
 
-    color: #A8A296;
+    color: #C4BEA8;
     font-size: 13px;
     vertical-align: middle;
     cursor: pointer;

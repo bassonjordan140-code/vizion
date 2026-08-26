@@ -49,7 +49,12 @@ function renderHotels() {
 
         card.addEventListener("click", function () {
             HotelManager.switchToHotel(hotelIndex).then(function () {
-                window.location.href = "buildings.html";
+                // Si les informations du site n'ont encore jamais été validées
+                // (hôtel quitté avant ce clic sur site-info.html), on les
+                // remontre plutôt que de sauter directement à la liste des
+                // bâtiments.
+                var confirmed = !!ReportExport.getSiteInfo().confirmed;
+                window.location.href = confirmed ? "buildings.html" : "site-info.html";
             });
         });
 

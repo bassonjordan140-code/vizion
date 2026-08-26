@@ -55,7 +55,7 @@ continueButton.addEventListener("click", function () {
     };
 
     HotelManager.switchToHotel(hotelSelect.value, defaultSiteInfo).then(function () {
-        window.location.href = "buildings.html";
+        window.location.href = "site-info.html";
     });
 });
 

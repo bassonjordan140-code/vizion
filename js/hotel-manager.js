@@ -104,13 +104,15 @@ window.HotelManager = (function () {
         return PhotoManager.clearPhotos();
     }
 
-    // Change d'hôtel actif : sauvegarde l'ancien (s'il diffère) puis charge le nouveau.
+    // Change d'hôtel actif : sauvegarde l'ancien puis charge le nouveau. On sauvegarde
+    // aussi quand hotelIndex === currentIndex (ré-ouverture du même hôtel) : sinon,
+    // loadHotelSnapshot ci-dessous écraserait les clés actives avec un instantané
+    // périmé et perdrait les changements faits depuis le dernier snapshot (ex. le
+    // flag "confirmed" de siteInfo posé sans passer par backToHotelsButton).
     function switchToHotel(hotelIndex, defaultSiteInfo) {
         hotelIndex = String(hotelIndex);
         var currentIndex = getCurrentHotelIndex();
-        var chain = (currentIndex && currentIndex !== hotelIndex)
-            ? saveCurrentHotelSnapshot()
-            : Promise.resolve();
+        var chain = currentIndex ? saveCurrentHotelSnapshot() : Promise.resolve();
         return chain.then(function () {
             markStarted(hotelIndex);
             return loadHotelSnapshot(hotelIndex, defaultSiteInfo);
