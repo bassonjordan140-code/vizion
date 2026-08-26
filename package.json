@@ -1,0 +1,32 @@
+{
+  "name": "app_vizion",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "sync:www": "node scripts/sync-www.js",
+    "android:sync": "npm run sync:www && npx cap sync android",
+    "android:open": "npm run android:sync && npx cap open android"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bassonjordan140-code/vizion.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/bassonjordan140-code/vizion/issues"
+  },
+  "homepage": "https://github.com/bassonjordan140-code/vizion#readme",
+  "dependencies": {
+    "@capacitor/android": "^8.5.0",
+    "@capacitor/cli": "^8.5.0",
+    "@capacitor/core": "^8.5.0"
+  }
+}
