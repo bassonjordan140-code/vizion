@@ -117,6 +117,24 @@ window.BackupManager = (function () {
             window.Capacitor.Plugins && window.Capacitor.Plugins.Share) || null;
     }
 
+    // Plugin natif maison (android/app/.../SaveToDownloadsPlugin.java) : écrit
+    // directement dans le dossier public "Téléchargements" de l'appareil via
+    // MediaStore (Android 10+, aucune permission requise). C'est le seul moyen
+    // d'obtenir un vrai "fichier enregistré sur l'appareil" sans passer par une
+    // feuille de partage — certains appareils n'ont aucune app qui propose une
+    // option "Enregistrer" dans cette feuille, seulement des apps de partage.
+    function getSaveToDownloadsPlugin() {
+        return (window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform() &&
+            window.Capacitor.Plugins && window.Capacitor.Plugins.SaveToDownloads) || null;
+    }
+
+    function mimeTypeFor(filename) {
+        if (/\.zip$/i.test(filename)) return "application/zip";
+        if (/\.xlsx$/i.test(filename)) return "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+        if (/\.json$/i.test(filename)) return "application/json";
+        return "application/octet-stream";
+    }
+
     function blobToBase64(blob) {
         return new Promise(function (resolve, reject) {
             var reader = new FileReader();
@@ -175,22 +193,11 @@ window.BackupManager = (function () {
     var VISIBLE_EXPORT_DIRECTORY = "EXTERNAL";
     var VISIBLE_EXPORT_SUBFOLDER = "ViZion";
 
-    function saveOrShareBlob(blob, filename) {
+    // Repli : écrit le fichier dans le dossier propre à l'app puis ouvre la
+    // feuille de partage native. Utilisé quand SaveToDownloads est absent
+    // (Android < 10) ou échoue pour une raison quelconque.
+    function shareViaFilesystem(blob, filename) {
         var Filesystem = getFilesystemPlugin();
-
-        if (!Filesystem) {
-            // Web : téléchargement classique via un lien <a download>.
-            var url = URL.createObjectURL(blob);
-            var a = document.createElement("a");
-            a.href = url;
-            a.download = filename;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            setTimeout(function () { URL.revokeObjectURL(url); }, 10000);
-            return Promise.resolve({ native: false });
-        }
-
         var path = VISIBLE_EXPORT_SUBFOLDER + "/" + filename;
 
         return blobToBase64(blob)
@@ -207,7 +214,7 @@ window.BackupManager = (function () {
             })
             .then(function (uriResult) {
                 var Share = getSharePlugin();
-                if (!Share) return { native: true, uri: uriResult.uri };
+                if (!Share) return { native: true, shared: false, uri: uriResult.uri };
                 return Share.share({ title: filename, url: uriResult.uri })
                     .catch(function (err) {
                         // L'utilisateur peut simplement fermer la feuille de partage
@@ -215,7 +222,39 @@ window.BackupManager = (function () {
                         // déjà écrit sur l'appareil à ce stade.
                         console.warn("Partage annulé ou échoué :", err);
                     })
-                    .then(function () { return { native: true, uri: uriResult.uri }; });
+                    .then(function () { return { native: true, shared: true, uri: uriResult.uri }; });
+            });
+    }
+
+    function saveOrShareBlob(blob, filename) {
+        var Filesystem = getFilesystemPlugin();
+
+        if (!Filesystem) {
+            // Web : téléchargement classique via un lien <a download>.
+            var url = URL.createObjectURL(blob);
+            var a = document.createElement("a");
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            setTimeout(function () { URL.revokeObjectURL(url); }, 10000);
+            return Promise.resolve({ native: false });
+        }
+
+        var SaveToDownloads = getSaveToDownloadsPlugin();
+        if (!SaveToDownloads) return shareViaFilesystem(blob, filename);
+
+        return blobToBase64(blob)
+            .then(function (base64) {
+                return SaveToDownloads.save({ data: base64, filename: filename, mimeType: mimeTypeFor(filename) });
+            })
+            .then(function (r) {
+                return { native: true, downloads: true, uri: r.uri };
+            })
+            .catch(function (err) {
+                console.warn("Enregistrement direct dans Téléchargements impossible, repli sur le partage :", err);
+                return shareViaFilesystem(blob, filename);
             });
     }
 
