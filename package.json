@@ -9,7 +9,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "sync:www": "node scripts/sync-www.js",
-    "android:sync": "npm run sync:www && npx cap sync android",
+    "android:sync": "npm run sync:www && npx cap sync android && node scripts/fix-cordova-js.js",
     "android:open": "npm run android:sync && npx cap open android"
   },
   "repository": {

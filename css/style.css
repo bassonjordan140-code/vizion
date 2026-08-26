@@ -1,6 +1,8 @@
 /* =========================
-   VIZION — DARK PREMIUM
+   VIZION — SAUGE PREMIUM
 ========================= */
+
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap");
 
 * {
     box-sizing: border-box;
@@ -20,18 +22,18 @@
 }
 
 .container::before {
-    content: "v2026.08.07-31";
+    content: "v2026.08.07-32";
     position: absolute;
     top: 14px;
     right: 14px;
     font-size: 12px;
-    font-weight: 700;
+    font-weight: 600;
     font-family: monospace;
-    color: #ffffff;
-    background: #E63946;
+    color: #A8A296;
+    background: transparent;
+    border: 1px solid rgba(227, 205, 139, 0.3);
     padding: 3px 8px;
     border-radius: 6px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
     z-index: 10;
     pointer-events: none;
 }
@@ -53,10 +55,17 @@ body {
     margin: 0;
     min-height: 100vh;
 
-    background: #060915;
+    background:
+        radial-gradient(
+            circle at 30% 0%,
+            #6B8261 0%,
+            #5D7052 55%,
+            #4E5F45 100%
+        );
+    background-attachment: fixed;
 
-    font-family: "Montserrat", Arial, sans-serif;
-    color: #E6E8ED;
+    font-family: "Manrope", Arial, sans-serif;
+    color: #F2ECD8;
 }
 
 /* =========================
@@ -72,9 +81,9 @@ body {
 
     padding: 48px;
 
-    background: #060915;
+    background: transparent;
 
-    border: 1px solid rgba(157, 164, 178, 0.15);
+    border: 1px solid rgba(227, 205, 139, 0.15);
 
     border-radius: 28px;
 
@@ -115,7 +124,7 @@ body {
 h1 {
     margin: 0;
 
-    color: #E6E8ED;
+    color: #F2ECD8;
 
     font-size: 46px;
     font-weight: 700;
@@ -126,7 +135,7 @@ h1 {
     margin-top: 22px;
     margin-bottom: 44px;
 
-    color: #C8CCD5;
+    color: #DCD6C2;
 
     font-size: 17px;
     line-height: 1.6;
@@ -138,7 +147,7 @@ h1 {
     margin-top: 10px;
     margin-bottom: 0;
 
-    color: #8A8F9C;
+    color: #A8A296;
 
     font-size: 13px;
     font-weight: 600;
@@ -159,21 +168,25 @@ h1 {
     align-items: center;
     gap: 22px;
 
-    border: 1px solid rgba(157, 164, 178, 0.18);
+    border: 1px solid rgba(227, 205, 139, 0.38);
     border-radius: 20px;
 
     background:
         linear-gradient(
-            145deg,
-            rgba(10, 31, 79, 0.55),
-            rgba(7, 22, 59, 0.55)
+            160deg,
+            rgba(227, 205, 139, 0.16),
+            rgba(227, 205, 139, 0.05)
         );
+    backdrop-filter: blur(18px) saturate(140%);
+    -webkit-backdrop-filter: blur(18px) saturate(140%);
 
-    color: #E6E8ED;
+    color: #F2ECD8;
 
     cursor: pointer;
 
     text-align: left;
+
+    overflow: hidden;
 
     /* Effet "flotte au-dessus de l'écran" au repos : ombre large sous la
        carte + léger inclinaison 3D (nécessite perspective sur .container)
@@ -182,9 +195,9 @@ h1 {
     transform-style: preserve-3d;
 
     box-shadow:
-        0 16px 30px rgba(0, 0, 0, 0.40),
-        0 1px 0 rgba(255, 255, 255, 0.06) inset,
-        0 -14px 22px rgba(0, 0, 0, 0.22) inset;
+        0 16px 30px rgba(0, 0, 0, 0.35),
+        inset 0 1px 0 rgba(255, 255, 255, 0.35),
+        inset 0 -12px 20px rgba(0, 0, 0, 0.10);
 
     transition:
         transform 0.16s cubic-bezier(0.22, 0.9, 0.32, 1),
@@ -193,19 +206,35 @@ h1 {
         background 0.22s;
 }
 
+/* Reflet diagonal type verre */
+.choice-button::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+        linear-gradient(
+            115deg,
+            rgba(255, 255, 255, 0.20) 0%,
+            rgba(255, 255, 255, 0) 28%,
+            rgba(255, 255, 255, 0) 72%,
+            rgba(255, 255, 255, 0.07) 100%
+        );
+    pointer-events: none;
+}
+
 /* Appui (mobile ET souris) : la carte "s'enfonce" — retour tactile net. */
 .choice-button:active {
     transform: translateZ(0) rotateX(0deg) scale(0.97);
 
     box-shadow:
-        0 6px 12px rgba(0, 0, 0, 0.35),
-        0 1px 0 rgba(255, 255, 255, 0.04) inset;
+        0 6px 12px rgba(0, 0, 0, 0.30),
+        inset 0 1px 0 rgba(255, 255, 255, 0.25);
 
     background:
         linear-gradient(
-            145deg,
-            rgba(10, 31, 79, 0.80),
-            rgba(7, 22, 59, 0.80)
+            160deg,
+            rgba(227, 205, 139, 0.26),
+            rgba(227, 205, 139, 0.10)
         );
 }
 
@@ -215,32 +244,45 @@ h1 {
     .choice-button:hover {
         transform: translateZ(0) rotateX(6deg) translateY(-6px);
 
-        border-color: rgba(200, 204, 213, 0.35);
+        border-color: rgba(227, 205, 139, 0.55);
 
         background:
             linear-gradient(
-                145deg,
-                rgba(10, 31, 79, 0.80),
-                rgba(7, 22, 59, 0.80)
+                160deg,
+                rgba(227, 205, 139, 0.22),
+                rgba(227, 205, 139, 0.08)
             );
 
         box-shadow:
-            0 24px 42px rgba(0, 0, 0, 0.48),
+            0 24px 42px rgba(0, 0, 0, 0.40),
             0 1px 0 rgba(255, 255, 255, 0.06) inset,
             0 -14px 22px rgba(0, 0, 0, 0.22) inset;
     }
 
 }
 
-.icon {
-    font-size: 34px;
-    filter: grayscale(0.2);
+.icon-badge {
+    position: relative;
+    flex: 0 0 auto;
+
+    width: 46px;
+    height: 46px;
+
+    border-radius: 13px;
+    border: 1px solid rgba(227, 205, 139, 0.55);
+    background: rgba(227, 205, 139, 0.14);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: #E3CD8B;
 }
 
 .choice-button strong {
     display: block;
 
-    color: #E6E8ED;
+    color: #F2ECD8;
 
     font-size: 20px;
     font-weight: 600;
@@ -251,7 +293,7 @@ h1 {
 
     margin-top: 6px;
 
-    color: #9DA4B2;
+    color: #A8A296;
 
     font-size: 14px;
     line-height: 1.4;
@@ -260,7 +302,7 @@ h1 {
 footer {
     margin-top: 36px;
 
-    color: #9DA4B2;
+    color: #A8A296;
 
     font-size: 13px;
 }
@@ -286,13 +328,13 @@ footer {
 
     border-radius: 20px;
 
-    border: 1px solid rgba(157, 164, 178, 0.18);
+    border: 1px solid rgba(227, 205, 139, 0.18);
 
     background:
         linear-gradient(
             145deg,
-            rgba(10, 31, 79, 0.50),
-            rgba(7, 22, 59, 0.50)
+            rgba(74, 90, 62, 0.50),
+            rgba(36, 46, 30, 0.50)
         );
 
     cursor: pointer;
@@ -307,13 +349,13 @@ footer {
 .module-card:hover {
     transform: translateY(-3px);
 
-    border-color: rgba(200, 204, 213, 0.35);
+    border-color: rgba(242, 236, 216, 0.35);
 
     background:
         linear-gradient(
             145deg,
-            rgba(10, 31, 79, 0.75),
-            rgba(7, 22, 59, 0.75)
+            rgba(74, 90, 62, 0.75),
+            rgba(36, 46, 30, 0.75)
         );
 
     box-shadow:
@@ -331,7 +373,7 @@ footer {
 }
 
 .module-card span {
-    color: #E6E8ED;
+    color: #F2ECD8;
 
     font-size: 16px;
     font-weight: 500;
@@ -345,7 +387,7 @@ footer {
     width: 22px;
     height: 22px;
 
-    accent-color: #C8CCD5;
+    accent-color: #DCD6C2;
 }
 
 /* =========================
@@ -372,16 +414,16 @@ footer {
 
     border-radius: 50%;
 
-    border: 1px solid rgba(157, 164, 178, 0.25);
+    border: 1px solid rgba(227, 205, 139, 0.25);
 
     background:
         linear-gradient(
             145deg,
-            #E6E8ED,
-            #9DA4B2
+            #F2ECD8,
+            #A8A296
         );
 
-    color: #020B22;
+    color: #20261A;
 
     font-size: 22px;
     font-weight: 700;
@@ -400,13 +442,13 @@ footer {
     filter: brightness(1.08);
 
     box-shadow:
-        0 8px 18px rgba(200, 204, 213, 0.25);
+        0 8px 18px rgba(242, 236, 216, 0.25);
 }
 
 [id$="Value"] {
     min-width: 24px;
 
-    color: #E6E8ED;
+    color: #F2ECD8;
 
     font-size: 22px;
     font-weight: 600;
@@ -430,11 +472,11 @@ footer {
     background:
         linear-gradient(
             135deg,
-            #E6E8ED,
-            #9DA4B2
+            #F2ECD8,
+            #A8A296
         );
 
-    color: #020B22;
+    color: #20261A;
 
     font-size: 18px;
     font-weight: 700;
@@ -453,7 +495,7 @@ footer {
     filter: brightness(1.06);
 
     box-shadow:
-        0 16px 32px rgba(200, 204, 213, 0.25);
+        0 16px 32px rgba(242, 236, 216, 0.25);
 }
 
 /* =========================
@@ -477,16 +519,22 @@ footer {
 
     border-radius: 20px;
 
-    border: 1px solid rgba(157, 164, 178, 0.18);
+    border: 1px solid rgba(227, 205, 139, 0.32);
 
     background:
         linear-gradient(
-            145deg,
-            rgba(10, 31, 79, 0.50),
-            rgba(7, 22, 59, 0.50)
+            160deg,
+            rgba(227, 205, 139, 0.14),
+            rgba(227, 205, 139, 0.04)
         );
+    backdrop-filter: blur(16px) saturate(140%);
+    -webkit-backdrop-filter: blur(16px) saturate(140%);
 
-    color: #E6E8ED;
+    box-shadow:
+        0 10px 22px rgba(0, 0, 0, 0.30),
+        inset 0 1px 0 rgba(255, 255, 255, 0.28);
+
+    color: #F2ECD8;
 
     cursor: pointer;
 
@@ -502,13 +550,13 @@ footer {
 .dashboard-card:hover {
     transform: translateY(-3px);
 
-    border-color: rgba(200, 204, 213, 0.35);
+    border-color: rgba(242, 236, 216, 0.35);
 
     background:
         linear-gradient(
             145deg,
-            rgba(10, 31, 79, 0.75),
-            rgba(7, 22, 59, 0.75)
+            rgba(74, 90, 62, 0.75),
+            rgba(36, 46, 30, 0.75)
         );
 
     box-shadow:
@@ -525,11 +573,11 @@ footer {
     height: 30px;
 
     border-radius: 50%;
-    border: 1px solid rgba(157, 164, 178, 0.20);
+    border: 1px solid rgba(227, 205, 139, 0.20);
 
-    background: rgba(10, 31, 79, 0.60);
+    background: rgba(74, 90, 62, 0.60);
 
-    color: #C8CCD5;
+    color: #DCD6C2;
 
     font-size: 14px;
 
@@ -550,9 +598,9 @@ footer {
 }
 
 .card-rename-btn:hover {
-    border-color: rgba(200, 204, 213, 0.45);
-    background: rgba(200, 204, 213, 0.12);
-    color: #E6E8ED;
+    border-color: rgba(242, 236, 216, 0.45);
+    background: rgba(242, 236, 216, 0.12);
+    color: #F2ECD8;
 }
 
 .card-delete-btn:hover {
@@ -578,11 +626,11 @@ footer {
     height: 30px;
 
     border-radius: 50%;
-    border: 1px solid rgba(157, 164, 178, 0.20);
+    border: 1px solid rgba(227, 205, 139, 0.20);
 
-    background: rgba(10, 31, 79, 0.60);
+    background: rgba(74, 90, 62, 0.60);
 
-    color: #C8CCD5;
+    color: #DCD6C2;
 
     font-size: 14px;
 
@@ -599,9 +647,9 @@ footer {
 }
 
 .card-duplicate-btn:hover {
-    border-color: rgba(200, 204, 213, 0.45);
-    background: rgba(200, 204, 213, 0.12);
-    color: #E6E8ED;
+    border-color: rgba(242, 236, 216, 0.45);
+    background: rgba(242, 236, 216, 0.12);
+    color: #F2ECD8;
 }
 
 .dashboard-header {
@@ -609,14 +657,14 @@ footer {
     justify-content: space-between;
     align-items: center;
 
-    color: #E6E8ED;
+    color: #F2ECD8;
 
     font-size: 20px;
     font-weight: 600;
 }
 
 .dashboard-header span {
-    color: #C8CCD5;
+    color: #DCD6C2;
 
     font-size: 16px;
     font-weight: 500;
@@ -630,7 +678,7 @@ footer {
 
     border-radius: 20px;
 
-    background: rgba(157, 164, 178, 0.15);
+    background: rgba(227, 205, 139, 0.15);
 
     overflow: hidden;
 }
@@ -644,9 +692,9 @@ footer {
     background:
         linear-gradient(
             90deg,
-            #9DA4B2,
-            #C8CCD5,
-            #E6E8ED
+            #A8A296,
+            #DCD6C2,
+            #F2ECD8
         );
 }
 
@@ -655,7 +703,7 @@ footer {
 
     margin-top: 12px;
 
-    color: #9DA4B2;
+    color: #A8A296;
 
     font-size: 13px;
 }
@@ -668,8 +716,8 @@ footer {
 
     border-radius: 20px;
 
-    background: #E6E8ED;
-    color: #6B7280;
+    background: #F2ECD8;
+    color: #A8A296;
 
     font-size: 11px;
     font-weight: 600;
@@ -685,8 +733,8 @@ footer {
     margin-top: 36px;
     padding: 24px;
     border-radius: 20px;
-    border: 1px solid rgba(157, 164, 178, 0.18);
-    background: linear-gradient(145deg, rgba(10, 31, 79, 0.50), rgba(7, 22, 59, 0.50));
+    border: 1px solid rgba(227, 205, 139, 0.18);
+    background: linear-gradient(145deg, rgba(74, 90, 62, 0.50), rgba(36, 46, 30, 0.50));
 }
 
 .export-token-setup {
@@ -696,14 +744,14 @@ footer {
 }
 
 .export-info {
-    color: #9DA4B2;
+    color: #A8A296;
     font-size: 14px;
     line-height: 1.5;
     margin: 0;
 }
 
 .export-info small {
-    color: #6B7280;
+    color: #A8A296;
 }
 
 .export-section details {
@@ -713,13 +761,13 @@ footer {
 
 .export-section summary {
     cursor: pointer;
-    color: #C8CCD5;
+    color: #DCD6C2;
     font-size: 14px;
     padding: 4px 0;
 }
 
 .export-section summary:hover {
-    color: #E6E8ED;
+    color: #F2ECD8;
 }
 
 .export-section details[open] summary {
@@ -729,10 +777,12 @@ footer {
 .secondary-button {
     width: 100%;
     padding: 14px;
-    border: 1px solid rgba(157, 164, 178, 0.30);
+    border: 1px solid rgba(227, 205, 139, 0.32);
     border-radius: 14px;
-    background: rgba(7, 22, 59, 0.60);
-    color: #E6E8ED;
+    background: rgba(227, 205, 139, 0.14);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    color: #F2ECD8;
     font-size: 15px;
     font-weight: 600;
     font-family: inherit;
@@ -742,7 +792,7 @@ footer {
 
 .secondary-button:hover {
     transform: translateY(-2px);
-    background: rgba(10, 31, 79, 0.80);
+    background: rgba(227, 205, 139, 0.22);
 }
 
 .export-button {
@@ -764,7 +814,7 @@ footer {
 
 .export-status {
     margin-top: 12px;
-    color: #9DA4B2;
+    color: #A8A296;
     font-size: 14px;
     min-height: 20px;
 }
@@ -803,14 +853,14 @@ footer {
 }
 
 .equipment-issue-info strong {
-    color: #E6E8ED;
+    color: #F2ECD8;
     font-size: 15px;
 }
 
 .equipment-issue-info small {
     display: block;
     margin-top: 2px;
-    color: #9DA4B2;
+    color: #A8A296;
     font-size: 12px;
 }
 
@@ -823,7 +873,7 @@ footer {
     border: 1px solid rgba(58, 95, 217, 0.40);
     background: rgba(58, 95, 217, 0.15);
 
-    color: #E6E8ED;
+    color: #F2ECD8;
     font-size: 13px;
     font-weight: 600;
     cursor: pointer;
@@ -847,16 +897,16 @@ footer {
 
     border-radius: 50%;
 
-    border: 1px solid rgba(157, 164, 178, 0.20);
+    border: 1px solid rgba(227, 205, 139, 0.20);
 
     background:
         linear-gradient(
             145deg,
-            rgba(10, 31, 79, 0.55),
-            rgba(7, 22, 59, 0.55)
+            rgba(74, 90, 62, 0.55),
+            rgba(36, 46, 30, 0.55)
         );
 
-    color: #C8CCD5;
+    color: #DCD6C2;
 
     font-size: 24px;
 
@@ -876,13 +926,13 @@ footer {
 .back-icon-button:hover {
     transform: translateX(-3px);
 
-    border-color: rgba(200, 204, 213, 0.40);
+    border-color: rgba(242, 236, 216, 0.40);
 
     background:
         linear-gradient(
             145deg,
-            rgba(10, 31, 79, 0.80),
-            rgba(7, 22, 59, 0.80)
+            rgba(74, 90, 62, 0.80),
+            rgba(36, 46, 30, 0.80)
         );
 
     box-shadow:
@@ -933,20 +983,26 @@ footer {
 
     border-radius: 22px;
 
-    border: 1px solid rgba(157, 164, 178, 0.18);
+    border: 1px solid rgba(227, 205, 139, 0.30);
 
     background:
         linear-gradient(
-            145deg,
-            rgba(10, 31, 79, 0.45),
-            rgba(7, 22, 59, 0.45)
+            160deg,
+            rgba(227, 205, 139, 0.12),
+            rgba(227, 205, 139, 0.04)
         );
+    backdrop-filter: blur(16px) saturate(140%);
+    -webkit-backdrop-filter: blur(16px) saturate(140%);
+
+    box-shadow:
+        0 10px 22px rgba(0, 0, 0, 0.28),
+        inset 0 1px 0 rgba(255, 255, 255, 0.25);
 
     text-align: left;
 }
 
 .field-label {
-    color: #E6E8ED;
+    color: #F2ECD8;
     font-size: 18px;
     font-weight: 700;
 
@@ -955,7 +1011,7 @@ footer {
 }
 
 .section-title {
-    color: #E6E8ED;
+    color: #F2ECD8;
     font-size: 22px;
     font-weight: bold;
     margin-bottom: 30px;
@@ -968,7 +1024,7 @@ footer {
 .field-group label {
     display: block;
     margin-bottom: 10px;
-    color: #C8CCD5;
+    color: #DCD6C2;
     font-weight: bold;
 }
 
@@ -977,9 +1033,11 @@ footer {
     width: 100%;
     padding: 16px;
     border-radius: 16px;
-    border: 1px solid rgba(157, 164, 178, 0.22);
-    background: #07163B;
-    color: #E6E8ED;
+    border: 1px solid rgba(227, 205, 139, 0.28);
+    background: rgba(36, 46, 30, 0.42);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    color: #F2ECD8;
     font-size: 16px;
 }
 
@@ -988,8 +1046,8 @@ footer {
 }
 
 .field-group select option {
-    background: #07163B;
-    color: #E6E8ED;
+    background: #242E1E;
+    color: #F2ECD8;
 }
 
 /* =========================
@@ -1000,7 +1058,7 @@ footer {
     margin-top: -16px;
     margin-bottom: 22px;
 
-    color: #9DA4B2;
+    color: #A8A296;
 
     font-size: 14px;
     line-height: 1.5;
@@ -1027,13 +1085,13 @@ footer {
     padding: 16px;
 
     border-radius: 16px;
-    border: 1px solid rgba(157, 164, 178, 0.15);
+    border: 1px solid rgba(227, 205, 139, 0.15);
 
     background:
         linear-gradient(
             145deg,
-            rgba(10, 31, 79, 0.35),
-            rgba(7, 22, 59, 0.35)
+            rgba(74, 90, 62, 0.35),
+            rgba(36, 46, 30, 0.35)
         );
 }
 
@@ -1045,7 +1103,7 @@ footer {
 .parois-cell label {
     margin-bottom: 6px;
 
-    color: #9DA4B2;
+    color: #A8A296;
 
     font-size: 12px;
     font-weight: 500;
@@ -1059,18 +1117,20 @@ footer {
     padding: 12px 14px;
 
     border-radius: 12px;
-    border: 1px solid rgba(157, 164, 178, 0.22);
+    border: 1px solid rgba(227, 205, 139, 0.28);
 
-    background: #07163B;
-    color: #E6E8ED;
+    background: rgba(36, 46, 30, 0.42);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    color: #F2ECD8;
 
     font-size: 15px;
     font-family: inherit;
 }
 
 .parois-cell select option {
-    background: #07163B;
-    color: #E6E8ED;
+    background: #242E1E;
+    color: #F2ECD8;
 }
 
 .parois-delete-btn {
@@ -1080,11 +1140,11 @@ footer {
     align-self: end;
 
     border-radius: 50%;
-    border: 1px solid rgba(157, 164, 178, 0.20);
+    border: 1px solid rgba(227, 205, 139, 0.20);
 
-    background: rgba(10, 31, 79, 0.45);
+    background: rgba(74, 90, 62, 0.45);
 
-    color: #C8CCD5;
+    color: #DCD6C2;
 
     font-size: 16px;
 
@@ -1115,12 +1175,12 @@ footer {
     margin: 4px 0;
     padding: 18px;
 
-    border: 1px dashed rgba(157, 164, 178, 0.20);
+    border: 1px dashed rgba(227, 205, 139, 0.20);
     border-radius: 14px;
 
-    background: rgba(10, 31, 79, 0.20);
+    background: rgba(74, 90, 62, 0.20);
 
-    color: #9DA4B2;
+    color: #A8A296;
 
     font-size: 14px;
     text-align: center;
@@ -1135,12 +1195,12 @@ footer {
 
     padding: 14px;
 
-    border: 1px dashed rgba(157, 164, 178, 0.30);
+    border: 1px dashed rgba(227, 205, 139, 0.30);
     border-radius: 14px;
 
     background: transparent;
 
-    color: #C8CCD5;
+    color: #DCD6C2;
 
     font-size: 15px;
     font-weight: 500;
@@ -1156,11 +1216,11 @@ footer {
 }
 
 .add-row-button:hover {
-    border-color: rgba(200, 204, 213, 0.55);
+    border-color: rgba(242, 236, 216, 0.55);
 
-    background: rgba(10, 31, 79, 0.35);
+    background: rgba(74, 90, 62, 0.35);
 
-    color: #E6E8ED;
+    color: #F2ECD8;
 
     transform: translateY(-1px);
 }
@@ -1179,13 +1239,13 @@ footer {
     padding: 18px;
 
     border-radius: 16px;
-    border: 1px solid rgba(157, 164, 178, 0.14);
+    border: 1px solid rgba(227, 205, 139, 0.14);
 
     background:
         linear-gradient(
             145deg,
-            rgba(10, 31, 79, 0.30),
-            rgba(7, 22, 59, 0.30)
+            rgba(74, 90, 62, 0.30),
+            rgba(36, 46, 30, 0.30)
         );
 }
 
@@ -1197,18 +1257,18 @@ footer {
     margin-bottom: 14px;
     padding-bottom: 12px;
 
-    border-bottom: 1px solid rgba(157, 164, 178, 0.10);
+    border-bottom: 1px solid rgba(227, 205, 139, 0.10);
 }
 
 .ouvrants-section-title {
-    color: #E6E8ED;
+    color: #F2ECD8;
     font-size: 16px;
     font-weight: 600;
     letter-spacing: 0.4px;
 }
 
 .ouvrants-section-count {
-    color: #9DA4B2;
+    color: #A8A296;
     font-size: 12px;
     font-weight: 500;
     text-transform: uppercase;
@@ -1236,9 +1296,9 @@ footer {
     padding: 12px;
 
     border-radius: 12px;
-    border: 1px solid rgba(157, 164, 178, 0.12);
+    border: 1px solid rgba(227, 205, 139, 0.12);
 
-    background: rgba(2, 11, 34, 0.45);
+    background: rgba(20, 24, 16, 0.45);
 }
 
 .ouvrant-row .parois-cell select,
@@ -1290,7 +1350,7 @@ footer {
     display: block;
     margin-bottom: 10px;
 
-    color: #C8CCD5;
+    color: #DCD6C2;
 
     font-weight: bold;
 }
@@ -1306,10 +1366,12 @@ footer {
     padding: 14px;
 
     border-radius: 14px;
-    border: 1px solid rgba(157, 164, 178, 0.22);
+    border: 1px solid rgba(227, 205, 139, 0.28);
 
-    background: #07163B;
-    color: #9DA4B2;
+    background: rgba(36, 46, 30, 0.42);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    color: #A8A296;
 
     font-size: 15px;
     font-weight: 600;
@@ -1325,19 +1387,19 @@ footer {
 }
 
 .toggle-btn:hover {
-    border-color: rgba(200, 204, 213, 0.40);
-    color: #E6E8ED;
+    border-color: rgba(242, 236, 216, 0.40);
+    color: #F2ECD8;
 }
 
 .toggle-btn.active {
     background:
         linear-gradient(
             135deg,
-            #E6E8ED,
-            #9DA4B2
+            #F2ECD8,
+            #A8A296
         );
 
-    color: #020B22;
+    color: #20261A;
 
     border-color: transparent;
 }
@@ -1359,13 +1421,13 @@ footer {
     padding: 16px;
 
     border-radius: 16px;
-    border: 1px solid rgba(157, 164, 178, 0.15);
+    border: 1px solid rgba(227, 205, 139, 0.15);
 
     background:
         linear-gradient(
             145deg,
-            rgba(10, 31, 79, 0.35),
-            rgba(7, 22, 59, 0.35)
+            rgba(74, 90, 62, 0.35),
+            rgba(36, 46, 30, 0.35)
         );
 }
 
@@ -1398,9 +1460,9 @@ footer {
     width: 100%;
     padding: 14px;
     border-radius: 12px;
-    border: 1px dashed rgba(0, 200, 150, 0.35);
-    background: rgba(7, 22, 59, 0.40);
-    color: #9DA4B2;
+    border: 1px dashed rgba(227, 205, 139, 0.35);
+    background: rgba(36, 46, 30, 0.40);
+    color: #A8A296;
     font-size: 13px;
     font-family: inherit;
     cursor: pointer;
@@ -1409,9 +1471,9 @@ footer {
 
 .photo-widget-capture:active,
 .photo-widget-capture:hover {
-    border-color: #00c896;
-    background: rgba(0, 200, 150, 0.08);
-    color: #e0e0e0;
+    border-color: #E3CD8B;
+    background: rgba(227, 205, 139, 0.08);
+    color: #EDE6D3;
 }
 
 .photo-widget-input {
@@ -1485,11 +1547,11 @@ footer {
     padding: 14px 16px;
 
     border-radius: 14px;
-    border: 1px solid rgba(157, 164, 178, 0.15);
+    border: 1px solid rgba(227, 205, 139, 0.15);
 
-    background: rgba(7, 22, 59, 0.35);
+    background: rgba(36, 46, 30, 0.35);
 
-    color: #C8CCD5;
+    color: #DCD6C2;
 
     font-size: 15px;
     font-weight: 500;
@@ -1503,21 +1565,21 @@ footer {
 }
 
 .equipement-item:hover {
-    border-color: rgba(200, 204, 213, 0.35);
-    color: #E6E8ED;
+    border-color: rgba(242, 236, 216, 0.35);
+    color: #F2ECD8;
 }
 
 .equipement-item.checked {
-    border-color: rgba(200, 204, 213, 0.40);
+    border-color: rgba(242, 236, 216, 0.40);
 
     background:
         linear-gradient(
             145deg,
-            rgba(10, 31, 79, 0.60),
-            rgba(7, 22, 59, 0.60)
+            rgba(74, 90, 62, 0.60),
+            rgba(36, 46, 30, 0.60)
         );
 
-    color: #E6E8ED;
+    color: #F2ECD8;
 }
 
 .equipement-header-row {
@@ -1532,7 +1594,7 @@ footer {
     height: 20px;
     flex-shrink: 0;
 
-    accent-color: #C8CCD5;
+    accent-color: #DCD6C2;
 }
 
 .equipement-detail-group {
@@ -1540,7 +1602,7 @@ footer {
     margin-top: 10px;
     padding-top: 10px;
 
-    border-top: 1px solid rgba(157, 164, 178, 0.12);
+    border-top: 1px solid rgba(227, 205, 139, 0.12);
 
     display: flex;
     flex-direction: column;
@@ -1554,7 +1616,7 @@ footer {
 }
 
 .equipement-nombre-label {
-    color: #9DA4B2;
+    color: #A8A296;
     font-size: 12px;
     font-weight: 500;
     text-transform: uppercase;
@@ -1567,10 +1629,12 @@ footer {
     padding: 8px 10px;
 
     border-radius: 10px;
-    border: 1px solid rgba(157, 164, 178, 0.22);
+    border: 1px solid rgba(227, 205, 139, 0.28);
 
-    background: #07163B;
-    color: #E6E8ED;
+    background: rgba(36, 46, 30, 0.42);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    color: #F2ECD8;
 
     font-size: 14px;
     font-family: inherit;
@@ -1598,13 +1662,13 @@ footer {
     padding: 16px;
 
     border-radius: 16px;
-    border: 1px solid rgba(157, 164, 178, 0.15);
+    border: 1px solid rgba(227, 205, 139, 0.15);
 
     background:
         linear-gradient(
             145deg,
-            rgba(10, 31, 79, 0.35),
-            rgba(7, 22, 59, 0.35)
+            rgba(74, 90, 62, 0.35),
+            rgba(36, 46, 30, 0.35)
         );
 }
 
@@ -1616,11 +1680,11 @@ footer {
     padding: 0 14px;
 
     border-radius: 12px;
-    border: 1px solid rgba(157, 164, 178, 0.12);
+    border: 1px solid rgba(227, 205, 139, 0.12);
 
-    background: rgba(7, 22, 59, 0.40);
+    background: rgba(36, 46, 30, 0.40);
 
-    color: #E6E8ED;
+    color: #F2ECD8;
 
     font-size: 15px;
     font-weight: 600;
@@ -1635,10 +1699,12 @@ footer {
     padding: 16px;
 
     border-radius: 16px;
-    border: 1px solid rgba(157, 164, 178, 0.22);
+    border: 1px solid rgba(227, 205, 139, 0.28);
 
-    background: #07163B;
-    color: #E6E8ED;
+    background: rgba(36, 46, 30, 0.42);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    color: #F2ECD8;
 
     font-size: 16px;
     font-family: inherit;
@@ -1648,7 +1714,7 @@ footer {
 }
 
 .commentaire-textarea::placeholder {
-    color: #9DA4B2;
+    color: #A8A296;
 }
 
 /* =========================
@@ -1672,13 +1738,13 @@ footer {
     padding: 16px;
 
     border-radius: 16px;
-    border: 1px solid rgba(157, 164, 178, 0.15);
+    border: 1px solid rgba(227, 205, 139, 0.15);
 
     background:
         linear-gradient(
             145deg,
-            rgba(10, 31, 79, 0.35),
-            rgba(7, 22, 59, 0.35)
+            rgba(74, 90, 62, 0.35),
+            rgba(36, 46, 30, 0.35)
         );
 }
 
@@ -1716,13 +1782,13 @@ footer {
     padding: 18px;
 
     border-radius: 16px;
-    border: 1px solid rgba(157, 164, 178, 0.14);
+    border: 1px solid rgba(227, 205, 139, 0.14);
 
     background:
         linear-gradient(
             145deg,
-            rgba(10, 31, 79, 0.30),
-            rgba(7, 22, 59, 0.30)
+            rgba(74, 90, 62, 0.30),
+            rgba(36, 46, 30, 0.30)
         );
 }
 
@@ -1734,7 +1800,7 @@ footer {
     margin-bottom: 16px;
     padding-bottom: 12px;
 
-    border-bottom: 1px solid rgba(157, 164, 178, 0.10);
+    border-bottom: 1px solid rgba(227, 205, 139, 0.10);
 }
 
 .bain-section .field-group {
@@ -1759,10 +1825,12 @@ footer {
     padding: 16px;
 
     border-radius: 16px;
-    border: 1px solid rgba(157, 164, 178, 0.22);
+    border: 1px solid rgba(227, 205, 139, 0.28);
 
-    background: #07163B;
-    color: #E6E8ED;
+    background: rgba(36, 46, 30, 0.42);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    color: #F2ECD8;
 
     font-size: 16px;
     font-family: inherit;
@@ -1896,13 +1964,13 @@ footer {
     gap: 10px;
     cursor: pointer;
     font-size: 0.95rem;
-    color: #e0e0e0;
+    color: #EDE6D3;
 }
 
 .equipement-check-label input[type="checkbox"] {
     width: 20px;
     height: 20px;
-    accent-color: #00c896;
+    accent-color: #E3CD8B;
     cursor: pointer;
     flex-shrink: 0;
 }
@@ -1935,10 +2003,10 @@ footer {
     padding: 10px 16px;
 
     border-radius: 999px;
-    border: 1px dashed rgba(157, 164, 178, 0.30);
+    border: 1px dashed rgba(227, 205, 139, 0.30);
 
     background: transparent;
-    color: #C8CCD5;
+    color: #DCD6C2;
 
     font-size: 13px;
     font-family: inherit;
@@ -1953,15 +2021,15 @@ footer {
 }
 
 .contact-suggestion-chip:hover {
-    border-color: rgba(200, 204, 213, 0.55);
-    background: rgba(10, 31, 79, 0.35);
-    color: #E6E8ED;
+    border-color: rgba(242, 236, 216, 0.55);
+    background: rgba(74, 90, 62, 0.35);
+    color: #F2ECD8;
 }
 
 .contact-suggestion-chip small {
     display: block;
     margin-top: 2px;
-    color: #9DA4B2;
+    color: #A8A296;
     font-size: 11px;
 }
 
@@ -1972,13 +2040,13 @@ footer {
     margin-bottom: 14px;
 
     border-radius: 16px;
-    border: 1px solid rgba(157, 164, 178, 0.15);
+    border: 1px solid rgba(227, 205, 139, 0.15);
 
     background:
         linear-gradient(
             145deg,
-            rgba(10, 31, 79, 0.35),
-            rgba(7, 22, 59, 0.35)
+            rgba(74, 90, 62, 0.35),
+            rgba(36, 46, 30, 0.35)
         );
 }
 
@@ -2009,10 +2077,10 @@ footer {
     height: 30px;
 
     border-radius: 50%;
-    border: 1px solid rgba(157, 164, 178, 0.20);
+    border: 1px solid rgba(227, 205, 139, 0.20);
 
-    background: rgba(10, 31, 79, 0.60);
-    color: #C8CCD5;
+    background: rgba(74, 90, 62, 0.60);
+    color: #DCD6C2;
 
     font-size: 14px;
 
@@ -2045,10 +2113,12 @@ footer {
     padding: 8px 10px;
 
     border-radius: 10px;
-    border: 1px solid rgba(157, 164, 178, 0.22);
+    border: 1px solid rgba(227, 205, 139, 0.28);
 
-    background: #07163B;
-    color: #E6E8ED;
+    background: rgba(36, 46, 30, 0.42);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    color: #F2ECD8;
 
     font-size: 14px;
     font-family: inherit;
@@ -2070,13 +2140,13 @@ footer {
     margin-bottom: 12px;
 
     border-radius: 16px;
-    border: 1px solid rgba(157, 164, 178, 0.20);
+    border: 1px solid rgba(227, 205, 139, 0.20);
 
     background:
         linear-gradient(
             145deg,
-            rgba(10, 31, 79, 0.50),
-            rgba(7, 22, 59, 0.50)
+            rgba(74, 90, 62, 0.50),
+            rgba(36, 46, 30, 0.50)
         );
 }
 
@@ -2085,7 +2155,7 @@ footer {
 
     padding-top: 8px;
 
-    color: #E6E8ED;
+    color: #F2ECD8;
     font-weight: 600;
     word-break: break-word;
 }
@@ -2097,14 +2167,14 @@ footer {
     border: none;
     background: none;
 
-    color: #9DA4B2;
+    color: #A8A296;
     font-size: 13px;
     vertical-align: middle;
     cursor: pointer;
 }
 
 .custom-equip-rename-btn:hover {
-    color: #E6E8ED;
+    color: #F2ECD8;
 }
 
 .custom-equip-fields {
@@ -2129,8 +2199,8 @@ footer {
     margin-bottom: 16px;
 
     border-radius: 12px;
-    border: 1px solid rgba(157, 164, 178, 0.25);
-    background: #0A1F4F;
+    border: 1px solid rgba(227, 205, 139, 0.25);
+    background: #4A5A3E;
 
     overflow: hidden;
 
@@ -2144,10 +2214,10 @@ footer {
     padding: 10px 14px;
 
     border: none;
-    border-bottom: 1px solid rgba(157, 164, 178, 0.12);
+    border-bottom: 1px solid rgba(227, 205, 139, 0.12);
     background: transparent;
 
-    color: #E6E8ED;
+    color: #F2ECD8;
     font-size: 14px;
     text-align: left;
     cursor: pointer;
@@ -2158,7 +2228,7 @@ footer {
 }
 
 .equip-suggestion-item:hover {
-    background: rgba(200, 204, 213, 0.10);
+    background: rgba(242, 236, 216, 0.10);
 }
 
 .custom-equip-delete {
@@ -2170,10 +2240,10 @@ footer {
     height: 30px;
 
     border-radius: 50%;
-    border: 1px solid rgba(157, 164, 178, 0.20);
+    border: 1px solid rgba(227, 205, 139, 0.20);
 
-    background: rgba(10, 31, 79, 0.60);
-    color: #C8CCD5;
+    background: rgba(74, 90, 62, 0.60);
+    color: #DCD6C2;
 
     font-size: 14px;
 
