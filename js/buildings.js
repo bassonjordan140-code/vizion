@@ -6,25 +6,13 @@
 ============================================================ */
 
 /* =========================
-   RETOUR AU HUB DES HÔTELS
+   RETOUR AUX INFORMATIONS DU SITE
+   Symétrique de la navigation "avant" (site-info.html -> validation ->
+   buildings.html) : on reste sur le même hôtel, pas besoin de sauvegarder
+   un instantané ni de rien échanger (voir js/hotel-manager.js).
 ========================= */
 
 document.getElementById("backToHotelsButton").addEventListener("click", function () {
-    // Retour au hub des hôtels : on sauvegarde l'hôtel en cours (siteInfo,
-    // bâtiments, bâtiment actif), rien n'est perdu ni supprimé.
-    HotelManager.saveCurrentHotelSnapshot().then(function () {
-        window.location.href = "select-hotel.html";
-    });
-});
-
-/* =========================
-   MODIFIER LES INFORMATIONS DU SITE
-   Coordonnées + contacts vivent désormais sur leur propre écran
-   (pages/site-info.html), affiché une première fois avant d'arriver
-   ici (voir js/select-hotel.js) ; ce lien permet d'y revenir.
-========================= */
-
-document.getElementById("editSiteInfoLink").addEventListener("click", function () {
     window.location.href = "site-info.html";
 });
 
