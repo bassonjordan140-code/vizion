@@ -77,6 +77,13 @@
 
     </div>
 
+    <script>
+        // Sans ce listener, Chrome/WebView (Android et iOS) n'applique jamais
+        // :active au toucher — connu pour désactiver l'effet de survol/appui
+        // tant qu'aucun gestionnaire touchstart n'existe sur la page.
+        document.addEventListener("touchstart", function () {}, { passive: true });
+    </script>
+
 </body>
 
 </html>

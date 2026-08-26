@@ -13,10 +13,14 @@
    mobile (barre d'adresse, encoches, etc. peuvent masquer un element fixe). */
 .container {
     position: relative;
+
+    /* Donne de la profondeur aux éléments avec un transform 3D
+       (ex: .choice-button) sans affecter les autres. */
+    perspective: 1200px;
 }
 
 .container::before {
-    content: "v2026.08.07-30";
+    content: "v2026.08.07-31";
     position: absolute;
     top: 14px;
     right: 14px;
@@ -171,17 +175,31 @@ h1 {
 
     text-align: left;
 
+    /* Effet "flotte au-dessus de l'écran" au repos : ombre large sous la
+       carte + léger inclinaison 3D (nécessite perspective sur .container)
+       + liseré clair en haut façon biseau. */
+    transform: translateZ(0) rotateX(3deg);
+    transform-style: preserve-3d;
+
+    box-shadow:
+        0 16px 30px rgba(0, 0, 0, 0.40),
+        0 1px 0 rgba(255, 255, 255, 0.06) inset,
+        0 -14px 22px rgba(0, 0, 0, 0.22) inset;
+
     transition:
-        transform 0.22s,
-        box-shadow 0.22s,
+        transform 0.16s cubic-bezier(0.22, 0.9, 0.32, 1),
+        box-shadow 0.16s cubic-bezier(0.22, 0.9, 0.32, 1),
         border-color 0.22s,
         background 0.22s;
 }
 
-.choice-button:hover {
-    transform: translateY(-4px);
+/* Appui (mobile ET souris) : la carte "s'enfonce" — retour tactile net. */
+.choice-button:active {
+    transform: translateZ(0) rotateX(0deg) scale(0.97);
 
-    border-color: rgba(200, 204, 213, 0.35);
+    box-shadow:
+        0 6px 12px rgba(0, 0, 0, 0.35),
+        0 1px 0 rgba(255, 255, 255, 0.04) inset;
 
     background:
         linear-gradient(
@@ -189,9 +207,29 @@ h1 {
             rgba(10, 31, 79, 0.80),
             rgba(7, 22, 59, 0.80)
         );
+}
 
-    box-shadow:
-        0 18px 35px rgba(0, 0, 0, 0.45);
+/* Survol souris uniquement : la carte se rapproche encore du lecteur. */
+@media (hover: hover) and (pointer: fine) {
+
+    .choice-button:hover {
+        transform: translateZ(0) rotateX(6deg) translateY(-6px);
+
+        border-color: rgba(200, 204, 213, 0.35);
+
+        background:
+            linear-gradient(
+                145deg,
+                rgba(10, 31, 79, 0.80),
+                rgba(7, 22, 59, 0.80)
+            );
+
+        box-shadow:
+            0 24px 42px rgba(0, 0, 0, 0.48),
+            0 1px 0 rgba(255, 255, 255, 0.06) inset,
+            0 -14px 22px rgba(0, 0, 0, 0.22) inset;
+    }
+
 }
 
 .icon {
