@@ -196,15 +196,43 @@ window.ReportExport = (function () {
        TÉLÉCHARGEMENT LOCAL
     ========================= */
 
-    function downloadBlob(blob, filename) {
-        var url = URL.createObjectURL(blob);
-        var a = document.createElement("a");
-        a.href = url;
-        a.download = filename;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        setTimeout(function () { URL.revokeObjectURL(url); }, 10000);
+    // Sur le web, trois téléchargements séparés (le navigateur gère très bien
+    // plusieurs fichiers à la suite). Dans l'app native, un lien <a download>
+    // ne déclenche rien (voir BackupManager.saveOrShareBlob) : on regroupe
+    // alors les 3 fichiers dans une seule archive, pour n'ouvrir qu'UNE seule
+    // fois la feuille de partage native plutôt que trois fois d'affilée.
+    function deliverReportFiles(xlsxBlob, jsonBlob, zipBlob) {
+        var Filesystem = window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform() &&
+            window.Capacitor.Plugins && window.Capacitor.Plugins.Filesystem;
+
+        if (!Filesystem) {
+            var url1 = URL.createObjectURL(xlsxBlob);
+            var url2 = URL.createObjectURL(jsonBlob);
+            var url3 = URL.createObjectURL(zipBlob);
+            [[url1, "rapport.xlsx"], [url2, "audit.json"], [url3, "photos.zip"]].forEach(function (pair) {
+                var a = document.createElement("a");
+                a.href = pair[0];
+                a.download = pair[1];
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            });
+            setTimeout(function () {
+                URL.revokeObjectURL(url1);
+                URL.revokeObjectURL(url2);
+                URL.revokeObjectURL(url3);
+            }, 10000);
+            return Promise.resolve();
+        }
+
+        var stamp = new Date().toISOString().slice(0, 10);
+        var bundle = new JSZip();
+        bundle.file("rapport.xlsx", xlsxBlob);
+        bundle.file("audit.json", jsonBlob);
+        bundle.file("photos.zip", zipBlob);
+        return bundle.generateAsync({ type: "blob" }).then(function (bundleBlob) {
+            return BackupManager.saveOrShareBlob(bundleBlob, "vizion-rapport-" + stamp + ".zip");
+        });
     }
 
     /* =========================
@@ -248,10 +276,9 @@ window.ReportExport = (function () {
                         : Promise.resolve(result);
 
                     return afterGithub.then(function (r) {
-                        downloadBlob(r.xlsxBlob, "rapport.xlsx");
-                        downloadBlob(r.jsonBlob, "audit.json");
-                        downloadBlob(r.zipBlob, "photos.zip");
-                        return r;
+                        return deliverReportFiles(r.xlsxBlob, r.jsonBlob, r.zipBlob).then(function () {
+                            return r;
+                        });
                     });
                 });
             });

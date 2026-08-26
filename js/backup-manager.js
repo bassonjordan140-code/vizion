@@ -91,17 +91,10 @@ window.BackupManager = (function () {
     }
 
     function exportBackup() {
+        var stamp = new Date().toISOString().slice(0, 10);
         return buildBackupZipBlob()
             .then(function (blob) {
-                var url = URL.createObjectURL(blob);
-                var a = document.createElement("a");
-                var stamp = new Date().toISOString().slice(0, 10);
-                a.href = url;
-                a.download = "vizion-sauvegarde-" + stamp + ".zip";
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
+                return saveOrShareBlob(blob, "vizion-sauvegarde-" + stamp + ".zip");
             });
     }
 
@@ -117,6 +110,11 @@ window.BackupManager = (function () {
     function getFilesystemPlugin() {
         return (window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform() &&
             window.Capacitor.Plugins && window.Capacitor.Plugins.Filesystem) || null;
+    }
+
+    function getSharePlugin() {
+        return (window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform() &&
+            window.Capacitor.Plugins && window.Capacitor.Plugins.Share) || null;
     }
 
     function blobToBase64(blob) {
@@ -162,6 +160,65 @@ window.BackupManager = (function () {
             });
     }
 
+    /* =========================
+       EXPORT VISIBLE (rapport, sauvegarde manuelle)
+       Sur le web, un simple lien <a download> suffit : le navigateur gère le
+       téléchargement. Dans l'app native (WebView Capacitor), ce lien ne
+       déclenche RIEN — il n'y a pas de gestionnaire de téléchargement par
+       défaut. On écrit alors le fichier via le plugin Filesystem puis on
+       ouvre la feuille de partage native (Share) : c'est aussi le seul moyen
+       simple pour l'utilisateur de récupérer le fichier, car le dossier
+       d'écriture (Directory.External) n'est pas visible depuis la plupart
+       des gestionnaires de fichiers Android.
+    ========================= */
+
+    var VISIBLE_EXPORT_DIRECTORY = "EXTERNAL";
+    var VISIBLE_EXPORT_SUBFOLDER = "ViZion";
+
+    function saveOrShareBlob(blob, filename) {
+        var Filesystem = getFilesystemPlugin();
+
+        if (!Filesystem) {
+            // Web : téléchargement classique via un lien <a download>.
+            var url = URL.createObjectURL(blob);
+            var a = document.createElement("a");
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            setTimeout(function () { URL.revokeObjectURL(url); }, 10000);
+            return Promise.resolve({ native: false });
+        }
+
+        var path = VISIBLE_EXPORT_SUBFOLDER + "/" + filename;
+
+        return blobToBase64(blob)
+            .then(function (base64) {
+                return Filesystem.writeFile({
+                    path: path,
+                    data: base64,
+                    directory: VISIBLE_EXPORT_DIRECTORY,
+                    recursive: true
+                });
+            })
+            .then(function () {
+                return Filesystem.getUri({ path: path, directory: VISIBLE_EXPORT_DIRECTORY });
+            })
+            .then(function (uriResult) {
+                var Share = getSharePlugin();
+                if (!Share) return { native: true, uri: uriResult.uri };
+                return Share.share({ title: filename, url: uriResult.uri })
+                    .catch(function (err) {
+                        // L'utilisateur peut simplement fermer la feuille de partage
+                        // sans rien choisir : ce n'est pas une erreur, le fichier est
+                        // déjà écrit sur l'appareil à ce stade.
+                        console.warn("Partage annulé ou échoué :", err);
+                    })
+                    .then(function () { return { native: true, uri: uriResult.uri }; });
+            });
+    }
+
     function importBackup(file) {
         return JSZip.loadAsync(file)
             .then(function (zip) {
@@ -196,7 +253,8 @@ window.BackupManager = (function () {
     return {
         exportBackup: exportBackup,
         importBackup: importBackup,
-        autoBackupSilent: autoBackupSilent
+        autoBackupSilent: autoBackupSilent,
+        saveOrShareBlob: saveOrShareBlob
     };
 
 })();
