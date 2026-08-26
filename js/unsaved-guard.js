@@ -45,6 +45,14 @@ window.UnsavedGuard = (function () {
         }
     }
 
-    return { watch: watch, confirmLeave: confirmLeave };
+    // Exposés pour js/fiche-nav.js (navigation précédent/suivant) : permet de
+    // ne préparer une redirection différée (sessionStorage) que dans les
+    // branches où l'utilisateur choisit réellement de quitter la fiche,
+    // jamais s'il annule — confirmLeave() seule ne permet pas de distinguer
+    // ces cas depuis l'extérieur.
+    function isDirty() { return dirty; }
+    function triggerSave() { if (saveButtonEl) saveButtonEl.click(); }
+
+    return { watch: watch, confirmLeave: confirmLeave, isDirty: isDirty, triggerSave: triggerSave };
 
 })();

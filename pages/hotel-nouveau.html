@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Nouvel état des lieux</title>
+
+    <link rel="stylesheet"
+          href="../css/style.css">
+</head>
+
+<body>
+
+    <div class="container">
+
+        <div class="page-nav-row">
+        <button class="back-icon-button"
+                onclick="window.location.href='audit-menu.html'">
+            ←
+        </button>
+
+        <button class="back-icon-button" onclick="window.location.href='../index.html'" aria-label="Retour à l'accueil">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 11.5 12 4l8 7.5"></path>
+                <path d="M6 10v9a1 1 0 0 0 1 1h3v-6h4v6h3a1 1 0 0 0 1-1v-9"></path>
+            </svg>
+        </button>
+        </div>
+
+        <h1>Nouvel état des lieux</h1>
+
+        <p class="subtitle">
+            Choisissez l'hôtel pour lequel démarrer un nouvel audit.
+        </p>
+
+        <div class="module-detail-card">
+
+            <div class="field-group">
+                <label for="hotelSelect">Hôtel</label>
+                <select id="hotelSelect">
+                    <option value="">— Sélectionner un hôtel —</option>
+                </select>
+            </div>
+
+            <div id="hotelPreview" class="section-hint hidden"></div>
+
+            <button type="button"
+                    class="secondary-button"
+                    id="continueButton"
+                    disabled>
+                + Démarrer cet audit
+            </button>
+
+        </div>
+
+    </div>
+
+    <script src="../js/secteur-config.js"></script>
+    <script src="../js/photo-manager.js"></script>
+    <script src="../js/building-manager.js"></script>
+    <script src="../js/hotel-manager.js"></script>
+    <script src="../js/hotels-data.js"></script>
+    <script src="../js/hotel-nouveau.js"></script>
+
+    <script>
+        document.addEventListener("touchstart", function () {}, { passive: true });
+    </script>
+
+</body>
+
+</html>

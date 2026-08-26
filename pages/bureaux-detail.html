@@ -16,10 +16,31 @@
 
     <div class="container">
 
+        <div class="page-nav-row">
         <button class="back-icon-button"
                 onclick="UnsavedGuard.confirmLeave('module-detail.html')">
             ←
         </button>
+
+        <button class="back-icon-button" onclick="window.location.href='../index.html'" aria-label="Retour à l'accueil">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 11.5 12 4l8 7.5"></path>
+                <path d="M6 10v9a1 1 0 0 0 1 1h3v-6h4v6h3a1 1 0 0 0 1-1v-9"></path>
+            </svg>
+        </button>
+
+        <button class="back-icon-button" style="margin-left:auto;" onclick="FicheNav.goToSibling('bureaux', false, currentBureaux.numero, -1)" aria-label="Localisation précédente">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="15 6 9 12 15 18"></polyline>
+            </svg>
+        </button>
+
+        <button class="back-icon-button" onclick="FicheNav.goToSibling('bureaux', false, currentBureaux.numero, 1)" aria-label="Localisation suivante">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="9 6 15 12 9 18"></polyline>
+            </svg>
+        </button>
+        </div>
 
         <h1 id="bureauxTitle">Bureaux</h1>
 
@@ -276,6 +297,7 @@
     <script src="../js/building-manager.js"></script>
     <script src="../js/photo-manager.js"></script>
     <script src="../js/unsaved-guard.js"></script>
+    <script src="../js/fiche-nav.js"></script>
     <script src="../js/lot-mapping.js"></script>
     <script src="../js/equipment-database.js"></script>
     <script src="../js/bureaux-detail.js"></script>

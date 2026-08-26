@@ -22,7 +22,7 @@
 }
 
 .container::before {
-    content: "v2026.08.07-32";
+    content: "v2026.08.07-33";
     position: absolute;
     top: 14px;
     right: 14px;
@@ -886,8 +886,15 @@ footer {
 }
 
 /* =========================
-   BACK BUTTON
+   BACK BUTTON / NAVIGATION
 ========================= */
+
+.page-nav-row {
+    display: flex;
+    gap: 12px;
+
+    margin-bottom: 28px;
+}
 
 .back-icon-button {
     width: 44px;
@@ -897,16 +904,18 @@ footer {
 
     border-radius: 50%;
 
-    border: 1px solid rgba(227, 205, 139, 0.20);
+    border: 1px solid rgba(227, 205, 139, 0.35);
 
     background:
         linear-gradient(
-            145deg,
-            rgba(74, 90, 62, 0.55),
-            rgba(36, 46, 30, 0.55)
+            160deg,
+            rgba(227, 205, 139, 0.16),
+            rgba(227, 205, 139, 0.05)
         );
+    backdrop-filter: blur(14px) saturate(140%);
+    -webkit-backdrop-filter: blur(14px) saturate(140%);
 
-    color: #DCD6C2;
+    color: #E3CD8B;
 
     font-size: 24px;
 
@@ -916,6 +925,10 @@ footer {
     align-items: center;
     justify-content: center;
 
+    box-shadow:
+        0 8px 18px rgba(0, 0, 0, 0.28),
+        inset 0 1px 0 rgba(255, 255, 255, 0.30);
+
     transition:
         transform 0.2s,
         box-shadow 0.2s,
@@ -923,20 +936,32 @@ footer {
         border-color 0.2s;
 }
 
-.back-icon-button:hover {
-    transform: translateX(-3px);
+.page-nav-row .back-icon-button {
+    margin-bottom: 0;
+}
 
-    border-color: rgba(242, 236, 216, 0.40);
+.back-icon-button:active {
+    transform: scale(0.93);
+}
 
-    background:
-        linear-gradient(
-            145deg,
-            rgba(74, 90, 62, 0.80),
-            rgba(36, 46, 30, 0.80)
-        );
+@media (hover: hover) and (pointer: fine) {
 
-    box-shadow:
-        0 10px 22px rgba(0, 0, 0, 0.35);
+    .back-icon-button:hover {
+        transform: translateX(-3px);
+
+        border-color: rgba(227, 205, 139, 0.55);
+
+        background:
+            linear-gradient(
+                160deg,
+                rgba(227, 205, 139, 0.24),
+                rgba(227, 205, 139, 0.09)
+            );
+
+        box-shadow:
+            0 12px 24px rgba(0, 0, 0, 0.35);
+    }
+
 }
 
 /* =========================

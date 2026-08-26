@@ -7,7 +7,7 @@
     <meta name="viewport"
           content="width=device-width, initial-scale=1.0">
 
-    <title>Hôtels</title>
+    <title>Ouvrir un audit</title>
 
     <link rel="stylesheet"
           href="../css/style.css">
@@ -17,45 +17,33 @@
 
     <div class="container">
 
+        <div class="page-nav-row">
         <button class="back-icon-button"
-                onclick="window.location.href='../index.html'">
+                onclick="window.location.href='audit-menu.html'">
             ←
         </button>
 
-        <h1>Hôtels</h1>
+        <button class="back-icon-button" onclick="window.location.href='../index.html'" aria-label="Retour à l'accueil">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 11.5 12 4l8 7.5"></path>
+                <path d="M6 10v9a1 1 0 0 0 1 1h3v-6h4v6h3a1 1 0 0 0 1-1v-9"></path>
+            </svg>
+        </button>
+        </div>
+
+        <h1>Ouvrir un audit</h1>
 
         <p class="subtitle">
-            Ouvrez un hôtel pour continuer son audit, ou ajoutez-en un nouveau.
+            Reprenez un audit déjà commencé.
         </p>
 
         <!-- Liste des hôtels déjà commencés -->
         <div id="hotelsDashboard" class="dashboard-list"></div>
 
         <p id="noHotelsHint" class="section-hint hidden">
-            Aucun hôtel pour l'instant — ajoutez-en un ci-dessous.
+            Aucun audit commencé pour l'instant — retournez à l'écran précédent
+            pour démarrer un nouvel état des lieux.
         </p>
-
-        <div class="module-detail-card">
-
-            <h2 class="section-title">Ajouter un hôtel</h2>
-
-            <div class="field-group">
-                <label for="hotelSelect">Hôtel</label>
-                <select id="hotelSelect">
-                    <option value="">— Sélectionner un hôtel —</option>
-                </select>
-            </div>
-
-            <div id="hotelPreview" class="section-hint hidden"></div>
-
-            <button type="button"
-                    class="secondary-button"
-                    id="continueButton"
-                    disabled>
-                + Ajouter cet hôtel
-            </button>
-
-        </div>
 
         <div class="module-detail-card">
 
@@ -83,7 +71,7 @@
 
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="../js/vendor/jszip.min.js"></script>
 
     <script src="../js/secteur-config.js"></script>
     <script src="../js/photo-manager.js"></script>
@@ -92,6 +80,10 @@
     <script src="../js/hotels-data.js"></script>
     <script src="../js/backup-manager.js"></script>
     <script src="../js/select-hotel.js"></script>
+
+    <script>
+        document.addEventListener("touchstart", function () {}, { passive: true });
+    </script>
 
 </body>
 

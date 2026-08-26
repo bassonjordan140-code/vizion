@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Audit énergétique</title>
+
+    <link rel="stylesheet"
+          href="../css/style.css">
+</head>
+
+<body>
+
+    <div class="container">
+
+        <button class="back-icon-button"
+                onclick="window.location.href='../index.html'">
+            ←
+        </button>
+
+        <h1>Audit énergétique</h1>
+
+        <p class="subtitle">
+            Démarrez un nouvel état des lieux, ou reprenez un audit déjà commencé.
+        </p>
+
+        <button class="choice-button"
+                onclick="window.location.href='hotel-nouveau.html'">
+
+            <span class="icon-badge">
+                <svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M8 3h6l4 4v13a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"></path>
+                    <path d="M14 3v4h4"></path>
+                    <line x1="12" y1="12.5" x2="12" y2="17"></line>
+                    <line x1="9.5" y1="14.75" x2="14.5" y2="14.75"></line>
+                </svg>
+            </span>
+
+            <span>
+                <strong>Nouvel état des lieux</strong>
+                <small>Choisissez un hôtel pour démarrer un nouvel audit.</small>
+            </span>
+
+        </button>
+
+        <button class="choice-button"
+                onclick="window.location.href='select-hotel.html'">
+
+            <span class="icon-badge">
+                <svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 7.5a1 1 0 0 1 1-1h4l2 2h9a1 1 0 0 1 1 1v.5H4"></path>
+                    <path d="M3.3 9H20l-1.6 9.1a1 1 0 0 1-1 .9H5.9a1 1 0 0 1-1-.9L3.3 9z"></path>
+                </svg>
+            </span>
+
+            <span>
+                <strong>Ouvrir</strong>
+                <small>Reprenez un audit déjà commencé.</small>
+            </span>
+
+        </button>
+
+    </div>
+
+    <script>
+        document.addEventListener("touchstart", function () {}, { passive: true });
+    </script>
+
+</body>
+
+</html>

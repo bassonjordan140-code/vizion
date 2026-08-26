@@ -57,7 +57,9 @@ window.BackupManager = (function () {
         return PhotoManager.restorePhotosForBuilding(buildingId);
     }
 
-    function exportBackup() {
+    // Construit le zip de sauvegarde (manifest + photos), partagé par l'export
+    // manuel (téléchargement) et la sauvegarde automatique silencieuse.
+    function buildBackupZipBlob() {
         return flushActiveState()
             .then(function () { return restoreActivePhotosAfterExport(); })
             .then(function () { return PhotoManager.exportAllPhotoRecords(); })
@@ -85,7 +87,11 @@ window.BackupManager = (function () {
                 });
 
                 return zip.generateAsync({ type: "blob" });
-            })
+            });
+    }
+
+    function exportBackup() {
+        return buildBackupZipBlob()
             .then(function (blob) {
                 var url = URL.createObjectURL(blob);
                 var a = document.createElement("a");
@@ -96,6 +102,63 @@ window.BackupManager = (function () {
                 a.click();
                 document.body.removeChild(a);
                 URL.revokeObjectURL(url);
+            });
+    }
+
+    /* =========================
+       SAUVEGARDE AUTOMATIQUE SILENCIEUSE (app native)
+    ========================= */
+
+    var AUTO_BACKUP_MIN_INTERVAL_MS = 2 * 60 * 1000; // 2 min entre deux écritures
+    var AUTO_BACKUP_LAST_KEY = "autoBackupLastRun";
+    var AUTO_BACKUP_FILENAME = "vizion-auto-backup.zip";
+    var AUTO_BACKUP_DIRECTORY = "EXTERNAL"; // Directory.External : dossier propre à l'app, sans permission requise
+
+    function getFilesystemPlugin() {
+        return (window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform() &&
+            window.Capacitor.Plugins && window.Capacitor.Plugins.Filesystem) || null;
+    }
+
+    function blobToBase64(blob) {
+        return new Promise(function (resolve, reject) {
+            var reader = new FileReader();
+            reader.onloadend = function () {
+                var result = reader.result || "";
+                var commaIdx = result.indexOf(",");
+                resolve(commaIdx === -1 ? result : result.slice(commaIdx + 1));
+            };
+            reader.onerror = function () { reject(reader.error); };
+            reader.readAsDataURL(blob);
+        });
+    }
+
+    // Appelée après chaque sauvegarde de fiche (voir js/unsaved-guard.js).
+    // Ne fait rien : sur le web (pas de plugin natif), ou si une sauvegarde
+    // automatique a déjà eu lieu il y a moins de AUTO_BACKUP_MIN_INTERVAL_MS
+    // (évite de re-zipper toutes les photos à chaque frappe de sauvegarde
+    // rapprochée). Écrase toujours le même fichier — pas d'accumulation.
+    function autoBackupSilent() {
+        var Filesystem = getFilesystemPlugin();
+        if (!Filesystem) return Promise.resolve();
+
+        var last = parseInt(localStorage.getItem(AUTO_BACKUP_LAST_KEY), 10) || 0;
+        if (Date.now() - last < AUTO_BACKUP_MIN_INTERVAL_MS) return Promise.resolve();
+
+        return buildBackupZipBlob()
+            .then(function (blob) { return blobToBase64(blob); })
+            .then(function (base64) {
+                return Filesystem.writeFile({
+                    path: AUTO_BACKUP_FILENAME,
+                    data: base64,
+                    directory: AUTO_BACKUP_DIRECTORY,
+                    recursive: true
+                });
+            })
+            .then(function () {
+                localStorage.setItem(AUTO_BACKUP_LAST_KEY, String(Date.now()));
+            })
+            .catch(function (err) {
+                console.error("Sauvegarde automatique silencieuse échouée :", err);
             });
     }
 
@@ -132,7 +195,8 @@ window.BackupManager = (function () {
 
     return {
         exportBackup: exportBackup,
-        importBackup: importBackup
+        importBackup: importBackup,
+        autoBackupSilent: autoBackupSilent
     };
 
 })();

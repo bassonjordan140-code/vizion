@@ -236,6 +236,34 @@ function deleteLocalisation(numero, nom) {
 
 }
 
+// Relais silencieux pour la navigation précédent/suivant entre localisations
+// (voir js/fiche-nav.js) : le bouton "Sauvegarder" d'une fiche redirige
+// toujours ici après l'enregistrement ; si une navigation vers une fiche
+// voisine était demandée, on la termine immédiatement sans afficher la
+// liste, plutôt que d'obliger l'utilisateur à recliquer une localisation.
+(function () {
+    var pendingRaw = sessionStorage.getItem("ficheNavPending");
+    if (!pendingRaw) return;
+    sessionStorage.removeItem("ficheNavPending");
+    var pending = JSON.parse(pendingRaw);
+    if (!currentSecteur || pending.secteurId !== currentSecteur.id) return;
+    localStorage.setItem(
+        currentKeyName(),
+        JSON.stringify({ moduleId: currentSecteur.id, secteurId: currentSecteur.id, label: currentSecteur.label, numero: pending.numero })
+    );
+    window.location.href = detailPage();
+})();
+
+// Sauvegarde automatique silencieuse (app native uniquement, cf.
+// js/backup-manager.js) : cette page relais est le point de passage commun
+// après CHAQUE sauvegarde de fiche, quel que soit le secteur — c'est donc ici,
+// plutôt que dans les 13 fiches, qu'on la déclenche. On attend que la
+// navigation en cours (retour d'une fiche) soit terminée pour ne pas risquer
+// qu'un déchargement de page interrompe l'écriture asynchrone.
+if (typeof BackupManager !== "undefined") {
+    BackupManager.autoBackupSilent();
+}
+
 if (currentSecteur) {
 
     renderList();

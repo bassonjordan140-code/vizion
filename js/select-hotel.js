@@ -1,8 +1,8 @@
 /* ============================================================
-   ViZion — Hub des hôtels
+   ViZion — Ouvrir un audit
    Liste les hôtels dont l'audit a déjà commencé (persistants tant
-   qu'on ne les supprime pas), permet d'en ouvrir un pour continuer,
-   ou d'en ajouter un nouveau depuis la liste fixe des 24 hôtels.
+   qu'on ne les supprime pas) et permet d'en ouvrir un pour continuer.
+   Démarrer un NOUVEL audit se fait depuis hotel-nouveau.html.
 ============================================================ */
 
 var hotelsDashboard = document.getElementById("hotelsDashboard");
@@ -63,80 +63,13 @@ function renderHotels() {
             // carte disparaisse immédiatement, sans attendre un rafraîchissement.
             HotelManager.deleteHotel(hotelIndex);
             renderHotels();
-            renderHotelOptions();
         });
 
         hotelsDashboard.appendChild(card);
     });
 }
 
-/* =========================
-   AJOUTER UN HÔTEL
-========================= */
-
-var hotelSelect = document.getElementById("hotelSelect");
-var hotelPreview = document.getElementById("hotelPreview");
-var continueButton = document.getElementById("continueButton");
-
-function renderHotelOptions() {
-    var started = HotelManager.listStartedHotelIndexes();
-    var previousValue = hotelSelect.value;
-
-    hotelSelect.innerHTML = '<option value="">— Sélectionner un hôtel —</option>';
-
-    HOTELS.forEach(function (hotel, index) {
-        if (started.indexOf(String(index)) !== -1) return;
-        var option = document.createElement("option");
-        option.value = index;
-        option.textContent = hotel.nom + " — " + hotel.commune;
-        hotelSelect.appendChild(option);
-    });
-
-    hotelSelect.value = previousValue;
-    if (hotelSelect.value !== previousValue) {
-        // L'option précédemment sélectionnée a disparu (hôtel ajouté entre-temps).
-        hotelSelect.value = "";
-    }
-    updatePreview();
-}
-
-function updatePreview() {
-    if (hotelSelect.value === "") {
-        hotelPreview.classList.add("hidden");
-        continueButton.disabled = true;
-        return;
-    }
-    var hotel = HOTELS[hotelSelect.value];
-    hotelPreview.innerHTML =
-        hotel.adresse + "<br>" +
-        hotel.activite;
-    hotelPreview.classList.remove("hidden");
-    continueButton.disabled = false;
-}
-
-hotelSelect.addEventListener("change", updatePreview);
-
-continueButton.addEventListener("click", function () {
-    var hotel = HOTELS[hotelSelect.value];
-    if (!hotel) return;
-
-    var defaultSiteInfo = {
-        nom: hotel.nom,
-        typeConstruction: hotel.activite,
-        adresse: hotel.adresse,
-        commune: hotel.commune,
-        zonePerene: hotel.zonePerene,
-        stationMeteo: hotel.stationMeteo,
-        activite: hotel.activite
-    };
-
-    HotelManager.switchToHotel(hotelSelect.value, defaultSiteInfo).then(function () {
-        window.location.href = "buildings.html";
-    });
-});
-
 renderHotels();
-renderHotelOptions();
 
 /* =========================
    SAUVEGARDE / RESTAURATION
