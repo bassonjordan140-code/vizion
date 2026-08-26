@@ -276,3 +276,28 @@ document.getElementById("validateSiteInfoBtn").addEventListener("click", functio
     ReportExport.setSiteInfo(Object.assign({}, current, { confirmed: true }));
     window.location.href = "buildings.html";
 });
+
+/* =========================
+   SAUVEGARDE
+   Le téléchargement se fait ici (l'import reste sur select-hotel.js) pour
+   ne pas dupliquer l'action à deux endroits.
+========================= */
+
+var exportBackupBtn = document.getElementById("exportBackupBtn");
+var backupStatus = document.getElementById("backupStatus");
+
+exportBackupBtn.addEventListener("click", function () {
+    exportBackupBtn.disabled = true;
+    backupStatus.textContent = "Préparation de la sauvegarde…";
+    BackupManager.exportBackup()
+        .then(function () {
+            backupStatus.textContent = "Sauvegarde téléchargée.";
+        })
+        .catch(function (err) {
+            console.error(err);
+            backupStatus.textContent = "Échec de la sauvegarde : " + err.message;
+        })
+        .finally(function () {
+            exportBackupBtn.disabled = false;
+        });
+});

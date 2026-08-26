@@ -123,13 +123,33 @@
             Valider et continuer →
         </button>
 
+        <!-- Sauvegarde -->
+        <div class="module-detail-card">
+            <h2 class="section-title">Sauvegarde</h2>
+            <p class="section-hint">
+                Télécharge toutes les données de tous les hôtels suivis (secteurs, fiches,
+                photos) dans un fichier unique, à conserver précieusement. En cas de
+                problème (appareil perdu, cache effacé…), importez-le depuis "Ouvrir un
+                audit" pour tout reprendre exactement là où vous en étiez.
+            </p>
+
+            <button type="button" id="exportBackupBtn" class="secondary-button">
+                💾 Télécharger une sauvegarde
+            </button>
+
+            <p id="backupStatus" class="export-status"></p>
+        </div>
+
     </div>
+
+    <script src="../js/vendor/jszip.min.js"></script>
 
     <script src="../js/secteur-config.js"></script>
     <script src="../js/contacts-data.js"></script>
     <script src="../js/photo-manager.js"></script>
     <script src="../js/building-manager.js"></script>
     <script src="../js/hotel-manager.js"></script>
+    <script src="../js/backup-manager.js"></script>
     <script src="../js/report-export.js"></script>
     <script src="../js/site-info.js"></script>
 

@@ -77,28 +77,14 @@ function renderHotels() {
 renderHotels();
 
 /* =========================
-   SAUVEGARDE / RESTAURATION
+   RESTAURATION D'UNE SAUVEGARDE
+   Le téléchargement d'une sauvegarde se fait désormais depuis
+   "Informations du site" (voir js/site-info.js) : cet écran ne gère plus
+   que l'import, pour ne pas dupliquer l'action à deux endroits.
 ========================= */
 
-var exportBackupBtn = document.getElementById("exportBackupBtn");
 var importBackupInput = document.getElementById("importBackupInput");
 var backupStatus = document.getElementById("backupStatus");
-
-exportBackupBtn.addEventListener("click", function () {
-    exportBackupBtn.disabled = true;
-    backupStatus.textContent = "Préparation de la sauvegarde…";
-    BackupManager.exportBackup()
-        .then(function () {
-            backupStatus.textContent = "Sauvegarde téléchargée.";
-        })
-        .catch(function (err) {
-            console.error(err);
-            backupStatus.textContent = "Échec de la sauvegarde : " + err.message;
-        })
-        .finally(function () {
-            exportBackupBtn.disabled = false;
-        });
-});
 
 importBackupInput.addEventListener("change", function () {
     var file = importBackupInput.files[0];
