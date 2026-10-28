@@ -31,5 +31,6 @@ window.HOTELS = [
     { nom: "Les Créoles", adresse: "43 avenue de Bourbon, 97434 Saint-Gilles-les-Bains", villeQuartier: "Saint-Gilles-les-Bains", commune: "Saint-Paul", zonePerene: "Zone 1 - sous le vent", stationMeteo: "POINTE DES TROIS-BASSINS", activite: "Hôtel 3*" },
     { nom: "Hôtel Les Géraniums", adresse: "11 rue Alfred Lacroix, 97418 Plaine-des-Cafres", villeQuartier: "Plaine-des-Cafres", commune: "Le Tampon", zonePerene: "Zone 4 - d'altitude", stationMeteo: "PLAINE DES PALMISTES", activite: "Hôtel 2*" },
     { nom: "Hôtel des Neiges", adresse: "1 rue de la Mare-à-Joncs, 97413 Cilaos", villeQuartier: "Mare-à-Joncs, Cilaos", commune: "Cilaos", zonePerene: "Zone 4 - d'altitude", stationMeteo: "PLAINE DES PALMISTES", activite: "Hôtel 3*" },
-    { nom: "Le Vieux Cep", adresse: "44 rue Saint-Louis, 97413 Cilaos", villeQuartier: "Centre-ville de Cilaos", commune: "Cilaos", zonePerene: "Zone 4 - d'altitude", stationMeteo: "PLAINE DES PALMISTES", activite: "Hôtel 3*" }
+    { nom: "Le Vieux Cep", adresse: "44 rue Saint-Louis, 97413 Cilaos", villeQuartier: "Centre-ville de Cilaos", commune: "Cilaos", zonePerene: "Zone 4 - d'altitude", stationMeteo: "PLAINE DES PALMISTES", activite: "Hôtel 3*" },
+    { nom: "Hôtel L'Écrin", adresse: "185 rue Alfred Lacroix, RN3 PK27, Bourg-Murat, 97418 Plaine-des-Cafres", villeQuartier: "Bourg-Murat, Plaine-des-Cafres", commune: "Le Tampon", zonePerene: "Zone 4 - d'altitude", stationMeteo: "PLAINE DES PALMISTES", activite: "Hôtel 2*" }
 ];

@@ -1,7 +1,7 @@
 /* ============================================================
    ViZion — Nouvel état des lieux
    Choix d'un hôtel parmi ceux pas encore commencés (liste fixe des
-   24 hôtels), pour démarrer un nouvel audit.
+   hôtels), pour démarrer un nouvel audit.
 ============================================================ */
 
 var hotelSelect = document.getElementById("hotelSelect");
