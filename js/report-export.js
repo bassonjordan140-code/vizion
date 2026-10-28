@@ -196,43 +196,89 @@ window.ReportExport = (function () {
        TÉLÉCHARGEMENT LOCAL
     ========================= */
 
-    // Sur le web, trois téléchargements séparés (le navigateur gère très bien
-    // plusieurs fichiers à la suite). Dans l'app native, un lien <a download>
-    // ne déclenche rien (voir BackupManager.saveOrShareBlob) : on regroupe
-    // alors les 3 fichiers dans une seule archive, pour n'ouvrir qu'UNE seule
-    // fois la feuille de partage native plutôt que trois fois d'affilée.
-    function deliverReportFiles(xlsxBlob, jsonBlob, zipBlob) {
-        var Filesystem = window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform() &&
-            window.Capacitor.Plugins && window.Capacitor.Plugins.Filesystem;
+    function isNativeApp() {
+        return !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform() &&
+            window.Capacitor.Plugins && window.Capacitor.Plugins.Filesystem);
+    }
 
-        if (!Filesystem) {
-            var url1 = URL.createObjectURL(xlsxBlob);
-            var url2 = URL.createObjectURL(jsonBlob);
-            var url3 = URL.createObjectURL(zipBlob);
-            [[url1, "rapport.xlsx"], [url2, "audit.json"], [url3, "photos.zip"]].forEach(function (pair) {
-                var a = document.createElement("a");
-                a.href = pair[0];
-                a.download = pair[1];
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-            });
-            setTimeout(function () {
-                URL.revokeObjectURL(url1);
-                URL.revokeObjectURL(url2);
-                URL.revokeObjectURL(url3);
-            }, 10000);
-            return Promise.resolve();
-        }
-
-        var stamp = new Date().toISOString().slice(0, 10);
-        var bundle = new JSZip();
-        bundle.file("rapport.xlsx", xlsxBlob);
-        bundle.file("audit.json", jsonBlob);
-        bundle.file("photos.zip", zipBlob);
-        return bundle.generateAsync({ type: "blob" }).then(function (bundleBlob) {
-            return BackupManager.saveOrShareBlob(bundleBlob, "vizion-rapport-" + stamp + ".zip");
+    // Web : trois téléchargements séparés (le navigateur gère très bien plusieurs
+    // fichiers à la suite, et la mémoire d'un ordinateur n'est pas un problème).
+    function deliverReportFilesWeb(xlsxBlob, jsonBlob, zipBlob) {
+        var url1 = URL.createObjectURL(xlsxBlob);
+        var url2 = URL.createObjectURL(jsonBlob);
+        var url3 = URL.createObjectURL(zipBlob);
+        [[url1, "rapport.xlsx"], [url2, "audit.json"], [url3, "photos.zip"]].forEach(function (pair) {
+            var a = document.createElement("a");
+            a.href = pair[0];
+            a.download = pair[1];
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
         });
+        setTimeout(function () {
+            URL.revokeObjectURL(url1);
+            URL.revokeObjectURL(url2);
+            URL.revokeObjectURL(url3);
+        }, 10000);
+        return Promise.resolve();
+    }
+
+    // Nom de dossier unique par bâtiment (deux bâtiments peuvent porter le même nom).
+    function uniqueFolderName(building, used) {
+        var base = (building.nom || building.id).replace(/[\\/]/g, "-");
+        var name = base;
+        if (used[name]) name = base + " (" + building.id + ")";
+        used[name] = true;
+        return name;
+    }
+
+    // App native : une seule archive vizion-rapport-<date>.zip (rapport.xlsx,
+    // audit.json et un dossier photos/<bâtiment>/…), écrite par morceaux : une
+    // photo en mémoire à la fois. Avant, toutes les photos étaient zippées en
+    // mémoire (deux fois : photos.zip puis l'archive finale) puis converties en
+    // base64 : sur un gros audit, la mémoire de l'appareil était dépassée.
+    function deliverReportNative(xlsxBlob, jsonBlob, buildingsPhotos, onProgress) {
+        var stamp = new Date().toISOString().slice(0, 10);
+        var filename = "vizion-rapport-" + stamp + ".zip";
+
+        return BackupManager.exportZipFile(filename, function (zip) {
+            var jobs = [];
+            var usedFolders = {};
+            buildingsPhotos.forEach(function (building) {
+                if (!building.photos.length) return;
+                var folder = uniqueFolderName(building, usedFolders);
+                building.photos.forEach(function (photo, idx) {
+                    jobs.push({ path: "photos/" + folder + "/" + photoFileName(photo, idx), photo: photo });
+                });
+            });
+
+            return zip.addBlob("rapport.xlsx", xlsxBlob)
+                .then(function () { return zip.addBlob("audit.json", jsonBlob); })
+                .then(function () {
+                    return jobs.reduce(function (chain, job, index) {
+                        return chain.then(function () {
+                            if (onProgress) onProgress("Écriture des photos (" + (index + 1) + "/" + jobs.length + ")...");
+                            var blob = job.photo.blob;
+                            job.photo.blob = null; // libère la référence dès qu'elle est lue
+                            return zip.addBlob(job.path, blob);
+                        });
+                    }, Promise.resolve());
+                });
+        }).then(function (delivery) {
+            delivery.filename = filename;
+            return delivery;
+        });
+    }
+
+    function nativeDeliveryMessage(delivery) {
+        if (delivery.downloads) {
+            return "Rapport enregistré dans Téléchargements (" + delivery.filename +
+                " : rapport.xlsx, audit.json et dossier photos).";
+        }
+        if (delivery.shared) {
+            return "Rapport prêt (" + delivery.filename + ") : choisissez où l'envoyer ou l'enregistrer.";
+        }
+        return "Rapport enregistré sur cet appareil (" + delivery.filename + ").";
     }
 
     /* =========================
@@ -242,6 +288,7 @@ window.ReportExport = (function () {
     function sendReport(onProgress) {
 
         var siteInfo = getSiteInfo();
+        var native = isNativeApp();
 
         if (onProgress) onProgress("Collecte des bâtiments...");
 
@@ -256,10 +303,16 @@ window.ReportExport = (function () {
             if (onProgress) onProgress("Préparation des photos...");
 
             return BuildingManager.collectAllBuildingsPhotos().then(function (buildingsPhotos) {
-                return buildPhotosZip(buildingsPhotos).then(function (zipBlob) {
+
+                // photos.zip en mémoire seulement quand c'est nécessaire : téléchargement
+                // web, ou copie GitHub (optionnelle). L'app native écrit l'archive par morceaux.
+                var needsPhotosZip = !native || !!ExportGitHub.getToken();
+                var zipPromise = needsPhotosZip ? buildPhotosZip(buildingsPhotos) : Promise.resolve(null);
+
+                return zipPromise.then(function (zipBlob) {
 
                     var nbPhotos = buildingsPhotos.reduce(function (sum, b) { return sum + b.photos.length; }, 0);
-                    var result = { xlsxBlob: xlsxBlob, zipBlob: zipBlob, jsonBlob: jsonBlob, nbPhotos: nbPhotos, channel: "local", detail: "Rapport téléchargé sur cet appareil." };
+                    var result = { xlsxBlob: xlsxBlob, jsonBlob: jsonBlob, nbPhotos: nbPhotos, channel: "local", detail: "Rapport téléchargé sur cet appareil." };
 
                     // Le repli GitHub est optionnel (nécessite un token configuré) : s'il échoue
                     // ou n'est pas configuré, le téléchargement local reste toujours disponible.
@@ -276,7 +329,13 @@ window.ReportExport = (function () {
                         : Promise.resolve(result);
 
                     return afterGithub.then(function (r) {
-                        return deliverReportFiles(r.xlsxBlob, r.jsonBlob, r.zipBlob).then(function () {
+                        if (!native) {
+                            return deliverReportFilesWeb(xlsxBlob, jsonBlob, zipBlob).then(function () { return r; });
+                        }
+                        zipBlob = null;
+                        return deliverReportNative(xlsxBlob, jsonBlob, buildingsPhotos, onProgress).then(function (delivery) {
+                            r.detail = nativeDeliveryMessage(delivery) +
+                                (r.channel === "github" ? " Une copie a aussi été envoyée sur GitHub." : "");
                             return r;
                         });
                     });

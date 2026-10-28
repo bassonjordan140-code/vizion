@@ -417,6 +417,26 @@ window.BackupManager = (function () {
         });
     }
 
+    // Export ZIP générique par morceaux, réutilisé par le rapport (js/report-export.js).
+    // fill(zip) reçoit { addBlob(nom, blob), addText(nom, texte) } et renvoie une
+    // promesse ; chaque fichier est lu, écrit puis oublié avant le suivant.
+    function exportZipFile(filename, fill) {
+        return runExclusive(function () {
+            return writeZipExport(filename, function (sink) {
+                var writer = createZipWriter(sink);
+                var zip = {
+                    addBlob: function (name, blob) {
+                        return readBlobBytes(blob).then(function (bytes) { return writer.addFile(name, bytes); });
+                    },
+                    addText: function (name, text) {
+                        return writer.addFile(name, new TextEncoder().encode(text));
+                    }
+                };
+                return fill(zip).then(function () { return writer.finish(); });
+            });
+        });
+    }
+
     // Appelée après chaque sauvegarde de fiche (voir js/unsaved-guard.js).
     // Ne fait rien : sur le web (pas de plugin natif), si une sauvegarde
     // automatique a déjà eu lieu il y a moins de AUTO_BACKUP_MIN_INTERVAL_MS
@@ -462,15 +482,14 @@ window.BackupManager = (function () {
     }
 
     /* =========================
-       EXPORT VISIBLE (rapport, sauvegarde manuelle)
-       Sur le web, un simple lien <a download> suffit : le navigateur gère le
-       téléchargement. Dans l'app native (WebView Capacitor), ce lien ne
-       déclenche RIEN — il n'y a pas de gestionnaire de téléchargement par
-       défaut. On écrit alors le fichier via le plugin Filesystem puis on
-       ouvre la feuille de partage native (Share) : c'est aussi le seul moyen
-       simple pour l'utilisateur de récupérer le fichier, car le dossier
-       d'écriture (Directory.External) n'est pas visible depuis la plupart
-       des gestionnaires de fichiers Android.
+       PARTAGE (repli)
+       Sur le web, un simple lien <a download> suffit. Dans l'app native, ce lien
+       ne déclenche RIEN (pas de gestionnaire de téléchargement dans la WebView) :
+       on écrit dans "Téléchargements" via le plugin SaveToDownloads. Sur Android
+       < 10, où ce plugin n'est pas disponible, on écrit dans le dossier de l'app
+       (Directory.External, invisible dans la plupart des gestionnaires de
+       fichiers) puis on ouvre la feuille de partage native pour que l'utilisateur
+       puisse récupérer le fichier.
     ========================= */
 
     var VISIBLE_EXPORT_DIRECTORY = "EXTERNAL";
@@ -495,54 +514,19 @@ window.BackupManager = (function () {
             });
     }
 
-    // Repli : écrit le fichier dans le dossier propre à l'app puis ouvre la
-    // feuille de partage native. Utilisé quand SaveToDownloads est absent
-    // (Android < 10) ou échoue pour une raison quelconque.
-    function shareViaFilesystem(blob, filename) {
-        var Filesystem = getFilesystemPlugin();
-        var path = VISIBLE_EXPORT_SUBFOLDER + "/" + filename;
+    /* =========================
+       IMPORT EN FLUX
+       Lit l'annuaire central du ZIP puis chaque photo directement depuis le
+       fichier (Blob.slice : aucune copie en mémoire), et les écrit par lots dans
+       IndexedDB. Avant, JSZip chargeait le fichier entier puis en recopiait chaque
+       photo : sur une grosse sauvegarde, ça dépassait la mémoire de l'appareil.
+    ========================= */
 
-        return blobToBase64(blob)
-            .then(function (base64) {
-                return Filesystem.writeFile({
-                    path: path,
-                    data: base64,
-                    directory: VISIBLE_EXPORT_DIRECTORY,
-                    recursive: true
-                });
-            })
-            .then(function () { return shareFileAtPath(path, filename); });
-    }
+    var IMPORT_BATCH_SIZE = 25;
 
-    // Pour les petits fichiers déjà en mémoire (rapport .xlsx/.json). Les
-    // sauvegardes complètes, potentiellement énormes, passent par
-    // writeZipExport (écriture par morceaux) et non par ici.
-    function saveOrShareBlob(blob, filename) {
-        var Filesystem = getFilesystemPlugin();
-
-        if (!Filesystem) {
-            // Web : téléchargement classique via un lien <a download>.
-            downloadBlobInBrowser(blob, filename);
-            return Promise.resolve({ native: false });
-        }
-
-        var SaveToDownloads = getSaveToDownloadsPlugin();
-        if (!SaveToDownloads) return shareViaFilesystem(blob, filename);
-
-        return blobToBase64(blob)
-            .then(function (base64) {
-                return SaveToDownloads.save({ data: base64, filename: filename, mimeType: mimeTypeFor(filename) });
-            })
-            .then(function (r) {
-                return { native: true, downloads: true, uri: r.uri };
-            })
-            .catch(function (err) {
-                console.warn("Enregistrement direct dans Téléchargements impossible, repli sur le partage :", err);
-                return shareViaFilesystem(blob, filename);
-            });
-    }
-
-    function importBackup(file) {
+    // Ancienne méthode (JSZip charge tout le fichier en mémoire) : seulement pour les
+    // archives que le lecteur en flux ne gère pas (ZIP64, entrées compressées).
+    function importBackupWithJSZip(file) {
         return JSZip.loadAsync(file)
             .then(function (zip) {
                 var manifestFile = zip.file("manifest.json");
@@ -573,11 +557,127 @@ window.BackupManager = (function () {
             });
     }
 
+    function readBlobText(blob) {
+        if (blob.text) return blob.text();
+        return new Promise(function (resolve, reject) {
+            var reader = new FileReader();
+            reader.onload = function () { resolve(reader.result); };
+            reader.onerror = function () { reject(reader.error); };
+            reader.readAsText(blob);
+        });
+    }
+
+    // Renvoie { nom: { size, localOffset } } ou null si le format n'est pas pris en
+    // charge (ZIP64, entrées compressées) : l'appelant se rabat alors sur JSZip.
+    function readZipIndex(file) {
+        var size = file.size;
+        if (size < 22) return Promise.resolve(null);
+
+        return readBlobBytes(file.slice(Math.max(0, size - 65557), size)).then(function (tail) {
+            var tailView = new DataView(tail.buffer, tail.byteOffset, tail.byteLength);
+            var eocd = -1;
+            for (var i = tail.length - 22; i >= 0; i--) {
+                if (tailView.getUint32(i, true) === 0x06054B50) { eocd = i; break; }
+            }
+            if (eocd === -1) return null;
+
+            var count = tailView.getUint16(eocd + 10, true);
+            var centralSize = tailView.getUint32(eocd + 12, true);
+            var centralOffset = tailView.getUint32(eocd + 16, true);
+            if (count === 0xFFFF || centralSize === 0xFFFFFFFF || centralOffset === 0xFFFFFFFF) return null;
+            if (centralOffset + centralSize > size) return null;
+
+            return readBlobBytes(file.slice(centralOffset, centralOffset + centralSize)).then(function (central) {
+                var view = new DataView(central.buffer, central.byteOffset, central.byteLength);
+                var decoder = new TextDecoder("utf-8");
+                var entries = {};
+                var pos = 0;
+                for (var n = 0; n < count; n++) {
+                    if (pos + 46 > central.length || view.getUint32(pos, true) !== 0x02014B50) return null;
+                    var method = view.getUint16(pos + 10, true);
+                    var compressed = view.getUint32(pos + 20, true);
+                    var uncompressed = view.getUint32(pos + 24, true);
+                    var nameLength = view.getUint16(pos + 28, true);
+                    var extraLength = view.getUint16(pos + 30, true);
+                    var commentLength = view.getUint16(pos + 32, true);
+                    var localOffset = view.getUint32(pos + 42, true);
+                    if (method !== 0 || compressed !== uncompressed || compressed === 0xFFFFFFFF || localOffset === 0xFFFFFFFF) return null;
+                    var name = decoder.decode(central.subarray(pos + 46, pos + 46 + nameLength));
+                    entries[name] = { size: uncompressed, localOffset: localOffset };
+                    pos += 46 + nameLength + extraLength + commentLength;
+                }
+                return entries;
+            });
+        });
+    }
+
+    // Blob (vue sur le fichier, sans copie) du contenu d'une entrée STORE.
+    function zipEntryBlob(file, entry, type) {
+        return readBlobBytes(file.slice(entry.localOffset, entry.localOffset + 30)).then(function (header) {
+            var view = new DataView(header.buffer, header.byteOffset, header.byteLength);
+            if (header.length < 30 || view.getUint32(0, true) !== 0x04034B50) {
+                throw new Error("Fichier de sauvegarde invalide (archive corrompue).");
+            }
+            var start = entry.localOffset + 30 + view.getUint16(26, true) + view.getUint16(28, true);
+            if (start + entry.size > file.size) {
+                throw new Error("Fichier de sauvegarde incomplet (archive tronquée).");
+            }
+            return file.slice(start, start + entry.size, type || "");
+        });
+    }
+
+    function importBackup(file) {
+        return readZipIndex(file).then(function (index) {
+            if (!index) return importBackupWithJSZip(file);
+
+            var manifestEntry = index["manifest.json"];
+            if (!manifestEntry) throw new Error("Fichier de sauvegarde invalide (manifest.json manquant).");
+
+            return zipEntryBlob(file, manifestEntry, "application/json")
+                .then(readBlobText)
+                .then(function (text) {
+                    var manifest = JSON.parse(text);
+                    var photos = manifest.photos || [];
+
+                    // On vérifie tout AVANT d'effacer quoi que ce soit.
+                    photos.forEach(function (entry) {
+                        if (!index[entry.file]) {
+                            throw new Error("Fichier de sauvegarde invalide (photo manquante : " + entry.file + ").");
+                        }
+                    });
+
+                    var batches = [];
+                    for (var i = 0; i < photos.length; i += IMPORT_BATCH_SIZE) {
+                        batches.push(photos.slice(i, i + IMPORT_BATCH_SIZE));
+                    }
+
+                    return PhotoManager.clearAllPhotosAndArchive()
+                        .then(function () {
+                            return sequence(batches, function (batch) {
+                                return Promise.all(batch.map(function (entry) {
+                                    return zipEntryBlob(file, index[entry.file], "image/jpeg").then(function (blob) {
+                                        return {
+                                            store: entry.store,
+                                            key: entry.key,
+                                            buildingId: entry.buildingId,
+                                            thumbnail: entry.thumbnail,
+                                            timestamp: entry.timestamp,
+                                            blob: blob
+                                        };
+                                    });
+                                })).then(function (records) { return PhotoManager.putPhotoRecords(records); });
+                            });
+                        })
+                        .then(function () { restoreLocalStorage(manifest.localStorage); });
+                });
+        });
+    }
+
     return {
         exportBackup: exportBackup,
         importBackup: importBackup,
         autoBackupSilent: autoBackupSilent,
-        saveOrShareBlob: saveOrShareBlob,
+        exportZipFile: exportZipFile,
         createZipWriter: createZipWriter
     };
 

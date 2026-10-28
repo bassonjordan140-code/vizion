@@ -271,13 +271,11 @@ window.PhotoManager = (function () {
         });
     }
 
-    // Remplace tout le contenu photo (store actif + archive) par les enregistrements fournis
-    // (utilisé pour restaurer une sauvegarde complète). N'importe jamais de manière partielle :
-    // les deux stores sont d'abord vidés.
-    function importAllPhotoRecords(records) {
-        return clearAllPhotosAndArchive().then(function () {
-            return openDB();
-        }).then(function (db) {
+    // Écrit un lot d'enregistrements photo (store actif ou archive selon record.store)
+    // SANS rien effacer : permet de restaurer une grosse sauvegarde par lots, sans
+    // garder toutes les photos en mémoire d'un coup.
+    function putPhotoRecords(records) {
+        return openDB().then(function (db) {
             return new Promise(function (resolve, reject) {
                 var tx = db.transaction([STORE_NAME, ARCHIVE_STORE_NAME], "readwrite");
                 var activeStore = tx.objectStore(STORE_NAME);
@@ -304,6 +302,15 @@ window.PhotoManager = (function () {
                 tx.oncomplete = function () { resolve(); };
                 tx.onerror = function () { reject(tx.error); };
             });
+        });
+    }
+
+    // Remplace tout le contenu photo (store actif + archive) par les enregistrements fournis
+    // (utilisé pour restaurer une sauvegarde complète). N'importe jamais de manière partielle :
+    // les deux stores sont d'abord vidés.
+    function importAllPhotoRecords(records) {
+        return clearAllPhotosAndArchive().then(function () {
+            return putPhotoRecords(records);
         });
     }
 
@@ -534,7 +541,8 @@ window.PhotoManager = (function () {
         clearPhotos: clearPhotos,
         clearAllPhotosAndArchive: clearAllPhotosAndArchive,
         exportAllPhotoRecords: exportAllPhotoRecords,
-        importAllPhotoRecords: importAllPhotoRecords
+        importAllPhotoRecords: importAllPhotoRecords,
+        putPhotoRecords: putPhotoRecords
     };
 
 })();
