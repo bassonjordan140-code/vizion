@@ -57,47 +57,6 @@ window.BackupManager = (function () {
         return PhotoManager.restorePhotosForBuilding(buildingId);
     }
 
-    // Construit le zip de sauvegarde (manifest + photos), partagé par l'export
-    // manuel (téléchargement) et la sauvegarde automatique silencieuse.
-    function buildBackupZipBlob() {
-        return flushActiveState()
-            .then(function () { return restoreActivePhotosAfterExport(); })
-            .then(function () { return PhotoManager.exportAllPhotoRecords(); })
-            .then(function (photoRecords) {
-                var manifest = {
-                    version: 1,
-                    exportedAt: new Date().toISOString(),
-                    localStorage: dumpLocalStorage(),
-                    photos: photoRecords.map(function (record, index) {
-                        return {
-                            store: record.store,
-                            key: record.key,
-                            buildingId: record.buildingId,
-                            thumbnail: record.thumbnail,
-                            timestamp: record.timestamp,
-                            file: "blobs/" + index + ".jpg"
-                        };
-                    })
-                };
-
-                var zip = new JSZip();
-                zip.file("manifest.json", JSON.stringify(manifest));
-                photoRecords.forEach(function (record, index) {
-                    zip.file("blobs/" + index + ".jpg", record.blob);
-                });
-
-                return zip.generateAsync({ type: "blob" });
-            });
-    }
-
-    function exportBackup() {
-        var stamp = new Date().toISOString().slice(0, 10);
-        return buildBackupZipBlob()
-            .then(function (blob) {
-                return saveOrShareBlob(blob, "vizion-sauvegarde-" + stamp + ".zip");
-            });
-    }
-
     /* =========================
        SAUVEGARDE AUTOMATIQUE SILENCIEUSE (app native)
     ========================= */
@@ -148,34 +107,358 @@ window.BackupManager = (function () {
         });
     }
 
+    function bytesToBase64(bytes) {
+        return blobToBase64(new Blob([bytes]));
+    }
+
+    function readBlobBytes(blob) {
+        if (blob.arrayBuffer) {
+            return blob.arrayBuffer().then(function (buffer) { return new Uint8Array(buffer); });
+        }
+        return new Promise(function (resolve, reject) {
+            var reader = new FileReader();
+            reader.onload = function () { resolve(new Uint8Array(reader.result)); };
+            reader.onerror = function () { reject(reader.error); };
+            reader.readAsArrayBuffer(blob);
+        });
+    }
+
+    // Exécute les promesses une par une (pas en parallèle : on veut une seule
+    // photo / un seul morceau en mémoire à la fois).
+    function sequence(items, task) {
+        return items.reduce(function (chain, item, index) {
+            return chain.then(function () { return task(item, index); });
+        }, Promise.resolve());
+    }
+
+    // Un seul export/sauvegarde à la fois : flushActiveState() déplace
+    // temporairement les photos du bâtiment actif vers l'archive, deux
+    // sauvegardes simultanées (manuelle + automatique) pourraient se marcher
+    // dessus et produire une archive sans ces photos.
+    var backupBusy = false;
+    var backupQueue = Promise.resolve();
+
+    function runExclusive(task) {
+        var run = backupQueue.then(function () {
+            backupBusy = true;
+            return task();
+        });
+        run.then(function () { backupBusy = false; }, function () { backupBusy = false; });
+        backupQueue = run.catch(function () {});
+        return run;
+    }
+
+    /* =========================
+       ZIP EN FLUX (sans compression)
+       Les photos sont déjà des JPEG : les compresser ne gagnerait rien. Avant,
+       JSZip chargeait TOUTES les photos en mémoire, fabriquait un énorme blob,
+       puis il fallait en faire une chaîne base64 (+33 %) pour la passer au
+       plugin natif : sur une grosse sauvegarde (plusieurs hôtels pleins de
+       photos) la mémoire de la WebView était dépassée et l'app plantait. Ici
+       l'archive est écrite entrée par entrée vers une "sortie" (sink) qui la
+       transmet par morceaux de 1 Mo : en mémoire, une photo + un morceau.
+       Format : ZIP classique, méthode STORE, lisible par JSZip et unzip.
+       Pas de ZIP64 : au-delà de 4 Go ou 65 535 fichiers, on refuse proprement.
+    ========================= */
+
+    var ZIP_CHUNK_BYTES = 1024 * 1024;
+    var ZIP_MAX_BYTES = 0xFFFFFFFF;
+    var ZIP_MAX_ENTRIES = 0xFFFF;
+
+    var CRC_TABLE = (function () {
+        var table = new Uint32Array(256);
+        for (var n = 0; n < 256; n++) {
+            var c = n;
+            for (var k = 0; k < 8; k++) c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1);
+            table[n] = c >>> 0;
+        }
+        return table;
+    })();
+
+    function crc32(bytes) {
+        var crc = 0xFFFFFFFF;
+        for (var i = 0; i < bytes.length; i++) crc = CRC_TABLE[(crc ^ bytes[i]) & 0xFF] ^ (crc >>> 8);
+        return (crc ^ 0xFFFFFFFF) >>> 0;
+    }
+
+    function dosDateTime(date) {
+        return {
+            time: (date.getHours() << 11) | (date.getMinutes() << 5) | (date.getSeconds() >> 1),
+            date: ((Math.max(date.getFullYear(), 1980) - 1980) << 9) | ((date.getMonth() + 1) << 5) | date.getDate()
+        };
+    }
+
+    function splitChunks(bytes) {
+        var chunks = [];
+        for (var i = 0; i < bytes.length; i += ZIP_CHUNK_BYTES) {
+            chunks.push(bytes.subarray(i, Math.min(i + ZIP_CHUNK_BYTES, bytes.length)));
+        }
+        return chunks;
+    }
+
+    // sink = { write(Uint8Array) -> Promise, close() -> Promise<résultat>, abort() -> Promise }
+    function createZipWriter(sink) {
+        var entries = [];
+        var offset = 0;
+        var stamp = dosDateTime(new Date());
+        var encoder = new TextEncoder();
+
+        function emit(bytes) {
+            offset += bytes.length;
+            return sink.write(bytes);
+        }
+
+        function addFile(name, bytes) {
+            // Marge pour l'annuaire central et la fin d'archive écrits à la fin.
+            if (entries.length >= ZIP_MAX_ENTRIES ||
+                offset + bytes.length + (entries.length + 2) * 512 > ZIP_MAX_BYTES) {
+                return Promise.reject(new Error("Sauvegarde trop volumineuse pour le format ZIP (4 Go ou 65 535 fichiers maximum)."));
+            }
+
+            var nameBytes = encoder.encode(name);
+            var crc = crc32(bytes);
+            var header = new Uint8Array(30 + nameBytes.length);
+            var view = new DataView(header.buffer);
+            view.setUint32(0, 0x04034B50, true);
+            view.setUint16(4, 20, true);           // version nécessaire
+            view.setUint16(6, 0x0800, true);       // noms de fichiers en UTF-8
+            view.setUint16(8, 0, true);            // méthode : STORE
+            view.setUint16(10, stamp.time, true);
+            view.setUint16(12, stamp.date, true);
+            view.setUint32(14, crc, true);
+            view.setUint32(18, bytes.length, true);
+            view.setUint32(22, bytes.length, true);
+            view.setUint16(26, nameBytes.length, true);
+            view.setUint16(28, 0, true);
+            header.set(nameBytes, 30);
+
+            entries.push({ nameBytes: nameBytes, crc: crc, size: bytes.length, offset: offset });
+            return emit(header).then(function () { return emit(bytes); });
+        }
+
+        function finish() {
+            var centralOffset = offset;
+            var records = entries.map(function (entry) {
+                var record = new Uint8Array(46 + entry.nameBytes.length);
+                var view = new DataView(record.buffer);
+                view.setUint32(0, 0x02014B50, true);
+                view.setUint16(4, 20, true);
+                view.setUint16(6, 20, true);
+                view.setUint16(8, 0x0800, true);
+                view.setUint16(10, 0, true);
+                view.setUint16(12, stamp.time, true);
+                view.setUint16(14, stamp.date, true);
+                view.setUint32(16, entry.crc, true);
+                view.setUint32(20, entry.size, true);
+                view.setUint32(24, entry.size, true);
+                view.setUint16(28, entry.nameBytes.length, true);
+                view.setUint32(42, entry.offset, true);
+                record.set(entry.nameBytes, 46);
+                return record;
+            });
+            var centralSize = records.reduce(function (sum, record) { return sum + record.length; }, 0);
+
+            var end = new Uint8Array(22);
+            var endView = new DataView(end.buffer);
+            endView.setUint32(0, 0x06054B50, true);
+            endView.setUint16(8, entries.length, true);
+            endView.setUint16(10, entries.length, true);
+            endView.setUint32(12, centralSize, true);
+            endView.setUint32(16, centralOffset, true);
+
+            return sequence(records.concat([end]), emit).then(function () { return sink.close(); });
+        }
+
+        return { addFile: addFile, finish: finish };
+    }
+
+    // Sortie web : le navigateur gère le téléchargement (lien <a download>).
+    function downloadBlobInBrowser(blob, filename) {
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement("a");
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(function () { URL.revokeObjectURL(url); }, 10000);
+    }
+
+    function createWebSink(filename) {
+        var parts = [];
+        return {
+            write: function (bytes) { parts.push(bytes); return Promise.resolve(); },
+            close: function () {
+                downloadBlobInBrowser(new Blob(parts, { type: mimeTypeFor(filename) }), filename);
+                parts = [];
+                return Promise.resolve({ native: false });
+            },
+            abort: function () { parts = []; return Promise.resolve(); }
+        };
+    }
+
+    // Sortie native "Téléchargements" : plugin maison, écriture par morceaux
+    // dans MediaStore (begin / append / finish — voir SaveToDownloadsPlugin.java).
+    function createDownloadsSink(plugin, filename) {
+        return plugin.begin({ filename: filename, mimeType: mimeTypeFor(filename) }).then(function (started) {
+            var id = started.id;
+            return {
+                write: function (bytes) {
+                    return sequence(splitChunks(bytes), function (chunk) {
+                        return bytesToBase64(chunk).then(function (data) {
+                            return plugin.append({ id: id, data: data });
+                        });
+                    });
+                },
+                close: function () {
+                    return plugin.finish({ id: id }).then(function (result) {
+                        return { native: true, downloads: true, uri: result.uri };
+                    });
+                },
+                abort: function () { return plugin.abort({ id: id }).catch(function () {}); }
+            };
+        });
+    }
+
+    // Sortie native dans un fichier du dossier de l'app (plugin Filesystem),
+    // écrit par morceaux : premier morceau = writeFile, suivants = appendFile.
+    function createFilesystemSink(Filesystem, path, directory) {
+        var started = false;
+        return {
+            write: function (bytes) {
+                return sequence(splitChunks(bytes), function (chunk) {
+                    return bytesToBase64(chunk).then(function (data) {
+                        if (!started) {
+                            started = true;
+                            return Filesystem.writeFile({ path: path, data: data, directory: directory, recursive: true });
+                        }
+                        return Filesystem.appendFile({ path: path, data: data, directory: directory });
+                    });
+                });
+            },
+            close: function () { return Promise.resolve({ native: true, path: path }); },
+            abort: function () { return Filesystem.deleteFile({ path: path, directory: directory }).catch(function () {}); }
+        };
+    }
+
+    // Écrit manifest.json puis chaque photo, une à la fois, dans le zip.
+    function buildBackupToSink(sink) {
+        return flushActiveState()
+            .then(function () { return restoreActivePhotosAfterExport(); })
+            .then(function () { return PhotoManager.exportAllPhotoRecords(); })
+            .then(function (photoRecords) {
+                var manifest = {
+                    version: 1,
+                    exportedAt: new Date().toISOString(),
+                    localStorage: dumpLocalStorage(),
+                    photos: photoRecords.map(function (record, index) {
+                        return {
+                            store: record.store,
+                            key: record.key,
+                            buildingId: record.buildingId,
+                            thumbnail: record.thumbnail,
+                            timestamp: record.timestamp,
+                            file: "blobs/" + index + ".jpg"
+                        };
+                    })
+                };
+
+                var writer = createZipWriter(sink);
+                return writer.addFile("manifest.json", new TextEncoder().encode(JSON.stringify(manifest)))
+                    .then(function () {
+                        return sequence(photoRecords, function (record, index) {
+                            var blob = record.blob;
+                            record.blob = null; // libère la référence dès qu'elle est lue
+                            return readBlobBytes(blob).then(function (bytes) {
+                                return writer.addFile("blobs/" + index + ".jpg", bytes);
+                            });
+                        });
+                    })
+                    .then(function () { return writer.finish(); });
+            });
+    }
+
+    // Ouvre la bonne sortie pour un export visible (web, Téléchargements natif,
+    // ou repli dossier de l'app + feuille de partage), y écrit, et nettoie en
+    // cas d'échec pour ne pas laisser un fichier à moitié écrit.
+    function writeZipExport(filename, build) {
+        var Filesystem = getFilesystemPlugin();
+        var openSink;
+
+        if (!Filesystem) {
+            openSink = Promise.resolve(createWebSink(filename));
+        } else {
+            var viaShare = function () {
+                var path = VISIBLE_EXPORT_SUBFOLDER + "/" + filename;
+                var sink = createFilesystemSink(Filesystem, path, VISIBLE_EXPORT_DIRECTORY);
+                sink.close = function () { return shareFileAtPath(path, filename); };
+                return sink;
+            };
+            var SaveToDownloads = getSaveToDownloadsPlugin();
+            openSink = SaveToDownloads
+                ? createDownloadsSink(SaveToDownloads, filename).catch(function (err) {
+                    console.warn("Enregistrement direct dans Téléchargements impossible, repli sur le partage :", err);
+                    return viaShare();
+                })
+                : Promise.resolve(viaShare());
+        }
+
+        return openSink.then(function (sink) {
+            return build(sink).catch(function (err) {
+                return sink.abort().then(function () { throw err; });
+            });
+        });
+    }
+
+    function exportBackup() {
+        var stamp = new Date().toISOString().slice(0, 10);
+        return runExclusive(function () {
+            return writeZipExport("vizion-sauvegarde-" + stamp + ".zip", buildBackupToSink);
+        });
+    }
+
     // Appelée après chaque sauvegarde de fiche (voir js/unsaved-guard.js).
-    // Ne fait rien : sur le web (pas de plugin natif), ou si une sauvegarde
+    // Ne fait rien : sur le web (pas de plugin natif), si une sauvegarde
     // automatique a déjà eu lieu il y a moins de AUTO_BACKUP_MIN_INTERVAL_MS
     // (évite de re-zipper toutes les photos à chaque frappe de sauvegarde
-    // rapprochée). Écrase toujours le même fichier — pas d'accumulation.
+    // rapprochée), ou si une autre sauvegarde est déjà en cours. Écrit dans un
+    // fichier temporaire puis le renomme : un plantage en cours d'écriture ne
+    // détruit jamais la dernière bonne sauvegarde. Écrase toujours le même
+    // fichier — pas d'accumulation.
     function autoBackupSilent() {
         var Filesystem = getFilesystemPlugin();
         if (!Filesystem) return Promise.resolve();
 
         var last = parseInt(localStorage.getItem(AUTO_BACKUP_LAST_KEY), 10) || 0;
         if (Date.now() - last < AUTO_BACKUP_MIN_INTERVAL_MS) return Promise.resolve();
+        if (backupBusy) return Promise.resolve();
 
-        return buildBackupZipBlob()
-            .then(function (blob) { return blobToBase64(blob); })
-            .then(function (base64) {
-                return Filesystem.writeFile({
-                    path: AUTO_BACKUP_FILENAME,
-                    data: base64,
-                    directory: AUTO_BACKUP_DIRECTORY,
-                    recursive: true
+        var tmpName = AUTO_BACKUP_FILENAME + ".tmp";
+
+        return runExclusive(function () {
+            var sink = createFilesystemSink(Filesystem, tmpName, AUTO_BACKUP_DIRECTORY);
+            return buildBackupToSink(sink)
+                .catch(function (err) {
+                    return sink.abort().then(function () { throw err; });
+                })
+                .then(function () {
+                    return Filesystem.deleteFile({ path: AUTO_BACKUP_FILENAME, directory: AUTO_BACKUP_DIRECTORY }).catch(function () {});
+                })
+                .then(function () {
+                    return Filesystem.rename({
+                        from: tmpName,
+                        to: AUTO_BACKUP_FILENAME,
+                        directory: AUTO_BACKUP_DIRECTORY,
+                        toDirectory: AUTO_BACKUP_DIRECTORY
+                    });
+                })
+                .then(function () {
+                    localStorage.setItem(AUTO_BACKUP_LAST_KEY, String(Date.now()));
+                })
+                .catch(function (err) {
+                    console.error("Sauvegarde automatique silencieuse échouée :", err);
                 });
-            })
-            .then(function () {
-                localStorage.setItem(AUTO_BACKUP_LAST_KEY, String(Date.now()));
-            })
-            .catch(function (err) {
-                console.error("Sauvegarde automatique silencieuse échouée :", err);
-            });
+        });
     }
 
     /* =========================
@@ -193,6 +476,25 @@ window.BackupManager = (function () {
     var VISIBLE_EXPORT_DIRECTORY = "EXTERNAL";
     var VISIBLE_EXPORT_SUBFOLDER = "ViZion";
 
+    // Ouvre la feuille de partage native sur un fichier déjà écrit dans le
+    // dossier de l'app (Directory.External).
+    function shareFileAtPath(path, filename) {
+        var Filesystem = getFilesystemPlugin();
+        return Filesystem.getUri({ path: path, directory: VISIBLE_EXPORT_DIRECTORY })
+            .then(function (uriResult) {
+                var Share = getSharePlugin();
+                if (!Share) return { native: true, shared: false, uri: uriResult.uri };
+                return Share.share({ title: filename, url: uriResult.uri })
+                    .catch(function (err) {
+                        // L'utilisateur peut simplement fermer la feuille de partage
+                        // sans rien choisir : ce n'est pas une erreur, le fichier est
+                        // déjà écrit sur l'appareil à ce stade.
+                        console.warn("Partage annulé ou échoué :", err);
+                    })
+                    .then(function () { return { native: true, shared: true, uri: uriResult.uri }; });
+            });
+    }
+
     // Repli : écrit le fichier dans le dossier propre à l'app puis ouvre la
     // feuille de partage native. Utilisé quand SaveToDownloads est absent
     // (Android < 10) ou échoue pour une raison quelconque.
@@ -209,36 +511,18 @@ window.BackupManager = (function () {
                     recursive: true
                 });
             })
-            .then(function () {
-                return Filesystem.getUri({ path: path, directory: VISIBLE_EXPORT_DIRECTORY });
-            })
-            .then(function (uriResult) {
-                var Share = getSharePlugin();
-                if (!Share) return { native: true, shared: false, uri: uriResult.uri };
-                return Share.share({ title: filename, url: uriResult.uri })
-                    .catch(function (err) {
-                        // L'utilisateur peut simplement fermer la feuille de partage
-                        // sans rien choisir : ce n'est pas une erreur, le fichier est
-                        // déjà écrit sur l'appareil à ce stade.
-                        console.warn("Partage annulé ou échoué :", err);
-                    })
-                    .then(function () { return { native: true, shared: true, uri: uriResult.uri }; });
-            });
+            .then(function () { return shareFileAtPath(path, filename); });
     }
 
+    // Pour les petits fichiers déjà en mémoire (rapport .xlsx/.json). Les
+    // sauvegardes complètes, potentiellement énormes, passent par
+    // writeZipExport (écriture par morceaux) et non par ici.
     function saveOrShareBlob(blob, filename) {
         var Filesystem = getFilesystemPlugin();
 
         if (!Filesystem) {
             // Web : téléchargement classique via un lien <a download>.
-            var url = URL.createObjectURL(blob);
-            var a = document.createElement("a");
-            a.href = url;
-            a.download = filename;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            setTimeout(function () { URL.revokeObjectURL(url); }, 10000);
+            downloadBlobInBrowser(blob, filename);
             return Promise.resolve({ native: false });
         }
 
@@ -293,7 +577,8 @@ window.BackupManager = (function () {
         exportBackup: exportBackup,
         importBackup: importBackup,
         autoBackupSilent: autoBackupSilent,
-        saveOrShareBlob: saveOrShareBlob
+        saveOrShareBlob: saveOrShareBlob,
+        createZipWriter: createZipWriter
     };
 
 })();

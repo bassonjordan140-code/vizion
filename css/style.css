@@ -22,7 +22,7 @@
 }
 
 .container::before {
-    content: "v2026.08.26-37";
+    content: "v2026.10.28-38";
     position: absolute;
     top: 14px;
     right: 14px;
