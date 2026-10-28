@@ -22,7 +22,7 @@
 }
 
 .container::before {
-    content: "v2026.10.28-40";
+    content: "v2026.10.28-41";
     position: absolute;
     top: 14px;
     right: 14px;
@@ -2300,4 +2300,276 @@ footer {
         padding-top: 0;
         margin-bottom: 4px;
     }
+}
+/* =========================
+   PLANS D'ÉVACUATION
+========================= */
+
+.plan-add-type-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 14px;
+}
+
+.plan-add-type-row input,
+.plan-type-name,
+.plan-name,
+.plan-selection-label,
+.plan-selection-type {
+    min-width: 0;
+    padding: 12px 14px;
+    border-radius: 14px;
+    border: 1px solid rgba(227, 205, 139, 0.28);
+    background: rgba(36, 46, 30, 0.42);
+    color: #F2ECD8;
+    font-size: 15px;
+    font-family: inherit;
+}
+
+.plan-add-type-row input {
+    flex: 1;
+}
+
+.plan-add-type-row .secondary-button {
+    width: auto;
+    padding: 12px 18px;
+    white-space: nowrap;
+}
+
+.plan-type-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.plan-type-swatch,
+.plan-palette-dot {
+    flex: none;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 2px solid #ffffff;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.45);
+}
+
+.plan-type-name {
+    flex: 1;
+}
+
+.plan-type-count {
+    flex: none;
+    color: #C4BEA8;
+    font-size: 13px;
+}
+
+.plan-type-delete,
+.plan-delete {
+    flex: none;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: 1px solid rgba(227, 205, 139, 0.20);
+    background: rgba(74, 90, 62, 0.60);
+    color: #DCD6C2;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.plan-type-delete:hover,
+.plan-delete:hover {
+    border-color: rgba(255, 120, 120, 0.45);
+    background: rgba(255, 120, 120, 0.10);
+    color: #ff9c9c;
+}
+
+.plan-card {
+    margin-bottom: 20px;
+    padding: 16px;
+    border-radius: 18px;
+    border: 1px solid rgba(227, 205, 139, 0.15);
+    background: linear-gradient(145deg, rgba(74, 90, 62, 0.35), rgba(36, 46, 30, 0.35));
+}
+
+.plan-card-head {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 14px;
+}
+
+.plan-name {
+    flex: 1;
+    font-weight: 600;
+}
+
+.plan-palette {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.plan-palette-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px 8px 8px;
+    border-radius: 999px;
+    border: 1px solid rgba(227, 205, 139, 0.30);
+    background: transparent;
+    color: #DCD6C2;
+    font-size: 14px;
+    font-family: inherit;
+    cursor: pointer;
+}
+
+.plan-palette-chip.active {
+    border-color: #E3CD8B;
+    background: rgba(227, 205, 139, 0.20);
+    color: #F2ECD8;
+    font-weight: 700;
+}
+
+.plan-palette-count {
+    min-width: 18px;
+    padding: 1px 6px;
+    border-radius: 999px;
+    background: rgba(0, 0, 0, 0.30);
+    font-size: 12px;
+    text-align: center;
+}
+
+.plan-hint-inline {
+    color: #C4BEA8;
+    font-size: 13px;
+}
+
+.plan-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.plan-small-button {
+    padding: 9px 14px;
+    border-radius: 12px;
+    border: 1px solid rgba(227, 205, 139, 0.32);
+    background: rgba(227, 205, 139, 0.14);
+    color: #F2ECD8;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+}
+
+.plan-small-button.danger {
+    border-color: rgba(255, 120, 120, 0.45);
+    color: #ff9c9c;
+}
+
+.plan-zoom-label {
+    min-width: 52px;
+    color: #DCD6C2;
+    font-size: 14px;
+    text-align: center;
+}
+
+.plan-viewport {
+    max-height: 70vh;
+    overflow: auto;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    background: #ffffff;
+    -webkit-overflow-scrolling: touch;
+}
+
+.plan-stage {
+    position: relative;
+    cursor: crosshair;
+}
+
+.plan-image {
+    display: block;
+    width: 100%;
+    height: auto;
+    user-select: none;
+    -webkit-user-drag: none;
+    pointer-events: none;
+}
+
+.plan-dots {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+}
+
+.plan-dot {
+    position: absolute;
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    border: 3px solid #ffffff;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.55), 0 2px 5px rgba(0, 0, 0, 0.45);
+    cursor: pointer;
+    pointer-events: auto;
+}
+
+.plan-dot.selected {
+    box-shadow: 0 0 0 3px #111111, 0 0 0 6px #E3CD8B;
+}
+
+.plan-dot-label {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-top: 3px;
+    color: #111111;
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1;
+    white-space: nowrap;
+    text-shadow: 0 0 3px #ffffff, 0 0 3px #ffffff, 0 0 3px #ffffff;
+    pointer-events: none;
+}
+
+.plan-selection {
+    margin-top: 12px;
+    padding: 14px;
+    border-radius: 14px;
+    border: 1px solid rgba(227, 205, 139, 0.30);
+    background: rgba(36, 46, 30, 0.45);
+}
+
+.plan-selection-fields {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.plan-selection-fields > * {
+    flex: 1 1 160px;
+}
+
+.plan-selection-type option {
+    background: #242E1E;
+    color: #F2ECD8;
+}
+
+.plan-selection-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.plan-hint {
+    margin: 12px 0 0;
+    color: #C4BEA8;
+    font-size: 13px;
+    line-height: 1.5;
 }

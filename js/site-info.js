@@ -2,7 +2,8 @@
    ViZion — Informations du site
    Premier écran d'un hôtel (nouveau ou repris tant que non validé) :
    coordonnées du site + contacts, avant de passer à l'ajout des
-   bâtiments (pages/buildings.html). "Valider et continuer" marque
+   plans d'évacuation (pages/plans.html) puis des bâtiments
+   (pages/buildings.html). "Valider et continuer" marque
    siteInfo.confirmed pour que js/select-hotel.js saute directement
    à buildings.html la prochaine fois qu'on rouvre cet hôtel.
 ============================================================ */
@@ -274,7 +275,7 @@ document.getElementById("validateSiteInfoBtn").addEventListener("click", functio
     saveSiteInfo();
     var current = ReportExport.getSiteInfo();
     ReportExport.setSiteInfo(Object.assign({}, current, { confirmed: true }));
-    window.location.href = "buildings.html";
+    window.location.href = "plans.html";
 });
 
 /* =========================

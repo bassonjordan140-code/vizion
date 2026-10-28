@@ -44,6 +44,16 @@
             Aucun bâtiment pour l'instant — ajoutez-en un ci-dessous.
         </p>
 
+        <!-- Plans d'évacuation (étape avant les bâtiments) -->
+        <div class="dashboard-card" id="plansCard" tabindex="0" role="button"
+             onclick="window.location.href='plans.html'">
+            <div class="dashboard-header">
+                <strong>Plans d'évacuation</strong>
+                <span id="plansCardStatus">à faire</span>
+            </div>
+            <small id="plansCardHint">Repérer les types de chambres sur les plans</small>
+        </div>
+
         <div class="module-detail-card">
             <h2 class="section-title">Ajouter un bâtiment</h2>
             <div class="field-group">
@@ -119,6 +129,7 @@
     <script src="../js/photo-manager.js"></script>
     <script src="../js/building-manager.js"></script>
     <script src="../js/hotel-manager.js"></script>
+    <script src="../js/plans-manager.js"></script>
     <script src="../js/backup-manager.js"></script>
     <script src="../js/progress.js"></script>
     <script src="../js/export-github.js"></script>

@@ -134,6 +134,11 @@ window.HotelManager = (function () {
             });
         });
 
+        // Plans d'évacuation de l'hôtel (rangés dans l'archive sous "plans_<index>").
+        chain = chain.then(function () {
+            return PhotoManager.deleteArchivedPhotosForBuilding("plans_" + hotelIndex);
+        });
+
         localStorage.removeItem(hotelSnapshotKey(hotelIndex));
 
         var started = listStartedHotelIndexes().filter(function (idx) { return idx !== hotelIndex; });

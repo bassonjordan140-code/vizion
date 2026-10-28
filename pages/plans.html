@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Plans d'évacuation</title>
+
+    <link rel="stylesheet"
+          href="../css/style.css">
+</head>
+
+<body>
+
+    <div class="container">
+
+        <div class="page-nav-row">
+        <button class="back-icon-button"
+                onclick="window.location.href='site-info.html'"
+                aria-label="Retour aux informations du site">
+            ←
+        </button>
+
+        <button class="back-icon-button" onclick="window.location.href='site-info.html'" aria-label="Informations du site">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 11.5 12 4l8 7.5"></path>
+                <path d="M6 10v9a1 1 0 0 0 1 1h3v-6h4v6h3a1 1 0 0 0 1-1v-9"></path>
+            </svg>
+        </button>
+        </div>
+
+        <h1>Plans d'évacuation</h1>
+
+        <p class="subtitle">
+            Repérez les chambres sur les plans d'évacuation : un type de chambre, une couleur.
+            Cette étape est facultative.
+        </p>
+
+        <!-- 1. Types de chambres -->
+        <div class="module-detail-card">
+            <h2 class="section-title">1. Types de chambres</h2>
+            <p class="section-hint">
+                Ajoutez les types de pièces de l'hôtel. Une couleur est attribuée
+                automatiquement à chacun.
+            </p>
+
+            <div id="typeSuggestions" class="contact-suggestions"></div>
+
+            <div id="typesList"></div>
+
+            <div class="plan-add-type-row">
+                <input type="text" id="newTypeInput" placeholder="Ex : Bungalow, Studio…" maxlength="40">
+                <button type="button" id="addTypeBtn" class="secondary-button">+ Ajouter</button>
+            </div>
+        </div>
+
+        <!-- 2. Plans -->
+        <div class="module-detail-card">
+            <h2 class="section-title">2. Plans d'évacuation</h2>
+            <p class="section-hint">
+                Photographiez un plan (un par niveau ou par bâtiment si besoin), puis
+                posez les points de couleur sur les chambres.
+            </p>
+
+            <div id="plansList"></div>
+
+            <p id="plansError" class="export-status"></p>
+
+            <div class="photo-widget-capture-group">
+                <label class="photo-widget-capture">
+                    <input type="file" accept="image/*" capture="environment" class="photo-widget-input" id="planCameraInput">
+                    <span class="photo-widget-label">📷 Photographier un plan</span>
+                </label>
+                <label class="photo-widget-capture">
+                    <input type="file" accept="image/*" class="photo-widget-input" id="planGalleryInput">
+                    <span class="photo-widget-label">🖼️ Choisir dans la galerie</span>
+                </label>
+            </div>
+        </div>
+
+        <button type="button" id="continueBtn" class="primary-button">
+            Continuer vers les bâtiments →
+        </button>
+
+    </div>
+
+    <script src="../js/photo-manager.js"></script>
+    <script src="../js/hotel-manager.js"></script>
+    <script src="../js/plans-manager.js"></script>
+    <script src="../js/plans.js"></script>
+
+    <script>
+        document.addEventListener("touchstart", function () {}, { passive: true });
+    </script>
+
+</body>
+
+</html>

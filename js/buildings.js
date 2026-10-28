@@ -17,6 +17,21 @@ document.getElementById("backToHotelsButton").addEventListener("click", function
 });
 
 /* =========================
+   PLANS D'ÉVACUATION
+   Résumé de l'étape (pages/plans.html) : plans ajoutés et points posés.
+========================= */
+
+(function renderPlansCard() {
+    var data = PlansManager.getData();
+    var nbPlans = data.plans.length;
+    var nbPoints = PlansManager.totalPoints(data);
+    document.getElementById("plansCardStatus").textContent = nbPlans ? "✅" : "à faire";
+    document.getElementById("plansCardHint").textContent = nbPlans
+        ? nbPlans + " plan" + (nbPlans > 1 ? "s" : "") + " — " + nbPoints + " chambre" + (nbPoints > 1 ? "s" : "") + " repérée" + (nbPoints > 1 ? "s" : "")
+        : "Repérer les types de chambres sur les plans";
+})();
+
+/* =========================
    LISTE DES BÂTIMENTS
 ========================= */
 

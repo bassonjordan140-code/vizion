@@ -212,6 +212,51 @@ window.PhotoManager = (function () {
         });
     }
 
+    // Photo rangée directement dans l'archive sous un identifiant de "casier"
+    // arbitraire (ex: "plans_3" pour les plans d'évacuation de l'hôtel 3) : elle
+    // n'est jamais échangée avec le store actif et suit donc l'hôtel, pas le
+    // bâtiment ouvert. Sauvegardes et restaurations la couvrent déjà (store
+    // photos_archive).
+    function putArchivedPhoto(bucketId, key, blob) {
+        return openDB().then(function (db) {
+            return new Promise(function (resolve, reject) {
+                var tx = db.transaction(ARCHIVE_STORE_NAME, "readwrite");
+                tx.objectStore(ARCHIVE_STORE_NAME).put({
+                    archiveKey: bucketId + "::" + key,
+                    buildingId: bucketId,
+                    key: key,
+                    blob: blob,
+                    thumbnail: null,
+                    timestamp: Date.now()
+                });
+                tx.oncomplete = function () { resolve(); };
+                tx.onerror = function () { reject(tx.error); };
+            });
+        });
+    }
+
+    function getArchivedPhoto(bucketId, key) {
+        return openDB().then(function (db) {
+            return new Promise(function (resolve, reject) {
+                var req = db.transaction(ARCHIVE_STORE_NAME, "readonly")
+                    .objectStore(ARCHIVE_STORE_NAME).get(bucketId + "::" + key);
+                req.onsuccess = function () { resolve(req.result ? req.result.blob : null); };
+                req.onerror = function () { reject(req.error); };
+            });
+        });
+    }
+
+    function deleteArchivedPhoto(bucketId, key) {
+        return openDB().then(function (db) {
+            return new Promise(function (resolve, reject) {
+                var tx = db.transaction(ARCHIVE_STORE_NAME, "readwrite");
+                tx.objectStore(ARCHIVE_STORE_NAME).delete(bucketId + "::" + key);
+                tx.oncomplete = function () { resolve(); };
+                tx.onerror = function () { reject(tx.error); };
+            });
+        });
+    }
+
     // Vide entièrement le store actif ET l'archive (remise à zéro complète, tous bâtiments confondus).
     function clearAllPhotosAndArchive() {
         return openDB().then(function (db) {
@@ -542,7 +587,11 @@ window.PhotoManager = (function () {
         clearAllPhotosAndArchive: clearAllPhotosAndArchive,
         exportAllPhotoRecords: exportAllPhotoRecords,
         importAllPhotoRecords: importAllPhotoRecords,
-        putPhotoRecords: putPhotoRecords
+        putPhotoRecords: putPhotoRecords,
+        putArchivedPhoto: putArchivedPhoto,
+        getArchivedPhoto: getArchivedPhoto,
+        deleteArchivedPhoto: deleteArchivedPhoto,
+        resizeImage: resizeImage
     };
 
 })();

@@ -166,8 +166,14 @@ window.ReportExport = (function () {
 
     // buildingsPhotos = [{ id, nom, photos }, ...] — voir BuildingManager.collectAllBuildingsPhotos.
     // Un sous-dossier par bâtiment dans le zip, pour éviter toute collision de nom de fichier.
-    function buildPhotosZip(buildingsPhotos) {
+    // planFiles = [{ name, blob }, ...] — plans d'évacuation annotés (voir
+    // PlansManager.collectExportFiles), rangés dans un dossier "plans".
+    function buildPhotosZip(buildingsPhotos, planFiles) {
         var zip = new JSZip();
+        if (planFiles && planFiles.length) {
+            var plansFolder = zip.folder("plans");
+            planFiles.forEach(function (file) { plansFolder.file(file.name, file.blob); });
+        }
         buildingsPhotos.forEach(function (building) {
             if (!building.photos.length) return;
             var folder = zip.folder((building.nom || building.id).replace(/[\\/]/g, "-"));
@@ -237,13 +243,16 @@ window.ReportExport = (function () {
     // photo en mémoire à la fois. Avant, toutes les photos étaient zippées en
     // mémoire (deux fois : photos.zip puis l'archive finale) puis converties en
     // base64 : sur un gros audit, la mémoire de l'appareil était dépassée.
-    function deliverReportNative(xlsxBlob, jsonBlob, buildingsPhotos, onProgress) {
+    function deliverReportNative(xlsxBlob, jsonBlob, buildingsPhotos, planFiles, onProgress) {
         var stamp = new Date().toISOString().slice(0, 10);
         var filename = "vizion-rapport-" + stamp + ".zip";
 
         return BackupManager.exportZipFile(filename, function (zip) {
             var jobs = [];
             var usedFolders = {};
+            (planFiles || []).forEach(function (file) {
+                jobs.push({ path: "plans/" + file.name, photo: { blob: file.blob } });
+            });
             buildingsPhotos.forEach(function (building) {
                 if (!building.photos.length) return;
                 var folder = uniqueFolderName(building, usedFolders);
@@ -273,7 +282,7 @@ window.ReportExport = (function () {
     function nativeDeliveryMessage(delivery) {
         if (delivery.downloads) {
             return "Rapport enregistré dans Téléchargements (" + delivery.filename +
-                " : rapport.xlsx, audit.json et dossier photos).";
+                " : rapport.xlsx, audit.json, plans et dossier photos).";
         }
         if (delivery.shared) {
             return "Rapport prêt (" + delivery.filename + ") : choisissez où l'envoyer ou l'enregistrer.";
@@ -302,12 +311,17 @@ window.ReportExport = (function () {
 
             if (onProgress) onProgress("Préparation des photos...");
 
-            return BuildingManager.collectAllBuildingsPhotos().then(function (buildingsPhotos) {
+            return Promise.all([
+                BuildingManager.collectAllBuildingsPhotos(),
+                PlansManager.collectExportFiles()
+            ]).then(function (collected) {
+                var buildingsPhotos = collected[0];
+                var planFiles = collected[1];
 
                 // photos.zip en mémoire seulement quand c'est nécessaire : téléchargement
                 // web, ou copie GitHub (optionnelle). L'app native écrit l'archive par morceaux.
                 var needsPhotosZip = !native || !!ExportGitHub.getToken();
-                var zipPromise = needsPhotosZip ? buildPhotosZip(buildingsPhotos) : Promise.resolve(null);
+                var zipPromise = needsPhotosZip ? buildPhotosZip(buildingsPhotos, planFiles) : Promise.resolve(null);
 
                 return zipPromise.then(function (zipBlob) {
 
@@ -333,7 +347,7 @@ window.ReportExport = (function () {
                             return deliverReportFilesWeb(xlsxBlob, jsonBlob, zipBlob).then(function () { return r; });
                         }
                         zipBlob = null;
-                        return deliverReportNative(xlsxBlob, jsonBlob, buildingsPhotos, onProgress).then(function (delivery) {
+                        return deliverReportNative(xlsxBlob, jsonBlob, buildingsPhotos, planFiles, onProgress).then(function (delivery) {
                             r.detail = nativeDeliveryMessage(delivery) +
                                 (r.channel === "github" ? " Une copie a aussi été envoyée sur GitHub." : "");
                             return r;
