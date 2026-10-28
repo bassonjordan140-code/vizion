@@ -22,7 +22,7 @@
 }
 
 .container::before {
-    content: "v2026.10.28-41";
+    content: "v2026.10.28-42";
     position: absolute;
     top: 14px;
     right: 14px;
@@ -2572,4 +2572,9 @@ footer {
     color: #C4BEA8;
     font-size: 13px;
     line-height: 1.5;
+}
+
+/* Carte d'accès aux plans (hors .dashboard-list) : même écart que les autres cartes. */
+#plansCard {
+    margin-top: 18px;
 }
