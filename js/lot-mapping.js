@@ -83,10 +83,21 @@ window.LotMapping = (function () {
        HELPERS DE LIGNE
     ========================= */
 
+    // opts.unitePuissance = "kW" pour les fiches dont le champ puissance se saisit
+    // en kW (pompes de piscine, chauffage piscine, calandre, ventilation et bornes
+    // de parking) : "puissance" reste telle que saisie (le rapport.xlsx n'a pas
+    // changé), "puissanceW" donne toujours des watts (voir ReportExport.buildLignes).
+    function toWatts(puissance, unite) {
+        if (puissance === undefined || puissance === null || puissance === "") return null;
+        return unite === "kW" ? Math.round(puissance * 1000 * 1000) / 1000 : puissance;
+    }
+
     function makeRow(opts) {
         return {
             localisation: opts.localisation || "",
             secteur: opts.secteur || "",
+            puissanceW: toWatts(opts.puissance, opts.unitePuissance),
+            unitePuissance: opts.unitePuissance || "W",
             puissance: (opts.puissance === undefined || opts.puissance === null || opts.puissance === "") ? null : opts.puissance,
             nombre: (opts.nombre === undefined || opts.nombre === null || opts.nombre === "") ? null : opts.nombre,
             description: opts.description || "",
@@ -162,11 +173,27 @@ window.LotMapping = (function () {
     // (cuisine, salle de jeux, salle de sport, bureaux) — lot choisi par
     // l'utilisateur à la saisie (ou suggéré depuis EquipmentDatabase) ; "Autres"
     // en dernier recours si aucun lot n'a été renseigné (anciennes fiches).
+    // "Mirco onde" et "Micro-ondes" doivent sortir sous le même nom (voir
+    // EquipmentDatabase.canonicalName) ; sans la base chargée, le nom reste tel quel.
+    function canonicalEquipmentName(nom) {
+        return window.EquipmentDatabase ? EquipmentDatabase.canonicalName(nom) : nom;
+    }
+
+    // Lot déduit du nom quand l'équipement n'en porte pas (checklist de la fiche
+    // hébergement, ancienne saisie) : table de la fiche hébergement, sinon base
+    // d'équipements connus. Chaîne vide si le nom n'est reconnu nulle part.
+    function defaultLotFor(nom) {
+        var canon = canonicalEquipmentName(nom);
+        if (HEBERGEMENT_EQUIP_LOT[canon]) return HEBERGEMENT_EQUIP_LOT[canon];
+        var match = window.EquipmentDatabase && EquipmentDatabase.findMatch ? EquipmentDatabase.findMatch(nom) : null;
+        return match ? match.lot : "";
+    }
+
     function addCustomEquipementsRows(rows, equipementsPersonnalises, ctx) {
         (equipementsPersonnalises || []).forEach(function (eq) {
             rows.push(makeRow({
                 localisation: ctx.localisation, secteur: ctx.secteur,
-                puissance: eq.puissance, nombre: eq.nombre, description: eq.nom, lot: eq.lot || "9-1",
+                puissance: eq.puissance, nombre: eq.nombre, description: canonicalEquipmentName(eq.nom), lot: eq.lot || defaultLotFor(eq.nom) || "9-1",
                 formulaireOrigine: ctx.formulaireOrigine, nomFormulaire: ctx.nomFormulaire
             }));
         });
@@ -251,10 +278,10 @@ window.LotMapping = (function () {
             rows.push(makeRow({
                 localisation: localisation, secteur: ctx.secteur,
                 puissance: eq.puissance, nombre: (eq.nombre || 0) * mult,
-                description: eq.nom,
+                description: canonicalEquipmentName(eq.nom),
                 // Équipement libre : lot choisi par l'utilisateur (eq.lot) en priorité.
                 // Sinon (checklist fixe, sans sélecteur de lot), lot connu du nom.
-                lot: eq.lot || HEBERGEMENT_EQUIP_LOT[eq.nom] || "9-1",
+                lot: eq.lot || defaultLotFor(eq.nom) || "9-1",
                 formulaireOrigine: ctx.formulaireOrigine, nomFormulaire: ctx.nomFormulaire
             }));
         });
@@ -346,7 +373,7 @@ window.LotMapping = (function () {
         (fiche.pompes || []).forEach(function (p) {
             rows.push(makeRow({
                 localisation: localisation, secteur: ctx.secteur,
-                puissance: p.puissance, nombre: 1,
+                puissance: p.puissance, unitePuissance: "kW", nombre: 1,
                 description: "Pompe de filtration (" + (p.duree || "?") + " h/jour, période : " +
                     (p.periode || "non précisée") + (p.variateur ? ", variateur de vitesse" : ", sans variateur de vitesse") + ")",
                 lot: "4-1", formulaireOrigine: ctx.formulaireOrigine, nomFormulaire: ctx.nomFormulaire
@@ -356,7 +383,7 @@ window.LotMapping = (function () {
         if (fiche.chauffee === "oui" && fiche.typeChauffe) {
             rows.push(makeRow({
                 localisation: localisation, secteur: ctx.secteur, nombre: 1,
-                puissance: fiche.chauffagePuissance,
+                puissance: fiche.chauffagePuissance, unitePuissance: "kW",
                 description: "Chauffage piscine (" + fiche.typeChauffe + ", consigne " + (fiche.temperatureConsigne || "?") +
                     "°C, période : " + (fiche.periodeChauffage || "non précisée") + ")",
                 lot: PISCINE_CHAUFFE_LOT[fiche.typeChauffe] || "9-1",
@@ -498,7 +525,7 @@ window.LotMapping = (function () {
             (b.pompes || []).forEach(function (p) {
                 rows.push(makeRow({
                     localisation: localisation, secteur: ctx.secteur,
-                    puissance: p.puissance, nombre: 1,
+                    puissance: p.puissance, unitePuissance: "kW", nombre: 1,
                     description: "Pompe bain à remous (" + (p.duree || "?") + " h/jour)",
                     lot: "4-1", formulaireOrigine: ctx.formulaireOrigine, nomFormulaire: ctx.nomFormulaire
                 }));
@@ -543,9 +570,11 @@ window.LotMapping = (function () {
        6. BUANDERIE
     ========================= */
 
-    var SECHE_LINGE_LOT = {
-        "Résistance électrique": "3-1", "Pompe à chaleur": "10-5", "Gaz": "3-2"
-    };
+    // Lave-linge, sèche-linge et calandre n'ont pas de famille de lots à eux dans la
+    // nomenclature : ils sont rattachés explicitement à "Forces motrices" (7-1),
+    // plutôt que de finir en "Autres" ou dans la cuisine. Le type d'énergie du
+    // sèche-linge reste dans la description.
+    var BLANCHISSERIE_LOT = "7-1";
 
     function extractBuanderieRows(fiche, numero) {
         var rows = [];
@@ -560,7 +589,7 @@ window.LotMapping = (function () {
                 localisation: localisation, secteur: ctx.secteur, nombre: fiche.laveLinge.nombre,
                 puissance: fiche.laveLinge.puissance,
                 description: "Lave-linge (" + (fiche.laveLinge.capaciteKg || "?") + " kg)",
-                lot: "3-3", formulaireOrigine: ctx.formulaireOrigine, nomFormulaire: ctx.nomFormulaire
+                lot: BLANCHISSERIE_LOT, formulaireOrigine: ctx.formulaireOrigine, nomFormulaire: ctx.nomFormulaire
             }));
         }
         if (fiche.secheLinge && fiche.secheLinge.nombre) {
@@ -568,15 +597,15 @@ window.LotMapping = (function () {
                 localisation: localisation, secteur: ctx.secteur,
                 puissance: fiche.secheLinge.puissance, nombre: fiche.secheLinge.nombre,
                 description: "Sèche-linge (" + (fiche.secheLinge.capaciteKg || "?") + " kg, " + (fiche.secheLinge.typeEnergie || "?") + ")",
-                lot: SECHE_LINGE_LOT[fiche.secheLinge.typeEnergie] || "9-1",
+                lot: BLANCHISSERIE_LOT,
                 formulaireOrigine: ctx.formulaireOrigine, nomFormulaire: ctx.nomFormulaire
             }));
         }
         if (fiche.calandre && (fiche.calandre.presente === "oui" || fiche.calandre.presente === true)) {
             rows.push(makeRow({
                 localisation: localisation, secteur: ctx.secteur,
-                puissance: fiche.calandre.puissance, nombre: 1,
-                description: "Calandre / repasseuse", lot: "7-1",
+                puissance: fiche.calandre.puissance, unitePuissance: "kW", nombre: 1,
+                description: "Calandre / repasseuse", lot: BLANCHISSERIE_LOT,
                 formulaireOrigine: ctx.formulaireOrigine, nomFormulaire: ctx.nomFormulaire
             }));
         }
@@ -774,7 +803,7 @@ window.LotMapping = (function () {
         if (fiche.ventilation && fiche.ventilation.presente) {
             rows.push(makeRow({
                 localisation: localisation, secteur: ctx.secteur,
-                puissance: fiche.ventilation.puissance, nombre: 1,
+                puissance: fiche.ventilation.puissance, unitePuissance: "kW", nombre: 1,
                 description: "Ventilation parking (" + (fiche.ventilation.mode || "?") + ")",
                 lot: "13", formulaireOrigine: ctx.formulaireOrigine, nomFormulaire: ctx.nomFormulaire
             }));
@@ -782,7 +811,7 @@ window.LotMapping = (function () {
         if (fiche.bornesVE && fiche.bornesVE.presentes) {
             rows.push(makeRow({
                 localisation: localisation, secteur: ctx.secteur,
-                puissance: fiche.bornesVE.puissance, nombre: fiche.bornesVE.nombre,
+                puissance: fiche.bornesVE.puissance, unitePuissance: "kW", nombre: fiche.bornesVE.nombre,
                 description: "Bornes de recharge VE", lot: "7-1",
                 formulaireOrigine: ctx.formulaireOrigine, nomFormulaire: ctx.nomFormulaire
             }));
@@ -869,8 +898,19 @@ window.LotMapping = (function () {
     return {
         LOTS: LOTS,
         lotNom: lotNom,
+        defaultLotFor: defaultLotFor,
         lotSelectOptionsHTML: lotSelectOptionsHTML,
         buildAllRows: buildAllRows,
+        // Lignes d'UNE fiche (même règles que buildAllRows) ; tableau vide pour un
+        // module inconnu.
+        extractFiche: function (moduleId, fiche, numero, customLabel) {
+            var extractor = EXTRACTORS[moduleId];
+            if (extractor) return extractor(fiche, numero);
+            if (typeof isCustomSecteurId === "function" && isCustomSecteurId(moduleId)) {
+                return extractCustomRows(fiche, numero, customLabel || "Secteur personnalisé");
+            }
+            return [];
+        },
         cuisineEquipLabel: cuisineEquipLabel
     };
 

@@ -551,13 +551,35 @@ window.PhotoManager = (function () {
 
     // Remplace tous les <div class="photo-slot" data-photo-field="xxx">
     // par un vrai widget avec la clé complète module_numero_field
+    // Unités de clim : une zone pour l'unité extérieure, une pour l'intérieure
+    // (rôles clim_ue / clim_ui dans le nom des photos exportées), plusieurs
+    // photos possibles dans chacune. Les anciennes fiches ont leurs photos sous
+    // le rôle unique "clim" : tant qu'il en reste une, on l'affiche à part pour
+    // qu'elle reste visible et supprimable.
+    var MULTI_PHOTO_FIELDS = { clim_ue: true, clim_ui: true };
+
+    function showLegacyClimPhotos(slot, moduleId, numero) {
+        var legacyKey = moduleId + "_" + numero + "_clim";
+        getAllPhotos().then(function (photos) {
+            var hasLegacy = photos.some(function (p) {
+                return p.key === legacyKey || p.key.indexOf(legacyKey + "_photo") === 0;
+            });
+            if (!hasLegacy) return;
+            var block = document.createElement("div");
+            block.className = "field-group";
+            block.innerHTML = '<label>Photos de clim déjà prises (ancienne saisie)</label>' + createMultiPhotoWidget(legacyKey);
+            slot.parentNode.parentNode.insertBefore(block, slot.parentNode);
+            bindAll(block);
+        });
+    }
+
     function initPage(moduleId, numero) {
         var slots = document.querySelectorAll(".photo-slot[data-photo-field]");
         slots.forEach(function (slot) {
             var field = slot.getAttribute("data-photo-field");
             var key = moduleId + "_" + numero + "_" + field;
-            // Clim : plusieurs photos possibles (ex: unité intérieure + extérieure).
-            slot.innerHTML = field === "clim" ? createMultiPhotoWidget(key) : createPhotoWidget(key);
+            slot.innerHTML = MULTI_PHOTO_FIELDS[field] ? createMultiPhotoWidget(key) : createPhotoWidget(key);
+            if (field === "clim_ue") showLegacyClimPhotos(slot, moduleId, numero);
         });
         // Bind les widgets statiques
         bindAll();

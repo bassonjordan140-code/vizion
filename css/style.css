@@ -22,7 +22,7 @@
 }
 
 .container::before {
-    content: "v2026.10.28-42";
+    content: "v2026.10.29-43";
     position: absolute;
     top: 14px;
     right: 14px;
@@ -2577,4 +2577,113 @@ footer {
 /* Carte d'accès aux plans (hors .dashboard-list) : même écart que les autres cartes. */
 #plansCard {
     margin-top: 18px;
+}
+
+/* =========================
+   COMPLÉMENTS DE FICHE (js/fiche-extras.js)
+   Une carte repliable par groupe de champs facultatifs.
+========================= */
+
+.extras-card .section-title {
+    margin-bottom: 12px;
+}
+
+.extras-card > .section-hint {
+    margin-top: 0;
+    margin-bottom: 16px;
+}
+
+.extras-groups {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 6px;
+}
+
+.extras-group {
+    border-radius: 16px;
+    border: 1px solid rgba(227, 205, 139, 0.22);
+    background: rgba(36, 46, 30, 0.35);
+}
+
+.extras-group.has-values {
+    border-color: rgba(227, 205, 139, 0.45);
+}
+
+.extras-summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 16px 18px;
+    color: #F2ECD8;
+    font-weight: 700;
+    cursor: pointer;
+    list-style: none;
+}
+
+.extras-summary::-webkit-details-marker {
+    display: none;
+}
+
+.extras-summary::after {
+    content: "▾";
+    color: #C4BEA8;
+    transition: transform 0.2s;
+}
+
+.extras-group[open] > .extras-summary::after {
+    transform: rotate(180deg);
+}
+
+.extras-badge {
+    margin-left: auto;
+    color: #C4BEA8;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.extras-body {
+    padding: 0 18px 18px;
+}
+
+.extras-body .section-hint {
+    margin-top: 0;
+    margin-bottom: 16px;
+}
+
+.extras-fields {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px 12px;
+}
+
+.extras-fields .field-group {
+    margin-bottom: 12px;
+}
+
+.extras-item {
+    margin-bottom: 14px;
+    padding: 14px;
+    border-radius: 14px;
+    border: 1px solid rgba(227, 205, 139, 0.18);
+    background: rgba(36, 46, 30, 0.35);
+}
+
+.extras-item-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    color: #F2ECD8;
+}
+
+.extras-suggest-btn {
+    margin-top: 10px;
+}
+
+@media (max-width: 480px) {
+    .extras-fields {
+        grid-template-columns: 1fr;
+    }
 }

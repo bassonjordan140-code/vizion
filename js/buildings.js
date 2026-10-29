@@ -160,6 +160,7 @@ function renderEquipmentIssues(issues) {
         var manque = [];
         if (issue.missingNombre) manque.push("nombre");
         if (issue.missingPuissance) manque.push("puissance unitaire");
+        if (issue.missingLot) manque.push("lot de travaux");
 
         var row = document.createElement("div");
         row.className = "equipment-issue-row";

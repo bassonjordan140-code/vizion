@@ -18,6 +18,11 @@ window.ReportExport = (function () {
         "Nom du formulaire saisi"
     ];
 
+    var FONCTIONNEMENT_HEADERS = [
+        "Bâtiment", "Secteur", "Localisation", "Lot", "Lot:Nom",
+        "Heures par jour", "Jours par an", "Heures par an", "Simultanéité", "Taux d'utilisation"
+    ];
+
     var LOTS_HEADERS = ["Index", "Nom", "Contact", "Tel", "ABR", "Email", "Entreprise", "Adresse"];
 
     var PAGE_GARDE_HEADERS = ["Index", "Type construction", "Adresse"];
@@ -125,6 +130,26 @@ window.ReportExport = (function () {
         var wsObs = XLSX.utils.aoa_to_sheet(obsData);
         XLSX.utils.book_append_sheet(wb, wsObs, "Observations");
 
+        // --- Fonctionnement --- (régime par lot : heures, simultanéité, taux d'utilisation).
+        // Feuille ajoutée seulement si au moins un régime a été saisi : sans saisie,
+        // le classeur reste exactement celui d'avant.
+        var fonctionnementData = [FONCTIONNEMENT_HEADERS];
+        buildingsAuditData.forEach(function (building) {
+            buildFonctionnement(building).forEach(function (f) {
+                fonctionnementData.push([
+                    building.nom, f.secteur, f.localisation, f.lot, f.lotNom,
+                    f.heuresParJour === null ? "" : f.heuresParJour,
+                    f.joursParAn === null ? "" : f.joursParAn,
+                    f.heuresParAn === null ? "" : f.heuresParAn,
+                    f.simultaneite === null ? "" : f.simultaneite,
+                    f.tauxUtilisation === null ? "" : f.tauxUtilisation
+                ]);
+            });
+        });
+        if (fonctionnementData.length > 1) {
+            XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(fonctionnementData), "Fonctionnement");
+        }
+
         var wbArray = XLSX.write(wb, { bookType: "xlsx", type: "array" });
         return new Blob([wbArray], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
     }
@@ -137,6 +162,164 @@ window.ReportExport = (function () {
        machines, etc. — utile pour ré-exploiter l'audit ailleurs qu'Excel.
     ========================= */
 
+    // Fiches d'un bâtiment à plat : [{ moduleId, numero, fiche }, ...] — mêmes
+    // règles que LotMapping.buildAllRows (modules inconnus ignorés).
+    function listFiches(building) {
+        var fiches = [];
+        Object.keys(building.donnees || {}).forEach(function (moduleId) {
+            var moduleData = building.donnees[moduleId] || {};
+            Object.keys(moduleData).forEach(function (numero) {
+                if (moduleData[numero]) fiches.push({ moduleId: moduleId, numero: numero, fiche: moduleData[numero] });
+            });
+        });
+        return fiches;
+    }
+
+    function ratio(percent) {
+        return typeof percent === "number" ? Math.round(percent) / 100 : null;
+    }
+
+    // Régime de fonctionnement saisi sur la fiche, par lot : heures par jour, jours
+    // par an, heures par an (calculées), simultanéité et taux d'utilisation en
+    // fractions de 1 (0,7 = 70 %). Les valeurs non saisies sont null.
+    function regimesByLot(fiche) {
+        var byLot = {};
+        ((fiche.complements && fiche.complements.regimes) || []).forEach(function (r) {
+            if (!r.lot) return;
+            var hj = typeof r.heuresParJour === "number" ? r.heuresParJour : null;
+            var ja = typeof r.joursParAn === "number" ? r.joursParAn : null;
+            byLot[r.lot] = {
+                heuresParJour: hj,
+                joursParAn: ja,
+                heuresParAn: hj !== null && ja !== null ? Math.round(hj * ja * 10) / 10 : null,
+                simultaneite: ratio(r.simultaneite),
+                tauxUtilisation: ratio(r.tauxUtilisation)
+            };
+        });
+        return byLot;
+    }
+
+    // Une ligne par équipement, avec son lot de travaux (toujours renseigné pour
+    // les familles connues), sa puissance unitaire EN WATTS quelle que soit l'unité
+    // de saisie de la fiche, et le régime de fonctionnement de son lot.
+    function buildLignes(building) {
+        if (!window.LotMapping || !LotMapping.extractFiche) return [];
+        var lignes = [];
+        listFiches(building).forEach(function (entry) {
+            var label = building.customLabels && building.customLabels[entry.moduleId];
+            var regimes = regimesByLot(entry.fiche);
+            LotMapping.extractFiche(entry.moduleId, entry.fiche, entry.numero, label).forEach(function (row) {
+                lignes.push({
+                    fiche: entry.moduleId + "_" + entry.numero,
+                    secteur: row.secteur,
+                    localisation: row.localisation,
+                    description: row.description,
+                    nombre: row.nombre,
+                    puissanceUnitaireW: row.puissanceW,
+                    lot: row.lot || null,
+                    lotNom: row.lotNom || null,
+                    fonctionnement: (row.lot && regimes[row.lot]) || null
+                });
+            });
+        });
+        return lignes;
+    }
+
+    // Lignes de la feuille "Fonctionnement" : un régime par lot et par fiche.
+    function buildFonctionnement(building) {
+        var out = [];
+        listFiches(building).forEach(function (entry) {
+            var regimes = regimesByLot(entry.fiche);
+            Object.keys(regimes).forEach(function (lot) {
+                var secteur = (window.SECTEURS || []).filter(function (s) { return s.id === entry.moduleId; })[0];
+                var custom = building.customLabels && building.customLabels[entry.moduleId];
+                var r = regimes[lot];
+                out.push({
+                    secteur: (secteur && secteur.label) || custom || entry.moduleId,
+                    localisation: entry.fiche.nom || (entry.moduleId + " " + entry.numero),
+                    lot: lot,
+                    lotNom: window.LotMapping ? LotMapping.lotNom(lot) : "",
+                    heuresParJour: r.heuresParJour,
+                    joursParAn: r.joursParAn,
+                    heuresParAn: r.heuresParAn,
+                    simultaneite: r.simultaneite,
+                    tauxUtilisation: r.tauxUtilisation
+                });
+            });
+        });
+        return out;
+    }
+
+    // Calcul thermique des parois d'une fiche hébergement : λ, masse volumique et
+    // chaleur spécifique de chaque couche (bibliothèque de matériaux), Rth, U et
+    // facteur solaire. Rien n'est calculé si une couche manque de données.
+    function buildThermique(building) {
+        if (!window.MateriauxThermiques) return [];
+        var out = [];
+        listFiches(building).forEach(function (entry) {
+            if (entry.moduleId !== "hebergements") return;
+            var fiche = entry.fiche;
+            var complements = fiche.complements || {};
+            var verticales = fiche.parois && fiche.parois.length
+                ? MateriauxThermiques.calculerParoi(fiche.parois, "verticale",
+                    complements.enveloppe && complements.enveloppe.couleurFacade)
+                : null;
+
+            var horizontales = [];
+            ["Toiture", "Plancher haut", "Plancher bas"].forEach(function (type) {
+                var couches = (complements.parois_horizontales || []).filter(function (c) { return c.paroi === type; });
+                if (!couches.length) return;
+                var couleur = (couches.filter(function (c) { return c.couleurExterieure; })[0] || {}).couleurExterieure;
+                horizontales.push(MateriauxThermiques.calculerParoi(couches, type.toLowerCase(), couleur));
+            });
+
+            if (verticales || horizontales.length) {
+                out.push({
+                    fiche: entry.moduleId + "_" + entry.numero,
+                    localisation: fiche.nom || ("Hébergement " + entry.numero),
+                    parois: { verticales: verticales, horizontales: horizontales }
+                });
+            }
+        });
+        return out;
+    }
+
+    // Champs qui valent "" ou 0 tant que personne ne les a renseignés : dans
+    // l'export, null veut dire "non relevé" et ne se confond plus avec un vrai zéro.
+    var UNSET_WHEN_EMPTY_TEXT = { periode: true, periodeChauffage: true };
+    var UNSET_WHEN_ZERO = { nbChambres: true, cyclesLaveLinge: true, cyclesSecheLinge: true };
+
+    function markUnset(node) {
+        if (Array.isArray(node)) return node.map(markUnset);
+        if (!node || typeof node !== "object") return node;
+        var out = {};
+        Object.keys(node).forEach(function (key) {
+            var value = node[key];
+            if (UNSET_WHEN_EMPTY_TEXT[key] && value === "") out[key] = null;
+            else if (UNSET_WHEN_ZERO[key] && value === 0) out[key] = null;
+            else out[key] = markUnset(value);
+        });
+        return out;
+    }
+
+    function slug(text) {
+        return String(text || "").toLowerCase()
+            .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+            .replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+    }
+
+    // Identifiant stable de l'hôtel : numéro dans le référentiel des hôtels
+    // (js/hotels-data.js, liste qui ne fait que s'allonger) + nom du référentiel.
+    function hotelIdentity(siteInfo) {
+        var index = window.HotelManager ? HotelManager.getCurrentHotelIndex() : "";
+        var ref = index !== "" && window.HOTELS ? window.HOTELS[Number(index)] : null;
+        return {
+            index: index === "" ? null : Number(index),
+            id: slug((ref && ref.nom) || siteInfo.nom) || null,
+            nomReferentiel: ref ? ref.nom : null
+        };
+    }
+
     // buildingsAuditData = [{ id, nom, donnees, customLabels }, ...].
     function buildAuditJSON(siteInfo, buildingsAuditData) {
         var audit = {
@@ -145,16 +328,28 @@ window.ReportExport = (function () {
                 exportDateFormatted: new Date().toLocaleDateString("fr-FR", {
                     day: "2-digit", month: "2-digit", year: "numeric",
                     hour: "2-digit", minute: "2-digit"
-                })
+                }),
+                formatVersion: 2,
+                hotel: hotelIdentity(siteInfo),
+                unites: {
+                    lignes: "puissances en watts, toujours",
+                    secteurs: "valeurs telles que saisies sur les fiches : puissances en watts, sauf les champs saisis en kW (pompes de piscine et de bain à remous, chauffage de piscine, calandre, ventilation et bornes de parking) ; utiliser lignes[].puissanceUnitaireW",
+                    simultaneite: "fraction de 1 (0,7 = 70 %)"
+                },
+                nonReleve: "null = non relevé (périodes vides, nbChambres et cycles de blanchisserie à 0 jamais saisis)"
             },
             siteInfo: siteInfo,
             batiments: buildingsAuditData.map(function (b) {
-                return {
+                var thermique = buildThermique(b);
+                var batiment = {
                     id: b.id,
                     nom: b.nom,
-                    secteurs: b.donnees,
-                    secteursPersonnalisesLabels: b.customLabels
+                    secteurs: markUnset(b.donnees),
+                    secteursPersonnalisesLabels: b.customLabels,
+                    lignes: buildLignes(b)
                 };
+                if (thermique.length) batiment.thermique = thermique;
+                return batiment;
             })
         };
         return new Blob([JSON.stringify(audit, null, 2)], { type: "application/json" });

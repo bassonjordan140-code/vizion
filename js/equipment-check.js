@@ -15,10 +15,11 @@ window.EquipmentCheck = (function () {
         "hebergements", "restaurant", "buanderie", "jeux", "reunion", "sport", "bureaux", "parking"
     ];
 
-    function pushIssue(list, ctx, equipNom, nombre, puissance) {
+    function pushIssue(list, ctx, equipNom, nombre, puissance, missingLot) {
         var missingNombre = !(nombre > 0);
         var missingPuissance = !(puissance > 0);
-        if (!missingNombre && !missingPuissance) return;
+        missingLot = !!missingLot;
+        if (!missingNombre && !missingPuissance && !missingLot) return;
         list.push({
             buildingId: ctx.buildingId,
             buildingNom: ctx.buildingNom,
@@ -29,13 +30,17 @@ window.EquipmentCheck = (function () {
             localisationNom: ctx.localisationNom,
             equipNom: equipNom || "(équipement sans nom)",
             missingNombre: missingNombre,
-            missingPuissance: missingPuissance
+            missingPuissance: missingPuissance,
+            missingLot: missingLot
         });
     }
 
     function scanArrayEquipements(list, ctx, equipements) {
         (equipements || []).forEach(function (eq) {
-            pushIssue(list, ctx, eq.nom, eq.nombre, eq.puissance);
+            // Sans lot choisi, le lot est déduit du nom ; s'il n'est reconnu nulle
+            // part, l'équipement finirait en "Autres" : on le signale.
+            var lotConnu = !!eq.lot || (typeof LotMapping !== "undefined" && !!LotMapping.defaultLotFor(eq.nom));
+            pushIssue(list, ctx, eq.nom, eq.nombre, eq.puissance, !lotConnu);
         });
     }
 

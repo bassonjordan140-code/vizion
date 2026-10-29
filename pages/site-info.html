@@ -119,6 +119,17 @@
             </button>
         </div>
 
+        <!-- Compléments du site (surfaces, PERENE, poste de transformation, groupes d'eau glacée) -->
+        <div class="module-detail-card extras-card">
+            <h2 class="section-title">Compléments du site</h2>
+            <p class="section-hint">
+                Facultatif. Surfaces, critères PERENE, poste de transformation, groupes d'eau
+                glacée : ce que le rapport demande en plus. Un champ laissé sur « Non relevé »
+                reste absent des données.
+            </p>
+            <div id="siteExtras" class="extras-groups"></div>
+        </div>
+
         <button type="button" id="validateSiteInfoBtn" class="primary-button">
             Valider et continuer →
         </button>
@@ -152,6 +163,7 @@
     <script src="../js/backup-manager.js"></script>
     <script src="../js/report-export.js"></script>
     <script src="../js/site-info.js"></script>
+    <script src="../js/fiche-extras.js"></script>
 
     <script>
         document.addEventListener("touchstart", function () {}, { passive: true });
