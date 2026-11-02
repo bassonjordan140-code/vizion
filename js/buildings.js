@@ -162,11 +162,15 @@ function renderEquipmentIssues(issues) {
         if (issue.missingPuissance) manque.push("puissance unitaire");
         if (issue.missingLot) manque.push("lot de travaux");
 
+        var detail = issue.puissanceSuspecte
+            ? 'puissance à vérifier : ' + issue.puissanceSuspecte + ' (hors du plausible pour un équipement)'
+            : manque.join(" et ") + ' manquant' + (manque.length > 1 ? "s" : "");
+
         var row = document.createElement("div");
         row.className = "equipment-issue-row";
         row.innerHTML =
             '<div class="equipment-issue-info">' +
-                '<strong>' + issue.equipNom + '</strong> — ' + manque.join(" et ") + ' manquant' + (manque.length > 1 ? "s" : "") +
+                '<strong>' + issue.equipNom + '</strong> — ' + detail +
                 '<small>' + issue.buildingNom + ' · ' + issue.secteurLabel + ' · ' + issue.localisationNom + '</small>' +
             '</div>' +
             '<button type="button" class="equipment-issue-fix-btn">Corriger →</button>';

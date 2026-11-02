@@ -75,6 +75,18 @@ restent exportées et visibles dans la fiche (« Photos de clim déjà prises »
 Les photos prises dans l'appli sont toutes réenregistrées en JPEG : les `.HEIC` de l'export du Clos
 y ont été ajoutés à la main.
 
+## Correctifs suite au retour sur le format 2
+* **ECS des hébergements** : la ligne porte maintenant `nombre` = nombre de logements du type
+  (elle sortait sans quantité : 21 kW manquants sur le Clos).
+* **Froid de chambre** : Frigo, Cave vin et Machine glaçons passent de `9-1` « Autres » à `3-5`
+  « Cuisine froid ». Minibar reste en `8-1`, à trancher avec la nomenclature.
+* **Puissance hors du plausible** : le récapitulatif avant export signale toute puissance unitaire
+  au-dessus de 60 kW ou sous 2 W (par exemple « 1500 kW » saisi dans un champ en kW). C'est un
+  avertissement, il peut être ignoré. La valeur du Clos (`chauffagePuissance` = 1500, à ramener à 1,5)
+  reste à corriger dans la fiche piscine.
+* **Test de non-régression** : `node scripts/test-export.js` rejoue l'export sur un audit de
+  démonstration ; avec un `audit.json` en argument, il affiche les totaux par secteur.
+
 ## À savoir
 * Les valeurs de la bibliothèque de matériaux et les coefficients de couleur sont **indicatifs**
   (à valider par le bureau d'études) ; elles se règlent dans `js/materiaux-thermiques.js`.

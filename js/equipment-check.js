@@ -57,6 +57,45 @@ window.EquipmentCheck = (function () {
         scanArrayEquipements(list, ctx, fiche.equipementsPersonnalises);
     }
 
+    // Puissance unitaire hors du plausible pour un équipement d'hôtel : au-dessus de
+    // 60 kW ou sous 2 W. Typiquement un champ saisi en kW qui reçoit des watts
+    // ("1500" kW pour une pompe à chaleur de 1,5 kW). Avertissement seulement :
+    // l'utilisateur peut l'ignorer, mais il le voit avant l'export.
+    var PUISSANCE_MAX_W = 60000;
+    var PUISSANCE_MIN_W = 2;
+
+    function scanPuissancesSuspectes(list, building) {
+        if (typeof LotMapping === "undefined" || !LotMapping.extractFiche) return;
+        var donnees = building.donnees || {};
+        Object.keys(donnees).forEach(function (secteurId) {
+            var isCustom = isCustomSecteurId(secteurId);
+            var secteurLabel = isCustom
+                ? ((building.customLabels && building.customLabels[secteurId]) || "Secteur personnalisé")
+                : ((SECTEURS.find(function (s) { return s.id === secteurId; }) || {}).label || secteurId);
+            var fichesParNumero = donnees[secteurId] || {};
+            Object.keys(fichesParNumero).forEach(function (numero) {
+                var fiche = fichesParNumero[numero];
+                if (!fiche) return;
+                LotMapping.extractFiche(secteurId, fiche, numero, secteurLabel).forEach(function (row) {
+                    var w = row.puissanceW;
+                    if (w === null || w === undefined || w <= 0) return;
+                    if (w <= PUISSANCE_MAX_W && w >= PUISSANCE_MIN_W) return;
+                    list.push({
+                        buildingId: building.id,
+                        buildingNom: building.nom,
+                        secteurId: secteurId,
+                        secteurLabel: secteurLabel,
+                        isCustom: isCustom,
+                        numero: numero,
+                        localisationNom: fiche.nom || (secteurLabel + " " + numero),
+                        equipNom: row.description,
+                        puissanceSuspecte: row.puissance + " " + row.unitePuissance
+                    });
+                });
+            });
+        });
+    }
+
     // buildingsAuditData : sortie de BuildingManager.collectAllBuildingsAuditData()
     // -> [{ id, nom, donnees: { secteurId: { numero: fiche } }, customLabels }, ...]
     function findIncompleteEquipment(buildingsAuditData) {
@@ -64,6 +103,7 @@ window.EquipmentCheck = (function () {
 
         (buildingsAuditData || []).forEach(function (building) {
             var donnees = building.donnees || {};
+            scanPuissancesSuspectes(issues, building);
 
             Object.keys(donnees).forEach(function (secteurId) {
                 var isCustom = isCustomSecteurId(secteurId);

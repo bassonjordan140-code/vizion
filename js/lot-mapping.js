@@ -233,12 +233,12 @@ window.LotMapping = (function () {
     var HEBERGEMENT_EQUIP_LOT = {
         "Télé": "8-1",
         "Minibar": "8-1",
-        "Frigo": "9-1",
+        "Frigo": "3-5",
         "Machine café": "8-1",
         "Sèche-cheveux": "8-1",
         "Téléphone": "9-1",
-        "Cave vin": "9-1",
-        "Machine glaçons": "9-1",
+        "Cave vin": "3-5",
+        "Machine glaçons": "3-5",
         "Bain remous": "9-1",
         "Brasseur air": "5-2",
         "Bouilloire": "8-1",
@@ -268,7 +268,7 @@ window.LotMapping = (function () {
             var ecsLot = { "Électrique": "2-1", "Solaire": "2-4", "Thermodynamique": "2-5", "Gaz": "2-3" }[fiche.ecs.energie] || "9-1";
             rows.push(makeRow({
                 localisation: localisation, secteur: ctx.secteur,
-                puissance: fiche.ecs.puissance,
+                puissance: fiche.ecs.puissance, nombre: mult,
                 description: "ECS " + (fiche.ecs.distribution || "") + (fiche.ecs.energie ? " (" + fiche.ecs.energie + ")" : ""),
                 lot: ecsLot, formulaireOrigine: ctx.formulaireOrigine, nomFormulaire: ctx.nomFormulaire
             }));
